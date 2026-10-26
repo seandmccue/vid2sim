@@ -1,0 +1,23 @@
+{
+  "name": "Vid2Sim.Sim",
+  "rootNamespace": "Vid2Sim",
+  "references": [
+    "Unity.TextMeshPro",
+    "Oculus.Interaction",
+    "Oculus.Interaction.OVR",
+    "Oculus.VR"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    { "name": "com.meta.xr.sdk.interaction", "expression": "", "define": "META_INTERACTION_SDK" },
+    { "name": "com.meta.xr.sdk.interaction.ovr", "expression": "", "define": "META_INTERACTION_SDK" },
+    { "name": "com.meta.xr.sdk.core", "expression": "", "define": "META_CORE_SDK" }
+  ],
+  "noEngineReferences": false
+}

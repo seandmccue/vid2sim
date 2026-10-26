@@ -1,0 +1,9 @@
+{
+  "name": "Vid2Sim.Generated",
+  "rootNamespace": "Vid2Sim.Generated",
+  "references": [ "Vid2Sim.Sim", "Oculus.Interaction", "Oculus.Interaction.OVR" ],
+  "autoReferenced": true,
+  "versionDefines": [
+    { "name": "com.meta.xr.sdk.interaction.ovr", "expression": "", "define": "META_INTERACTION_SDK" }
+  ]
+}
