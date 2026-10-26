@@ -157,7 +157,7 @@ def _spark_box_fallback(video: Path, keyframe: int, info: VideoInfo, part: dict,
                 {"type": "input_image", "image_url": f"data:image/png;base64,{b64}"},
             ]}],
             text={"format": {"type": "json_schema", "name": "box", "schema": schema, "strict": True}},
-            max_output_tokens=2000, stream=True)
+            max_output_tokens=4000, stream=True)  # reasoning shares the budget; 2000 hit the cap on a real run
         for kind, payload in iter_output_text(stream):
             if kind == "delta":
                 text += payload

@@ -1,0 +1,117 @@
+{
+  "parts": [
+    {
+      "id": "power_switch",
+      "interaction": "press",
+      "keyframe": 12,
+      "name": "Power Switch",
+      "prompt_phrase": "black rocker power switch"
+    },
+    {
+      "id": "filter_cover",
+      "interaction": "grab",
+      "keyframe": 45,
+      "name": "Filter Cover",
+      "prompt_phrase": "gray plastic filter cover"
+    },
+    {
+      "id": "dirty_intake_filter",
+      "interaction": "grab",
+      "keyframe": 80,
+      "name": "Old Intake Filter",
+      "prompt_phrase": "soiled pleated intake filter"
+    },
+    {
+      "id": "filter_housing",
+      "interaction": "inspect",
+      "keyframe": 110,
+      "name": "Filter Housing",
+      "prompt_phrase": "black rectangular filter housing"
+    },
+    {
+      "id": "clean_intake_filter",
+      "interaction": "grab",
+      "keyframe": 140,
+      "name": "New Intake Filter",
+      "prompt_phrase": "clean white pleated filter"
+    }
+  ],
+  "procedure": {
+    "id": "replace-intake-filter",
+    "title": "Replace the intake filter"
+  },
+  "steps": [
+    {
+      "action": "press",
+      "check": "Power indicator is off and fan is silent",
+      "coach": "Kill power first, every time.",
+      "end_frame": 25,
+      "failure": "Live power can start the fan and injure fingers.",
+      "instruction": "Press the black power switch to off.",
+      "order": 1,
+      "part_id": "power_switch",
+      "safety": true,
+      "start_frame": 0
+    },
+    {
+      "action": "pull",
+      "check": "Cover is detached and housing is exposed",
+      "coach": "Pull steady, don't yank the tabs.",
+      "end_frame": 60,
+      "failure": "Forcing the cover cracks the hinge tabs.",
+      "instruction": "Pull the filter cover open.",
+      "order": 2,
+      "part_id": "filter_cover",
+      "safety": false,
+      "start_frame": 30
+    },
+    {
+      "action": "pull",
+      "check": "Housing is empty with no filter inside",
+      "coach": "Pull it straight out to keep dust contained.",
+      "end_frame": 95,
+      "failure": "Leaving the old filter chokes airflow and overheats.",
+      "instruction": "Pull the old intake filter out of the housing.",
+      "order": 3,
+      "part_id": "dirty_intake_filter",
+      "safety": false,
+      "start_frame": 65
+    },
+    {
+      "action": "inspect",
+      "check": "Housing is clean with no dust buildup or damage",
+      "coach": "Give it a good look before the new one goes in.",
+      "end_frame": 125,
+      "failure": "Debris left inside bypasses the new filter.",
+      "instruction": "Inspect the filter housing for dust and damage.",
+      "order": 4,
+      "part_id": "filter_housing",
+      "safety": false,
+      "start_frame": 100
+    },
+    {
+      "action": "place",
+      "check": "New filter sits flush with gasket sealed all around",
+      "coach": "Seat it flush, check the gasket.",
+      "end_frame": 155,
+      "failure": "Poor seating lets unfiltered air into the intake.",
+      "instruction": "Place the new intake filter into the housing.",
+      "order": 5,
+      "part_id": "clean_intake_filter",
+      "safety": false,
+      "start_frame": 130
+    },
+    {
+      "action": "place",
+      "check": "Cover clicks shut and latch is flush",
+      "coach": "Close it up and listen for the click.",
+      "end_frame": 179,
+      "failure": "Loose cover rattles and leaks unfiltered air.",
+      "instruction": "Place the filter cover back and close it.",
+      "order": 6,
+      "part_id": "filter_cover",
+      "safety": false,
+      "start_frame": 160
+    }
+  ]
+}

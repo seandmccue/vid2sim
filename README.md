@@ -82,8 +82,11 @@ Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs ha
 
 | Procedure | Upload → playable | API cost | Steps correct vs trainer list | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
-| compressor-filter-swap | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
+| synthetic test pattern, 6 s (run 20261026-173002, chain check only) | 2.8 min | $0.32 | 2/6 (title-hint hallucination, no narration) | 0 / 0 / 5 |
+| compressor-filter-swap (real footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
 | _procedure #2_ | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
+
+The first row is the Oct 26 chain check on a colour-bar clip: every call succeeded, SAM correctly found nothing, Spark invented steps from the title hint because there was no narration or content. Real numbers come from real footage.
 
 Prices used: Spark $1.25/M in, $4.25/M out; SAM $0.20 per 1k frames, 50-frame minimum per request.
 Transcribe and Image rows are labelled estimates until Billing confirms the unit price.

@@ -1,0 +1,259 @@
+{
+  "run_id": "20261026-173002-a1f1f0",
+  "procedure": "replace-intake-filter",
+  "upload_to_spec_s": 331.9,
+  "api_cost_usd": 0.3219,
+  "steps": 6,
+  "parts": 5,
+  "parts_found_concept": 0,
+  "parts_found_box": 0,
+  "parts_manual": 5,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.37,
+      "cost_usd": 0.0,
+      "note": "p1.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 1.6,
+      "cost_usd": 0.0006,
+      "note": "0.10 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 18.84,
+      "cost_usd": 0.0204,
+      "note": "completed"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "skipped, no narration"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.34,
+      "cost_usd": 0.0,
+      "note": "power_switch.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.36,
+      "cost_usd": 0.01,
+      "note": "black rocker power switch"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 6.95,
+      "cost_usd": 0.0046,
+      "note": "power_switch"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.93,
+      "cost_usd": 0.0,
+      "note": "filter_cover.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.58,
+      "cost_usd": 0.033,
+      "note": "gray plastic filter cover"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 13.64,
+      "cost_usd": 0.0089,
+      "note": "filter_cover"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.0,
+      "cost_usd": 0.0,
+      "note": "dirty_intake_filter.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 2.85,
+      "cost_usd": 0.0122,
+      "note": "soiled pleated intake filter"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 4.98,
+      "cost_usd": 0.0031,
+      "note": "dirty_intake_filter"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.1,
+      "cost_usd": 0.0,
+      "note": "filter_housing.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 2.85,
+      "cost_usd": 0.0112,
+      "note": "black rectangular filter housing"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 5.34,
+      "cost_usd": 0.0043,
+      "note": "filter_housing"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 1.59,
+      "cost_usd": 0.0,
+      "note": "clean_intake_filter.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 2.57,
+      "cost_usd": 0.0112,
+      "note": "clean white pleated filter"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 2.54,
+      "cost_usd": 0.0024,
+      "note": "clean_intake_filter"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 18.88,
+      "cost_usd": 0.04,
+      "note": "power_switch (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 10.3,
+      "cost_usd": 0.04,
+      "note": "filter_cover (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 15.29,
+      "cost_usd": 0.04,
+      "note": "dirty_intake_filter (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 17.32,
+      "cost_usd": 0.04,
+      "note": "filter_housing (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 15.9,
+      "cost_usd": 0.04,
+      "note": "clean_intake_filter (cost is an estimate)"
+    },
+    {
+      "stage": "total",
+      "model": "pipeline",
+      "wall_s": 166.8,
+      "cost_usd": 0.0,
+      "note": "upload to StreamingAssets"
+    }
+  ],
+  "ground_truth": {
+    "steps_truth": 6,
+    "steps_extracted": 6,
+    "steps_correct": 2,
+    "accuracy": 0.333,
+    "rows": [
+      {
+        "order": 1,
+        "truth": "Switch the compressor off.",
+        "extracted": "Press the black power switch to off.",
+        "action_truth": "press",
+        "action_extracted": "press",
+        "action_ok": true,
+        "text_ok": true,
+        "ok": true
+      },
+      {
+        "order": 2,
+        "truth": "Open the tank drain valve to bleed pressure.",
+        "extracted": "Pull the filter cover open.",
+        "action_truth": "turn_ccw",
+        "action_extracted": "pull",
+        "action_ok": false,
+        "text_ok": false,
+        "ok": false
+      },
+      {
+        "order": 3,
+        "truth": "Unscrew the filter housing cover.",
+        "extracted": "Pull the old intake filter out of the housing.",
+        "action_truth": "turn_ccw",
+        "action_extracted": "pull",
+        "action_ok": false,
+        "text_ok": false,
+        "ok": false
+      },
+      {
+        "order": 4,
+        "truth": "Pull out the old filter.",
+        "extracted": "Inspect the filter housing for dust and damage.",
+        "action_truth": "pull",
+        "action_extracted": "inspect",
+        "action_ok": false,
+        "text_ok": false,
+        "ok": false
+      },
+      {
+        "order": 5,
+        "truth": "Seat the new filter in the housing.",
+        "extracted": "Place the new intake filter into the housing.",
+        "action_truth": "place",
+        "action_extracted": "place",
+        "action_ok": true,
+        "text_ok": true,
+        "ok": true
+      },
+      {
+        "order": 6,
+        "truth": "Screw the cover back on hand-tight.",
+        "extracted": "Place the filter cover back and close it.",
+        "action_truth": "turn_cw",
+        "action_extracted": "place",
+        "action_ok": false,
+        "text_ok": true,
+        "ok": false
+      }
+    ]
+  },
+  "generated_actions": [],
+  "textures": 5,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/replace-intake-filter"
+}

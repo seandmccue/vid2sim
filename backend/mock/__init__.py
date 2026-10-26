@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ..pipeline.common import VideoInfo
 
-_P1 = Path(__file__).resolve().parents[2] / "data" / "procedures" / "p1" / "spec.json"
+_P1 = Path(__file__).resolve().parents[2] / "data" / "procedures" / "p1" / "spec.handwritten.json"
 
 
 def _p1() -> dict:

@@ -1,27 +1,168 @@
 {
   "schema_version": "1.0",
   "procedure": {
-    "id": "compressor-filter-swap",
+    "id": "replace-intake-filter",
     "title": "Replace the intake filter",
-    "source_video": "file-handwritten",
-    "fps": 30,
-    "width": 1920,
-    "height": 1080,
-    "duration_s": 94
+    "source_video": "file-2558121138027214",
+    "fps": 30.0,
+    "width": 640,
+    "height": 360,
+    "duration_s": 6.0
   },
   "parts": [
-    { "id": "power_switch", "name": "power switch", "prompt_phrase": "red rocker switch", "interaction": "press", "keyframe": 62, "box": [812, 440, 905, 512], "size_hint_m": 0.04, "confidence": 0.91, "source": "concept" },
-    { "id": "drain_valve", "name": "tank drain valve", "prompt_phrase": "brass drain valve", "interaction": "turn", "keyframe": 380, "box": [1010, 790, 1080, 860], "size_hint_m": 0.05, "confidence": 0.84, "source": "concept" },
-    { "id": "filter_cover", "name": "filter housing cover", "prompt_phrase": "black plastic filter cap", "interaction": "turn", "keyframe": 920, "box": [700, 300, 900, 500], "size_hint_m": 0.10, "confidence": 0.88, "source": "concept" },
-    { "id": "old_filter", "name": "old intake filter", "prompt_phrase": "dirty white foam filter", "interaction": "grab", "keyframe": 1300, "box": [720, 330, 880, 480], "size_hint_m": 0.08, "confidence": 0.62, "source": "box" },
-    { "id": "new_filter", "name": "new intake filter", "prompt_phrase": "clean white foam filter", "interaction": "grab", "keyframe": 1700, "box": [1200, 700, 1360, 850], "size_hint_m": 0.08, "confidence": 0.93, "source": "concept" }
+    {
+      "id": "power_switch",
+      "name": "Power Switch",
+      "prompt_phrase": "black rocker power switch",
+      "interaction": "press",
+      "keyframe": 12,
+      "box": [
+        267,
+        150,
+        373,
+        210
+      ],
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "filter_cover",
+      "name": "Filter Cover",
+      "prompt_phrase": "gray plastic filter cover",
+      "interaction": "grab",
+      "keyframe": 45,
+      "box": [
+        267,
+        150,
+        373,
+        210
+      ],
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "dirty_intake_filter",
+      "name": "Old Intake Filter",
+      "prompt_phrase": "soiled pleated intake filter",
+      "interaction": "grab",
+      "keyframe": 80,
+      "box": [
+        267,
+        150,
+        373,
+        210
+      ],
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "filter_housing",
+      "name": "Filter Housing",
+      "prompt_phrase": "black rectangular filter housing",
+      "interaction": "inspect",
+      "keyframe": 110,
+      "box": [
+        267,
+        150,
+        373,
+        210
+      ],
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "clean_intake_filter",
+      "name": "New Intake Filter",
+      "prompt_phrase": "clean white pleated filter",
+      "interaction": "grab",
+      "keyframe": 140,
+      "box": [
+        267,
+        150,
+        373,
+        210
+      ],
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
+    }
   ],
   "steps": [
-    { "order": 1, "part_id": "power_switch", "action": "press", "instruction": "Switch the compressor off.", "start_frame": 48, "end_frame": 131, "check": "Switch reads OFF.", "failure": "Skipping this step is a safety fail.", "safety": true, "coach": "Power first, always." },
-    { "order": 2, "part_id": "drain_valve", "action": "turn_ccw", "instruction": "Open the tank drain valve to bleed pressure.", "start_frame": 340, "end_frame": 620, "check": "Gauge reads zero.", "failure": "Opening the housing under pressure can eject the cap.", "safety": true, "coach": "Zero on the gauge before you touch the housing." },
-    { "order": 3, "part_id": "filter_cover", "action": "turn_ccw", "instruction": "Unscrew the filter housing cover.", "start_frame": 880, "end_frame": 1180, "check": "Cover is off and set aside.", "failure": "Forcing the cap cracks the threads.", "safety": false, "coach": "Counter-clockwise, a quarter turn at a time." },
-    { "order": 4, "part_id": "old_filter", "action": "pull", "instruction": "Pull out the old filter.", "start_frame": 1240, "end_frame": 1420, "check": "Housing is empty.", "failure": "Leaving debris in the housing fouls the new filter.", "safety": false, "coach": "Straight out, don't twist." },
-    { "order": 5, "part_id": "new_filter", "action": "place", "instruction": "Seat the new filter in the housing.", "start_frame": 1660, "end_frame": 1900, "check": "Filter sits flush.", "failure": "A tilted filter lets unfiltered air past.", "safety": false, "coach": "Flush all the way around." },
-    { "order": 6, "part_id": "filter_cover", "action": "turn_cw", "instruction": "Screw the cover back on hand-tight.", "start_frame": 1960, "end_frame": 2300, "check": "Cover is snug.", "failure": "Over-tightening cracks the cap.", "safety": false, "coach": "Hand-tight is tight enough." }
+    {
+      "action": "press",
+      "check": "Power indicator is off and fan is silent",
+      "coach": "Kill power first, every time.",
+      "end_frame": 25,
+      "failure": "Live power can start the fan and injure fingers.",
+      "instruction": "Press the black power switch to off.",
+      "order": 1,
+      "part_id": "power_switch",
+      "safety": true,
+      "start_frame": 0
+    },
+    {
+      "action": "pull",
+      "check": "Cover is detached and housing is exposed",
+      "coach": "Pull steady, don't yank the tabs.",
+      "end_frame": 60,
+      "failure": "Forcing the cover cracks the hinge tabs.",
+      "instruction": "Pull the filter cover open.",
+      "order": 2,
+      "part_id": "filter_cover",
+      "safety": false,
+      "start_frame": 30
+    },
+    {
+      "action": "pull",
+      "check": "Housing is empty with no filter inside",
+      "coach": "Pull it straight out to keep dust contained.",
+      "end_frame": 95,
+      "failure": "Leaving the old filter chokes airflow and overheats.",
+      "instruction": "Pull the old intake filter out of the housing.",
+      "order": 3,
+      "part_id": "dirty_intake_filter",
+      "safety": false,
+      "start_frame": 65
+    },
+    {
+      "action": "inspect",
+      "check": "Housing is clean with no dust buildup or damage",
+      "coach": "Give it a good look before the new one goes in.",
+      "end_frame": 125,
+      "failure": "Debris left inside bypasses the new filter.",
+      "instruction": "Inspect the filter housing for dust and damage.",
+      "order": 4,
+      "part_id": "filter_housing",
+      "safety": false,
+      "start_frame": 100
+    },
+    {
+      "action": "place",
+      "check": "New filter sits flush with gasket sealed all around",
+      "coach": "Seat it flush, check the gasket.",
+      "end_frame": 155,
+      "failure": "Poor seating lets unfiltered air into the intake.",
+      "instruction": "Place the new intake filter into the housing.",
+      "order": 5,
+      "part_id": "clean_intake_filter",
+      "safety": false,
+      "start_frame": 130
+    },
+    {
+      "action": "place",
+      "check": "Cover clicks shut and latch is flush",
+      "coach": "Close it up and listen for the click.",
+      "end_frame": 179,
+      "failure": "Loose cover rattles and leaks unfiltered air.",
+      "instruction": "Place the filter cover back and close it.",
+      "order": 6,
+      "part_id": "filter_cover",
+      "safety": false,
+      "start_frame": 160
+    }
   ]
 }
