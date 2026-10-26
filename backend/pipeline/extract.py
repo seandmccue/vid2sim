@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from pathlib import Path
 
 from .common import (ACTION_VOCAB, INTERACTION_FOR_ACTION, SPARK_MODEL, Metrics, Timer, VideoInfo,
@@ -101,19 +102,31 @@ Narration (transcribed separately, with frame stamps):
 """
 
 
+# Spark is a reasoning model and reasoning shares the output budget. On a real 79 s clip the first
+# extraction burned 6000 tokens of reasoning and emitted 0 chars of JSON, so the default is generous
+# and an incomplete response is retried once at double the budget.
+DEFAULT_MAX_OUTPUT_TOKENS = int(os.environ.get("SPARK_MAX_OUTPUT_TOKENS", "16000"))
+REASONING_EFFORT = os.environ.get("SPARK_REASONING_EFFORT", "")  # e.g. low | medium | high; empty = API default
+
+
 def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, metrics: Metrics,
-                          stage: str, max_output_tokens: int = 6000) -> dict:
+                          stage: str, max_output_tokens: int | None = None, _retry: bool = True) -> dict:
     c = client()
+    budget = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
     text = ""
     usage_in = usage_out = 0
     status = "completed"
+    kwargs = {}
+    if REASONING_EFFORT:
+        kwargs["reasoning"] = {"effort": REASONING_EFFORT}
     with Timer() as t:
         stream = c.responses.create(
             model=SPARK_MODEL,
             input=[{"type": "message", "role": "user", "content": prompt_blocks}],
             text={"format": {"type": "json_schema", "name": name, "schema": schema, "strict": False}},
-            max_output_tokens=max_output_tokens,
+            max_output_tokens=budget,
             stream=True,
+            **kwargs,
         )
         for kind, payload in iter_output_text(stream):
             if kind == "delta":
@@ -124,10 +137,12 @@ def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, me
                 if u:
                     usage_in, usage_out = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
     metrics.log(stage, SPARK_MODEL, t.wall, spark_cost(usage_in, usage_out),
-                tokens_in=usage_in, tokens_out=usage_out, note=status)
+                tokens_in=usage_in, tokens_out=usage_out, note=f"{status}, budget {budget}")
     if status != "completed" or not text.strip():
-        raise RuntimeError(f"Spark {stage} returned status={status!r} with {len(text)} chars; "
-                           f"raise max_output_tokens (reasoning shares the budget)")
+        if _retry:
+            return _responses_structured(prompt_blocks, schema, name, metrics, stage, budget * 2, _retry=False)
+        raise RuntimeError(f"Spark {stage} returned status={status!r} with {len(text)} chars after a retry at "
+                           f"{budget} output tokens; raise SPARK_MAX_OUTPUT_TOKENS or lower SPARK_REASONING_EFFORT")
     return json.loads(text)
 
 
@@ -210,7 +225,7 @@ NARRATION:
 {ttext}
 """
         review = _responses_structured([{"type": "input_text", "text": prompt}], VERIFY_SCHEMA,
-                                       "procedure_review", metrics, "verify", max_output_tokens=4000)
+                                       "procedure_review", metrics, "verify")
     flagged = [r for r in review.get("steps", []) if not r.get("supported", True)]
     review["flagged_count"] = len(flagged)
     write_json(out_dir / "review.json", review)

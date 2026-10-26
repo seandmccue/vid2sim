@@ -1,0 +1,380 @@
+{
+  "run_id": "20261026-193913-ab0165",
+  "procedure": "nazava-water-filter-install",
+  "upload_to_spec_s": 577.4,
+  "api_cost_usd": 0.9059,
+  "steps": 8,
+  "parts": 7,
+  "parts_found_concept": 3,
+  "parts_found_box": 2,
+  "parts_manual": 2,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 12.12,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 10.32,
+      "cost_usd": 0.0079,
+      "note": "1.31 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 32.87,
+      "cost_usd": 0.0546,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 28.09,
+      "cost_usd": 0.04,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.42,
+      "cost_usd": 0.0,
+      "note": "base_stand.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.31,
+      "cost_usd": 0.0312,
+      "note": "dark blue plastic base stand"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.16,
+      "cost_usd": 0.0088,
+      "note": "base_stand"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 1.74,
+      "cost_usd": 0.01,
+      "note": "<155f>1<|box;x1=300;y1=311;x2=413;y2=380;w=848;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.27,
+      "cost_usd": 0.0,
+      "note": "lower_container.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 7.13,
+      "cost_usd": 0.0422,
+      "note": "translucent blue container with white tap"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.39,
+      "cost_usd": 0.0,
+      "note": "rubber_seal.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.16,
+      "cost_usd": 0.0382,
+      "note": "black rubber sealing ring"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 7.03,
+      "cost_usd": 0.0068,
+      "note": "rubber_seal"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.43,
+      "cost_usd": 0.0,
+      "note": "ceramic_filter.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 8.12,
+      "cost_usd": 0.0402,
+      "note": "white ceramic filter candle"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 4.0,
+      "cost_usd": 0.0,
+      "note": "siphon_tube.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.58,
+      "cost_usd": 0.0442,
+      "note": "blue plastic siphon tube"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 10.16,
+      "cost_usd": 0.009,
+      "note": "siphon_tube"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 10.88,
+      "cost_usd": 0.0272,
+      "note": "<85f>1<|box;x1=55;y1=209;x2=213;y2=352;w=848;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 6.02,
+      "cost_usd": 0.0,
+      "note": "upper_container.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 18.89,
+      "cost_usd": 0.098,
+      "note": "translucent blue water reservoir"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.18,
+      "cost_usd": 0.0,
+      "note": "filter_lid.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 8.27,
+      "cost_usd": 0.0582,
+      "note": "dark blue circular filter lid"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 10.51,
+      "cost_usd": 0.0062,
+      "note": "filter_lid"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 49.88,
+      "cost_usd": 0.0344,
+      "note": "Muse Code CLI not found; Spark wrote the script"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 45.62,
+      "cost_usd": 0.0344,
+      "note": "Muse Code CLI not found; Spark wrote the script"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 48.46,
+      "cost_usd": 0.0344,
+      "note": "Muse Code CLI not found; Spark wrote the script"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 16.22,
+      "cost_usd": 0.04,
+      "note": "base_stand (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 20.85,
+      "cost_usd": 0.04,
+      "note": "lower_container (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.44,
+      "cost_usd": 0.04,
+      "note": "rubber_seal (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 16.95,
+      "cost_usd": 0.04,
+      "note": "ceramic_filter (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 20.11,
+      "cost_usd": 0.04,
+      "note": "siphon_tube (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 14.22,
+      "cost_usd": 0.04,
+      "note": "upper_container (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 19.18,
+      "cost_usd": 0.04,
+      "note": "filter_lid (cost is an estimate)"
+    },
+    {
+      "stage": "total",
+      "model": "pipeline",
+      "wall_s": 577.44,
+      "cost_usd": 0.0,
+      "note": "upload to StreamingAssets"
+    }
+  ],
+  "ground_truth": {
+    "steps_truth": 7,
+    "steps_extracted": 8,
+    "steps_correct": 6,
+    "steps_matched": 7,
+    "accuracy": 0.857,
+    "extra_steps": [
+      "Place the dark blue base stand centered on the table."
+    ],
+    "rows": [
+      {
+        "order": 1,
+        "truth": "Set the lower container with the tap onto the base.",
+        "extracted": "Place the lower container with the tap onto the base stand.",
+        "extracted_order": 2,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 2,
+        "truth": "Take one rubber ring off the ceramic filter.",
+        "extracted": "Insert the first black rubber seal into the upper reservoir hole.",
+        "extracted_order": 3,
+        "action_truth": "pull",
+        "action_extracted": "insert",
+        "similarity": 0.57,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 3,
+        "truth": "Insert the ceramic filter through the upper container and fit the rubber ring back on.",
+        "extracted": "Insert the white ceramic filter candle into the upper reservoir.",
+        "extracted_order": 4,
+        "action_truth": "place",
+        "action_extracted": "insert",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 4,
+        "truth": "Screw the tube onto the filter slowly.",
+        "extracted": "Screw the blue siphon tube onto the ceramic filter.",
+        "extracted_order": 5,
+        "action_truth": "turn_cw",
+        "action_extracted": "screw",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 5,
+        "truth": "Set the upper container onto the lower container.",
+        "extracted": "Insert the assembled upper reservoir into the lower container.",
+        "extracted_order": 6,
+        "action_truth": "place",
+        "action_extracted": "insert",
+        "similarity": 0.75,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 6,
+        "truth": "Pour water into the upper container.",
+        "extracted": "Pour rain, tap, well or river water into the upper reservoir.",
+        "extracted_order": 7,
+        "action_truth": "pour",
+        "action_extracted": "pour",
+        "similarity": 0.75,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 7,
+        "truth": "Put the lid on the filter.",
+        "extracted": "Cover the upper reservoir with the dark blue lid.",
+        "extracted_order": 8,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      }
+    ]
+  },
+  "generated_actions": [
+    {
+      "verb": "insert",
+      "class": "InsertAction",
+      "path": "unity/TrainingSim/Assets/Generated/InsertAction.cs",
+      "compiled": null,
+      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
+    },
+    {
+      "verb": "screw",
+      "class": "ScrewAction",
+      "path": "unity/TrainingSim/Assets/Generated/ScrewAction.cs",
+      "compiled": null,
+      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
+    },
+    {
+      "verb": "pour",
+      "class": "PourAction",
+      "path": "unity/TrainingSim/Assets/Generated/PourAction.cs",
+      "compiled": null,
+      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
+    }
+  ],
+  "textures": 7,
+  "streaming_assets": "unity/TrainingSim/Assets/StreamingAssets/procedures/nazava-water-filter-install",
+  "api_cost_usd_codegen_rerun": 0.247
+}

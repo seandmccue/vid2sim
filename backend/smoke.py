@@ -66,7 +66,7 @@ def main() -> int:
             if kind == "delta":
                 raw += payload
     (a.video.parent / "smoke_sam.txt").write_text(raw)
-    hits = parse_sam(raw, 0, a.video.parent / "smoke_masks", "smoke")
+    hits = parse_sam(raw, 0, a.video.parent / "smoke_masks", "smoke", (info.width, info.height))
     confs = [h.confidence for h in hits if h.confidence is not None]
     print(f"[sam] '{a.concept}': {len(raw)} chars, {len(hits)} frames tracked, mean c={sum(confs)/len(confs) if confs else 0:.2f}, "
           f"masks decoded={sum(1 for h in hits if h.mask_png)}, {t.wall:.1f}s, cost ${sam_cost(info.nb_frames):.4f}")

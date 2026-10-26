@@ -80,13 +80,26 @@ validated on every write and load. Rules the engine depends on:
 
 Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs happen.
 
-| Procedure | Upload → playable | API cost | Steps correct vs trainer list | Parts: text / box / manual |
+| Procedure | Upload → playable | API cost | Steps correct vs ground truth | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
-| synthetic test pattern, 6 s (run 20261026-173002, chain check only) | 2.8 min | $0.32 | 2/6 (title-hint hallucination, no narration) | 0 / 0 / 5 |
-| compressor-filter-swap (real footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
-| _procedure #2_ | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
+| Nazava water-filter install, 79 s, CC BY test clip (run 20261026-193913) | 9.6 min | $0.91 + $0.25 code-gen rerun | 6/7 matched and correct, 1 extra step (Spark split "take the base" into its own step) | 3 / 2 / 2 |
+| synthetic colour-bar clip, 6 s (run 20261026-173002, chain check only) | 2.8 min | $0.32 | n/a (no content; Spark invented steps from the title hint) | 0 / 0 / 5 |
+| compressor-filter-swap (Sean's own footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
 
-The first row is the Oct 26 chain check on a colour-bar clip: every call succeeded, SAM correctly found nothing, Spark invented steps from the title hint because there was no narration or content. Real numbers come from real footage.
+Notes on the Nazava run (`data/procedures/nazava/metrics.json`):
+
+- Voice Transcribe returned 7 frame-stamped turns that match the clip's own subtitle track almost word for word.
+- Spark 1.3 extracted 8 steps in the right order with sensible coach lines and flagged 3 as safety steps; the verify
+  pass flagged one step's wording against the narration. Ground truth here was written from the clip's subtitles by
+  the pipeline author, not a trainer, so treat the 6/7 as a sanity check rather than a claim.
+- SAM 3.1 found the upper container (464 frames, mean c 0.83), ceramic filter (102 frames) and lower container
+  (94 frames) from the text prompt alone. The base stand and tube went through the box fallback; the tube box is
+  wrong (Spark boxed the container in the presenter's hands), which the dashboard overlay shows at a glance. The
+  rubber seal and the lid were found by neither path and are marked `manual` for the trainer to draw.
+- Spark's reasoning shares its output budget: at 6000 tokens the first extraction returned nothing, and at 8000
+  the three generated C# scripts came back empty. Both now default to 16000 with one retry at double; one script needed the 32000 retry.
+- Wall time is dominated by sequential Muse Image (7 × ~17 s) and code generation (3 × ~48 s); both are
+  parallelisable. The SAM calls total under a minute.
 
 Prices used: Spark $1.25/M in, $4.25/M out; SAM $0.20 per 1k frames, 50-frame minimum per request.
 Transcribe and Image rows are labelled estimates until Billing confirms the unit price.

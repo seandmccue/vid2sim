@@ -1,0 +1,53 @@
+{
+  "steps": [
+    {
+      "evidence": "take the base",
+      "order": 1,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "take the lower container with the with the tap",
+      "order": 2,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "take one insert it on the upper container like this",
+      "order": 3,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "then we have the ceramic filter hold it on the blue part",
+      "order": 4,
+      "suggested_fix": "Hold the white ceramic filter candle on the blue part.",
+      "supported": false
+    },
+    {
+      "evidence": "take the tube screw it here slowly",
+      "order": 5,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "then insert it here",
+      "order": 6,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "pour rain water tap water well water also river water",
+      "order": 7,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "then you take the lid cover",
+      "order": 8,
+      "suggested_fix": "",
+      "supported": true
+    }
+  ],
+  "flagged_count": 1
+}

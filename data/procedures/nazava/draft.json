@@ -1,0 +1,160 @@
+{
+  "parts": [
+    {
+      "id": "base_stand",
+      "interaction": "grab",
+      "keyframe": 180,
+      "name": "Base Stand",
+      "prompt_phrase": "dark blue plastic base stand"
+    },
+    {
+      "id": "lower_container",
+      "interaction": "grab",
+      "keyframe": 290,
+      "name": "Lower Container",
+      "prompt_phrase": "translucent blue container with white tap"
+    },
+    {
+      "id": "rubber_seal",
+      "interaction": "grab",
+      "keyframe": 460,
+      "name": "Rubber Seal",
+      "prompt_phrase": "black rubber sealing ring"
+    },
+    {
+      "id": "ceramic_filter",
+      "interaction": "grab",
+      "keyframe": 420,
+      "name": "Ceramic Filter",
+      "prompt_phrase": "white ceramic filter candle"
+    },
+    {
+      "id": "siphon_tube",
+      "interaction": "turn",
+      "keyframe": 800,
+      "name": "Siphon Tube",
+      "prompt_phrase": "blue plastic siphon tube"
+    },
+    {
+      "id": "upper_container",
+      "interaction": "grab",
+      "keyframe": 600,
+      "name": "Upper Reservoir",
+      "prompt_phrase": "translucent blue water reservoir"
+    },
+    {
+      "id": "filter_lid",
+      "interaction": "grab",
+      "keyframe": 1700,
+      "name": "Filter Lid",
+      "prompt_phrase": "dark blue circular filter lid"
+    }
+  ],
+  "procedure": {
+    "id": "nazava-water-filter-install",
+    "title": "Install the Nazava water filter"
+  },
+  "steps": [
+    {
+      "action": "place",
+      "check": "Base sits flat and does not wobble.",
+      "coach": "Start with a stable base.",
+      "end_frame": 140,
+      "failure": "Filter tower tips over and spills.",
+      "instruction": "Place the dark blue base stand centered on the table.",
+      "order": 1,
+      "part_id": "base_stand",
+      "safety": false,
+      "start_frame": 10
+    },
+    {
+      "action": "place",
+      "check": "Tap faces forward and container seats fully on base.",
+      "coach": "Seat the tap container squarely.",
+      "end_frame": 320,
+      "failure": "Filtered water cannot be dispensed or container falls.",
+      "instruction": "Place the lower container with the tap onto the base stand.",
+      "order": 2,
+      "part_id": "lower_container",
+      "safety": false,
+      "start_frame": 140
+    },
+    {
+      "action": "place",
+      "check": "Seal is fully seated with no gaps.",
+      "coach": "Push that seal in tight.",
+      "custom_action": "insert",
+      "end_frame": 520,
+      "failure": "Unfiltered water leaks past the filter.",
+      "instruction": "Insert the first black rubber seal into the upper reservoir hole.",
+      "order": 3,
+      "part_id": "rubber_seal",
+      "safety": true,
+      "start_frame": 360
+    },
+    {
+      "action": "place",
+      "check": "Filter stands upright and sealed in the reservoir.",
+      "coach": "Hold the blue part and press it in.",
+      "custom_action": "insert",
+      "end_frame": 690,
+      "failure": "Water bypasses the filter and stays dirty.",
+      "instruction": "Insert the white ceramic filter candle into the upper reservoir.",
+      "order": 4,
+      "part_id": "ceramic_filter",
+      "safety": true,
+      "start_frame": 520
+    },
+    {
+      "action": "turn_cw",
+      "check": "Tube is hand-tight and straight on the filter.",
+      "coach": "Turn it slowly until snug.",
+      "custom_action": "screw",
+      "end_frame": 920,
+      "failure": "Tube detaches and filtration stops.",
+      "instruction": "Screw the blue siphon tube onto the ceramic filter.",
+      "order": 5,
+      "part_id": "siphon_tube",
+      "safety": true,
+      "start_frame": 730
+    },
+    {
+      "action": "place",
+      "check": "Reservoir nests fully and tube hangs into lower container.",
+      "coach": "Lower it straight in.",
+      "custom_action": "insert",
+      "end_frame": 1201,
+      "failure": "Water spills and siphon cannot prime.",
+      "instruction": "Insert the assembled upper reservoir into the lower container.",
+      "order": 6,
+      "part_id": "upper_container",
+      "safety": false,
+      "start_frame": 1141
+    },
+    {
+      "action": "lift",
+      "check": "Reservoir fills without overflowing.",
+      "coach": "Fill it right up.",
+      "custom_action": "pour",
+      "end_frame": 1600,
+      "failure": "Filter runs dry and no clean water collects.",
+      "instruction": "Pour rain, tap, well or river water into the upper reservoir.",
+      "order": 7,
+      "part_id": "upper_container",
+      "safety": false,
+      "start_frame": 1340
+    },
+    {
+      "action": "place",
+      "check": "Lid covers fully and dust cannot enter.",
+      "coach": "Cover it and you are done.",
+      "end_frame": 1860,
+      "failure": "Dust and debris contaminate the water.",
+      "instruction": "Cover the upper reservoir with the dark blue lid.",
+      "order": 8,
+      "part_id": "filter_lid",
+      "safety": false,
+      "start_frame": 1600
+    }
+  ]
+}

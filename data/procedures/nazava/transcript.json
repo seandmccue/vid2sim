@@ -1,0 +1,56 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "Hi, I'm Joanne. I will explain how to install my tuba water filter it's so easy take the base take the lower container with the with the tap then we have the ceramic filter hold it on the blue part it has two rubbers step off take one insert it on the upper container like this then the other one insert it here take the tube screw it here slowly like this then insert it here pour rain water tap water well water also river water then you take the lid cover the finger yeah and it's all complete choose Nasava choose clean water save water stay healthy",
+  "audio_duration_ms": 78640,
+  "fps": 24.0,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 0,
+      "end_ms": 13580,
+      "start_frame": 0,
+      "end_frame": 325,
+      "text": "Hi, I'm Joanne. I will explain how to install my tuba water filter it's so easy take the base take the lower container with the with the tap"
+    },
+    {
+      "turn_id": 1,
+      "start_ms": 14700,
+      "end_ms": 29100,
+      "start_frame": 352,
+      "end_frame": 698,
+      "text": "then we have the ceramic filter hold it on the blue part it has two rubbers step off take one insert it on the upper container like this then the other one insert it here"
+    },
+    {
+      "turn_id": 2,
+      "start_ms": 30300,
+      "end_ms": 34780,
+      "start_frame": 727,
+      "end_frame": 834,
+      "text": "take the tube screw it here slowly"
+    },
+    {
+      "turn_id": 3,
+      "start_ms": 37500,
+      "end_ms": 38540,
+      "start_frame": 900,
+      "end_frame": 924,
+      "text": "like this"
+    },
+    {
+      "turn_id": 4,
+      "start_ms": 47580,
+      "end_ms": 50060,
+      "start_frame": 1141,
+      "end_frame": 1201,
+      "text": "then insert it here"
+    },
+    {
+      "turn_id": 5,
+      "start_ms": 55820,
+      "end_ms": 77500,
+      "start_frame": 1339,
+      "end_frame": 1860,
+      "text": "pour rain water tap water well water also river water then you take the lid cover the finger yeah and it's all complete choose Nasava choose clean water save water stay healthy"
+    }
+  ]
+}

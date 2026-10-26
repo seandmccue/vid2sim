@@ -81,8 +81,12 @@ def _sam_call(file_id: str, prompt: str, propagation: str | None, metrics: Metri
     return text
 
 
-def parse_sam(raw: str, trim_start: int, masks_dir: Path | None, part_id: str) -> list[FrameHit]:
-    """Parse SAM output with meta-sam-parser; map trim-local frames back to source frames."""
+def parse_sam(raw: str, trim_start: int, masks_dir: Path | None, part_id: str,
+              frame_size: tuple[int, int] | None = None) -> list[FrameHit]:
+    """Parse SAM output with meta-sam-parser; map trim-local frames back to source frames.
+    A mask raster covers only its box bounds (the parser README example: a 60x27 box carries a 27-row,
+    60-column mask), so the PNG written here is a full-frame canvas with the raster pasted at its bounds.
+    Pass frame_size=(w, h); without it the canvas is sized to the bounds' far corner."""
     from meta_sam_parser import CompletedOutcome, SegmentationBoxRecord, SegmentationMaskRecord, \
         decode_mask_to_raster, video_segmentation_format
     parser = video_segmentation_format().create_parser()
@@ -113,9 +117,17 @@ def parse_sam(raw: str, trim_start: int, masks_dir: Path | None, part_id: str) -
                 try:
                     raster = decode_mask_to_raster(r.mask)
                     from PIL import Image
-                    img = Image.frombytes("L", (r.mask.width, r.mask.height), bytes(255 if b else 0 for b in raster))
+                    tile = Image.frombytes("L", (r.mask.width, r.mask.height), bytes(255 if v else 0 for v in raster))
+                    bd = r.bounds
+                    left, top = int(round(bd.left)), int(round(bd.top))
+                    bw, bh = max(1, int(round(bd.right)) - left), max(1, int(round(bd.bottom)) - top)
+                    if (bw, bh) != tile.size:
+                        tile = tile.resize((bw, bh), Image.NEAREST)
+                    w, h = frame_size or (left + bw, top + bh)
+                    img = Image.new("L", (w, h), 0)
+                    img.paste(tile, (left, top))
                     out = masks_dir / f"{part_id}_f{trim_start + local:06d}_o{r.object_id}.png"
-                    img.save(out)
+                    img.save(out, optimize=True)
                     hit.mask_png = out
                     if hit.confidence is None and r.confidence is not None:
                         hit.confidence = r.confidence
@@ -199,7 +211,7 @@ def segment_part(video: Path, info: VideoInfo, part: dict, steps: list[dict], wo
 
     raw = _sam_call(file_id, part["prompt_phrase"], None, metrics, "segment_concept", frames)
     (raw_dir / f"{part['id']}_concept.txt").write_text(raw)
-    hits = parse_sam(raw, trim_start, masks_dir, part["id"])
+    hits = parse_sam(raw, trim_start, masks_dir, part["id"], (info.width, info.height))
     confs = [h.confidence for h in hits if h.confidence is not None]
     mean_c = sum(confs) / len(confs) if confs else 0.0
     result = PartResult(part_id=part["id"], source="concept", hits=hits, frames_billed=frames,
@@ -215,7 +227,7 @@ def segment_part(video: Path, info: VideoInfo, part: dict, steps: list[dict], wo
     prompt = _box_prompt(keyframe - trim_start, box, (info.width, info.height))
     raw2 = _sam_call(file_id, prompt, "forward", metrics, "segment_box", max(1, end - keyframe + 1))
     (raw_dir / f"{part['id']}_box.txt").write_text(raw2)
-    hits2 = parse_sam(raw2, trim_start, masks_dir, part["id"])
+    hits2 = parse_sam(raw2, trim_start, masks_dir, part["id"], (info.width, info.height))
     if not hits2:
         # SAM returned nothing on the box; keep Spark's box as the hit so the engine still has geometry
         hits2 = [FrameHit(frame=keyframe, box=box, confidence=None)]
