@@ -23,13 +23,18 @@ from .common import (ACTION_VOCAB, IMAGE_MODEL, PRICE_IMAGE_EACH_EST, SPARK_MODE
                      Timer, client, is_mock, iter_output_text, spark_cost)
 
 ISTEP_ACTION_INTERFACE = """
-// Assets/Sim/IStepAction.cs (engine side; generated code implements this)
+// Engine side (Assets/Sim). Generated code implements IStepAction and is added as a component to the
+// part's own GameObject, which already carries the Interaction SDK components PartFactory attached
+// (HandGrabInteractable + Grabbable for grab/turn parts, PokeInteractable for press parts).
 namespace Vid2Sim {
   public interface IStepAction {
-    // Bind to the spawned part and the step it serves; call emit(new StepEvent(part.Id, step.action))
-    // exactly once when the trainee completes the action. Must work with hand tracking only.
+    // Call emit(new StepEvent(part.id, step.action)) exactly once when the trainee completes the action.
     void Bind(Part part, Step step, System.Action<StepEvent> emit);
   }
+  public readonly struct StepEvent { public StepEvent(string partId, string action); }
+  // Plain data classes, NOT components. Field names are lowercase wire names:
+  public class Part { public string id, name, prompt_phrase, interaction; public float size_hint_m; }
+  public class Step { public int order; public string part_id, action, custom_action, instruction, check, failure, coach; public bool safety; }
 }
 """
 
@@ -69,28 +74,51 @@ def _muse_code(prompt: str) -> str | None:
     return proc.stdout
 
 
-def _spark_code(prompt: str, metrics: Metrics) -> str:
+CODE_MAX_OUTPUT_TOKENS = int(os.environ.get("SPARK_MAX_OUTPUT_TOKENS", "16000"))
+
+
+def _spark_code(prompt: str, metrics: Metrics, budget: int | None = None, _retry: bool = True) -> str | None:
+    """Spark writes the script when the Muse Code CLI is absent. Reasoning shares the output budget: at 8000
+    tokens a real run produced three empty files, so the budget is generous and an empty result retries once."""
     c = client()
-    text, uin, uout = "", 0, 0
+    budget = budget or CODE_MAX_OUTPUT_TOKENS
+    text, uin, uout, status = "", 0, 0, "completed"
     with Timer() as t:
         stream = c.responses.create(model=SPARK_MODEL,
                                     input=[{"type": "message", "role": "user", "content": [{"type": "input_text", "text": prompt}]}],
-                                    max_output_tokens=8000, stream=True)
+                                    max_output_tokens=budget, stream=True)
         for kind, payload in iter_output_text(stream):
             if kind == "delta":
                 text += payload
             else:
+                status = getattr(payload, "status", "completed")
                 u = getattr(payload, "usage", None)
                 if u:
                     uin, uout = int(u.input_tokens), int(u.output_tokens)
     metrics.log("generate_code", SPARK_MODEL, t.wall, spark_cost(uin, uout), tokens_in=uin, tokens_out=uout,
-                note="Muse Code CLI not found; Spark wrote the script")
+                note=f"Muse Code CLI not found; Spark wrote the script ({status}, budget {budget})")
+    if not text.strip() or "class " not in text:
+        if _retry:
+            return _spark_code(prompt, metrics, budget * 2, _retry=False)
+        return None
     return text
 
 
 def strip_fences(code: str) -> str:
     m = re.search(r"```(?:csharp|cs)?\s*(.*?)```", code, re.S)
     return (m.group(1) if m else code).strip() + "\n"
+
+
+SDK_GUARD = "#if META_INTERACTION_SDK"
+
+
+def guard_for_sdk(code: str) -> str:
+    """Generated scripts use Oculus.Interaction. Wrap them so a project without the Meta Interaction SDK
+    package (CI, the SDK-less compile gate) still compiles; the asmdef defines META_INTERACTION_SDK when
+    the package is present."""
+    if code.lstrip().startswith(SDK_GUARD) or "Oculus." not in code:
+        return code
+    return f"{SDK_GUARD}\n{code.rstrip()}\n#endif\n"
 
 
 def headless_compile(unity_project: Path, unity_exe: str | None = None) -> tuple[bool, str]:
@@ -115,12 +143,14 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
     """Returns one record per custom action: {verb, class, path, compiled, note}."""
     parts = {p["id"]: p for p in spec["parts"]}
     out = []
+    seen: set[str] = set()
     staging = unity_project / "Assets" / "Generated"
     staging.mkdir(parents=True, exist_ok=True)
     for step in spec["steps"]:
         verb = step.get("custom_action")
-        if not verb or verb in ACTION_VOCAB:
+        if not verb or verb in ACTION_VOCAB or verb in seen:
             continue
+        seen.add(verb)  # one script per verb, however many steps use it
         cls = _class_name(verb)
         target = staging / f"{cls}.cs"
         if target.exists():
@@ -138,7 +168,10 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
                 metrics.log("generate_code", "muse-code", t.wall, 0.0, note=f"{verb} -> {cls}")
             else:
                 code = _spark_code(prompt, metrics)
-        code = strip_fences(code)
+        if not code or not code.strip():
+            out.append({"verb": verb, "class": cls, "path": "", "compiled": False, "note": "generator returned no code; engine falls back to the vocabulary verb"})
+            continue
+        code = guard_for_sdk(strip_fences(code))
         candidate = staging / f"{cls}.cs.pending"
         candidate.write_text(code)
         compiled, note = (True, "gate skipped") if not gate else (True, "mock gate") if is_mock() else headless_compile(unity_project)
@@ -146,6 +179,19 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
             candidate.rename(target)
         out.append({"verb": verb, "class": cls, "path": str(target if compiled else candidate), "compiled": compiled, "note": note[-500:]})
     return out
+
+
+TEXTURE_MAX_PX = int(os.environ.get("VID2SIM_TEXTURE_MAX_PX", "1024"))
+
+
+def shrink_texture(path: Path, max_px: int = TEXTURE_MAX_PX) -> None:
+    """Muse Image returns ~2000 px PNGs (~1.4 MB each). A primitive on a bench never needs more than 1024."""
+    from PIL import Image
+    img = Image.open(path)
+    if max(img.size) <= max_px:
+        return
+    img.thumbnail((max_px, max_px), Image.LANCZOS)
+    img.save(path, optimize=True)
 
 
 def generate_textures(spec: dict, work: Path, metrics: Metrics) -> dict[str, Path]:
@@ -173,6 +219,7 @@ def generate_textures(spec: dict, work: Path, metrics: Metrics) -> dict[str, Pat
                                      prompt=f"Clean product texture of this {p['name']}, flat even lighting, "
                                             f"no hands, no background, centred, photographic")
         target.write_bytes(base64.b64decode(edit.data[0].b64_json))
+        shrink_texture(target)
         metrics.log("texture", IMAGE_MODEL, t.wall, PRICE_IMAGE_EACH_EST, note=f"{p['id']} (cost is an estimate)")
         out[p["id"]] = target
     return out

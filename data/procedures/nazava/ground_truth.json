@@ -1,0 +1,13 @@
+{
+  "procedure_id": "nazava-water-filter-install",
+  "written_by": "Claude, from the clip's own subtitle track and a frame contact sheet, before running the pipeline. Not a trainer's list; test data only.",
+  "steps": [
+    { "order": 1, "part": "lower container", "action": "place", "text": "Set the lower container with the tap onto the base." },
+    { "order": 2, "part": "rubber ring", "action": "pull", "text": "Take one rubber ring off the ceramic filter." },
+    { "order": 3, "part": "ceramic filter", "action": "place", "text": "Insert the ceramic filter through the upper container and fit the rubber ring back on." },
+    { "order": 4, "part": "tube", "action": "turn_cw", "text": "Screw the tube onto the filter slowly." },
+    { "order": 5, "part": "upper container", "action": "place", "text": "Set the upper container onto the lower container." },
+    { "order": 6, "part": "upper container", "action": "pour", "text": "Pour water into the upper container." },
+    { "order": 7, "part": "lid", "action": "place", "text": "Put the lid on the filter." }
+  ]
+}
