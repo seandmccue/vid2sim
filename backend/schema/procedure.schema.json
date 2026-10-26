@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/seandmccue/vid2sim/backend/schema/procedure.schema.json",
+  "title": "Procedure",
+  "description": "The contract between the pipeline (writer), the dashboard (editor) and the Unity sim engine (reader). Field names are frozen at schema_version 1.0; additions are versioned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "procedure", "parts", "steps"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1.0"] },
+    "procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "source_video", "fps", "width", "height", "duration_s"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "kebab-case slug, also the StreamingAssets folder name" },
+        "title": { "type": "string", "minLength": 1 },
+        "source_video": { "type": "string", "description": "Files API file_id of the uploaded source video" },
+        "fps": { "type": "number", "exclusiveMinimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "duration_s": { "type": "number", "minimum": 0 }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "prompt_phrase", "interaction", "keyframe", "box", "size_hint_m", "confidence", "source"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+          "name": { "type": "string", "minLength": 1, "description": "Human label shown in the coach panel" },
+          "prompt_phrase": { "type": "string", "minLength": 1, "description": "Concrete noun phrase for SAM; no commands, no 'or', no spatial words" },
+          "interaction": { "type": "string", "enum": ["press", "grab", "turn", "inspect"], "description": "Interaction SDK component PartFactory attaches" },
+          "keyframe": { "type": "integer", "minimum": 0, "description": "Source frame index used for the box fallback and the texture crop" },
+          "box": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 0 },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "[x1, y1, x2, y2] in source-video pixels, inclusive x2/y2, matching SAM's own w/h. Never scaled."
+          },
+          "size_hint_m": { "type": "number", "exclusiveMinimum": 0, "description": "Approximate longest dimension in metres" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "source": { "type": "string", "enum": ["concept", "box", "manual"], "description": "How the part was found: text prompt, box fallback, or trainer tap" }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order", "part_id", "action", "instruction", "start_frame", "end_frame", "check", "failure", "safety", "coach"],
+        "properties": {
+          "order": { "type": "integer", "minimum": 1 },
+          "part_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+          "action": {
+            "type": "string",
+            "enum": ["press", "grab", "pull", "lift", "place", "turn_cw", "turn_ccw", "inspect"],
+            "description": "Closed vocabulary the engine implements. Anything else is a Muse Code generation candidate and lives in steps[].custom_action."
+          },
+          "custom_action": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "Optional verb outside the vocabulary; generate.py produces a MonoBehaviour for it. action still holds the nearest vocabulary verb as the fallback." },
+          "instruction": { "type": "string", "minLength": 1 },
+          "start_frame": { "type": "integer", "minimum": 0 },
+          "end_frame": { "type": "integer", "minimum": 0 },
+          "check": { "type": "string" },
+          "failure": { "type": "string" },
+          "safety": { "type": "boolean" },
+          "coach": { "type": "string" }
+        }
+      }
+    }
+  }
+}

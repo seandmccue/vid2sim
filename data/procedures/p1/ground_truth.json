@@ -1,0 +1,12 @@
+{
+  "procedure_id": "compressor-filter-swap",
+  "written_by": "Sean, before any model saw the video",
+  "steps": [
+    { "order": 1, "part": "power switch", "action": "press", "text": "Switch the compressor off." },
+    { "order": 2, "part": "tank drain valve", "action": "turn_ccw", "text": "Open the tank drain valve to bleed pressure." },
+    { "order": 3, "part": "filter housing cover", "action": "turn_ccw", "text": "Unscrew the filter housing cover." },
+    { "order": 4, "part": "old intake filter", "action": "pull", "text": "Pull out the old filter." },
+    { "order": 5, "part": "new intake filter", "action": "place", "text": "Seat the new filter in the housing." },
+    { "order": 6, "part": "filter housing cover", "action": "turn_cw", "text": "Screw the cover back on hand-tight." }
+  ]
+}

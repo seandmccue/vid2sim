@@ -1,0 +1,30 @@
+# secrets
+.env
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# node
+node_modules/
+dashboard/dist/
+# raw video never committed (link from README)
+data/procedures/*/raw.mp4
+data/procedures/*/*.mp4
+data/procedures/*/*.mov
+data/procedures/*/*.wav
+data/procedures/*/bundle/masks/
+data/procedures/*/trims/
+backend/uploads/
+# unity
+unity/TrainingSim/[Ll]ibrary/
+unity/TrainingSim/[Tt]emp/
+unity/TrainingSim/[Oo]bj/
+unity/TrainingSim/[Bb]uild/
+unity/TrainingSim/[Bb]uilds/
+unity/TrainingSim/[Ll]ogs/
+unity/TrainingSim/[Uu]ser[Ss]ettings/
+unity/TrainingSim/*.csproj
+unity/TrainingSim/*.sln
+# os
+.DS_Store
