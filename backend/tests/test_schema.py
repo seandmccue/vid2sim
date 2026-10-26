@@ -6,7 +6,7 @@ from backend.pipeline.validate import validate_spec
 
 
 def _p1():
-    return json.loads((REPO_ROOT / "data/procedures/p1/spec.json").read_text())
+    return json.loads((REPO_ROOT / "data/procedures/p1/spec.handwritten.json").read_text())
 
 
 def test_schema_is_valid_draft7():

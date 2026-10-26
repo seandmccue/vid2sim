@@ -1,0 +1,47 @@
+[
+  {
+    "id": "power_switch",
+    "crop": "bundle/crops/power_switch.png",
+    "frames_tracked": 0,
+    "frames_billed": 41,
+    "mean_confidence": 0.0,
+    "masks": [],
+    "track": []
+  },
+  {
+    "id": "filter_cover",
+    "crop": "bundle/crops/filter_cover.png",
+    "frames_tracked": 0,
+    "frames_billed": 165,
+    "mean_confidence": 0.0,
+    "masks": [],
+    "track": []
+  },
+  {
+    "id": "dirty_intake_filter",
+    "crop": "bundle/crops/dirty_intake_filter.png",
+    "frames_tracked": 0,
+    "frames_billed": 61,
+    "mean_confidence": 0.0,
+    "masks": [],
+    "track": []
+  },
+  {
+    "id": "filter_housing",
+    "crop": "bundle/crops/filter_housing.png",
+    "frames_tracked": 0,
+    "frames_billed": 56,
+    "mean_confidence": 0.0,
+    "masks": [],
+    "track": []
+  },
+  {
+    "id": "clean_intake_filter",
+    "crop": "bundle/crops/clean_intake_filter.png",
+    "frames_tracked": 0,
+    "frames_billed": 56,
+    "mean_confidence": 0.0,
+    "masks": [],
+    "track": []
+  }
+]

@@ -105,9 +105,10 @@ class Metrics:
             w.writerow(row)
 
     def totals(self) -> dict[str, float]:
+        rows = [r for r in self.rows if r["stage"] != "total"]
         return {
-            "wall_s": sum(float(r["wall_s"]) for r in self.rows),
-            "cost_usd": sum(float(r["cost_usd"]) for r in self.rows),
+            "wall_s": sum(float(r["wall_s"]) for r in rows),
+            "cost_usd": sum(float(r["cost_usd"]) for r in rows),
         }
 
 

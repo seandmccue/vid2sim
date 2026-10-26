@@ -1,1 +1,29 @@
 run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
+20261026-172917-f13ff7,p1,upload,files,1.97,0.0000,0,0,0,p1.mp4
+20261026-172917-f13ff7,p1,smoke_spark,muse-spark-1.3,21.84,0.0146,0,1664,2955,completed
+20261026-172917-f13ff7,p1,smoke_sam,sam-3.1,5.66,0.0360,180,0,0,air filter: 0 frames
+20261026-173002-a1f1f0,p1,upload,files,3.37,0.0000,0,0,0,p1.mp4
+20261026-173002-a1f1f0,p1,transcribe,muse-voice-transcribe-1.0,1.60,0.0006,0,0,0,"0.10 min, cost is an estimate"
+20261026-173002-a1f1f0,p1,extract,muse-spark-1.3,18.84,0.0204,0,2057,4197,completed
+20261026-173002-a1f1f0,p1,verify,muse-spark-1.3,0.00,0.0000,0,0,0,"skipped, no narration"
+20261026-173002-a1f1f0,p1,upload,files,2.34,0.0000,0,0,0,power_switch.mp4
+20261026-173002-a1f1f0,p1,segment_concept,sam-3.1,4.36,0.0100,41,0,0,black rocker power switch
+20261026-173002-a1f1f0,p1,box_fallback,muse-spark-1.3,6.95,0.0046,0,352,987,power_switch
+20261026-173002-a1f1f0,p1,upload,files,2.93,0.0000,0,0,0,filter_cover.mp4
+20261026-173002-a1f1f0,p1,segment_concept,sam-3.1,5.58,0.0330,165,0,0,gray plastic filter cover
+20261026-173002-a1f1f0,p1,box_fallback,muse-spark-1.3,13.64,0.0089,0,351,2000,filter_cover
+20261026-173002-a1f1f0,p1,upload,files,2.00,0.0000,0,0,0,dirty_intake_filter.mp4
+20261026-173002-a1f1f0,p1,segment_concept,sam-3.1,2.85,0.0122,61,0,0,soiled pleated intake filter
+20261026-173002-a1f1f0,p1,box_fallback,muse-spark-1.3,4.98,0.0031,0,354,625,dirty_intake_filter
+20261026-173002-a1f1f0,p1,upload,files,3.10,0.0000,0,0,0,filter_housing.mp4
+20261026-173002-a1f1f0,p1,segment_concept,sam-3.1,2.85,0.0112,56,0,0,black rectangular filter housing
+20261026-173002-a1f1f0,p1,box_fallback,muse-spark-1.3,5.34,0.0043,0,351,911,filter_housing
+20261026-173002-a1f1f0,p1,upload,files,1.59,0.0000,0,0,0,clean_intake_filter.mp4
+20261026-173002-a1f1f0,p1,segment_concept,sam-3.1,2.57,0.0112,56,0,0,clean white pleated filter
+20261026-173002-a1f1f0,p1,box_fallback,muse-spark-1.3,2.54,0.0024,0,353,453,clean_intake_filter
+20261026-173002-a1f1f0,p1,texture,muse-image-1.0,18.88,0.0400,0,0,0,power_switch (cost is an estimate)
+20261026-173002-a1f1f0,p1,texture,muse-image-1.0,10.30,0.0400,0,0,0,filter_cover (cost is an estimate)
+20261026-173002-a1f1f0,p1,texture,muse-image-1.0,15.29,0.0400,0,0,0,dirty_intake_filter (cost is an estimate)
+20261026-173002-a1f1f0,p1,texture,muse-image-1.0,17.32,0.0400,0,0,0,filter_housing (cost is an estimate)
+20261026-173002-a1f1f0,p1,texture,muse-image-1.0,15.90,0.0400,0,0,0,clean_intake_filter (cost is an estimate)
+20261026-173002-a1f1f0,p1,total,pipeline,166.80,0.0000,0,0,0,upload to StreamingAssets

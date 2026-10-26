@@ -1,0 +1,8 @@
+This video contains no instructional / spoken steps — only an abstract test pattern. What is visible, one line per second:
+
+0s - Color bars with diagonal rainbow stripe near top, small gray horizontal bar in lower green bar, dotted pixels at top-right, checker in lower magenta.
+1s - Same bars, stripe drops to bottom forming a V, gray bar becomes vertical in green bar.
+2s - Stripe rises to lower-mid, gray bars form a plus / cross in green bar.
+3s - Stripe peaks at top forming an inverted-V, gray shape becomes a solid square in green bar.
+4s - Stripe descends to mid-frame, gray shape returns to horizontal bar in green bar.
+5s - Stripe dips to bottom forming a V again, gray shape becomes vertical again.

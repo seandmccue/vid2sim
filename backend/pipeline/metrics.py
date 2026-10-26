@@ -34,7 +34,10 @@ def compare_to_ground_truth(spec: dict, gt: dict) -> dict:
 
 
 def summary(spec: dict, metrics: Metrics, work: Path, gt_path: Path | None) -> dict:
-    tot = metrics.totals()
+    stage_rows = [r for r in metrics.rows if r["stage"] != "total"]
+    total_row = next((r for r in metrics.rows if r["stage"] == "total"), None)
+    tot = {"wall_s": float(total_row["wall_s"]) if total_row else sum(float(r["wall_s"]) for r in stage_rows),
+           "cost_usd": sum(float(r["cost_usd"]) for r in stage_rows)}
     by_source = {"concept": 0, "box": 0, "manual": 0}
     for p in spec["parts"]:
         by_source[p["source"]] = by_source.get(p["source"], 0) + 1
