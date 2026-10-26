@@ -1,0 +1,7 @@
+{
+  "name": "Vid2Sim.Sim.Editor",
+  "rootNamespace": "Vid2Sim.Editor",
+  "references": [ "Vid2Sim.Sim" ],
+  "includePlatforms": [ "Editor" ],
+  "autoReferenced": true
+}
