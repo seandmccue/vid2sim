@@ -18,6 +18,7 @@ namespace Vid2Sim.Editor
         [MenuItem("Vid2Sim/Build WebGL")]
         public static void BuildWebGL()
         {
+            ProjectAssets.Ensure();
             if (!File.Exists(SceneSetup.WebScenePath)) SceneSetup.CreateWebScene();
             Directory.CreateDirectory("Builds");
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
@@ -40,6 +41,7 @@ namespace Vid2Sim.Editor
         [MenuItem("Vid2Sim/Build Android APK")]
         public static void BuildAndroid()
         {
+            ProjectAssets.Ensure();
             if (!File.Exists(ScenePath)) SceneSetup.CreateSimScene();
             Directory.CreateDirectory("Builds");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);

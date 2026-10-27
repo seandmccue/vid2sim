@@ -91,6 +91,28 @@ namespace Vid2Sim.Tests
             Assert.That(errors, Has.Some.Contains("end_frame"));
         }
 
+        [Test]
+        public void Player_build_assets_are_present()
+        {
+            // Without these a player build throws on the first part (stripped shader) and on every coach label (no TMP settings).
+            Assert.IsNotNull(Resources.Load<Material>("Vid2SimPart"), "Assets/Sim/Resources/Vid2SimPart.mat missing: run Vid2Sim → Ensure Project Assets");
+            Assert.IsNotNull(Resources.Load<Material>("Vid2SimZone"), "Assets/Sim/Resources/Vid2SimZone.mat missing");
+            Assert.IsNotNull(Resources.Load<TMPro.TMP_Settings>("TMP Settings"), "TextMeshPro essentials not imported");
+        }
+
+        [UnityTest]
+        public IEnumerator CoachUI_builds_its_panel()
+        {
+            var root = new GameObject("ui");
+            var ui = root.AddComponent<CoachUI>();
+            var speech = root.AddComponent<Speech>();
+            ui.Build(_cam.transform, speech);
+            yield return null;
+            Assert.AreEqual(5, root.GetComponentsInChildren<TMPro.TextMeshProUGUI>().Length);
+            ui.SetTitle("t"); ui.SetStatus("s");
+            Object.Destroy(root);
+        }
+
         [UnityTest]
         public IEnumerator Factory_spawns_one_part_per_spec_part_on_the_bench()
         {
@@ -196,6 +218,28 @@ namespace Vid2Sim.Tests
             Assert.AreEqual(1, scorer.Current.wrong_part_touches);
             Assert.IsTrue(scorer.Current.safety_skipped);
             Assert.AreEqual(0, scorer.Current.score);
+        }
+
+        [UnityTest]
+        public IEnumerator Motion_before_a_step_arms_does_not_complete_it()
+        {
+            PartFactory factory = null; StepSequencer seq = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { factory = f; seq = s; });
+            // rotate the cover (step 3's part) before the procedure even starts
+            var cover = factory.Spawned["filter_cover"];
+            cover.transform.rotation = cover.SpawnRotation * Quaternion.AngleAxis(90f, Vector3.up);
+            seq.Begin(ReadSpec(seq), factory);
+            var sw = factory.Spawned["power_switch"]; sw.NotifySelect(); sw.NotifyUnselect(); yield return null;
+            var valve = factory.Spawned["drain_valve"]; valve.NotifySelect();
+            valve.transform.rotation = valve.SpawnRotation * Quaternion.AngleAxis(60f, Vector3.up);
+            yield return null; yield return null; valve.NotifyUnselect();
+            Assert.AreEqual(3, seq.Current.order);
+            yield return null; yield return null;
+            Assert.AreEqual(3, seq.Current.order, "pre-armed rotation must not complete step 3");
+            cover.NotifySelect();
+            cover.transform.rotation = cover.transform.rotation * Quaternion.AngleAxis(60f, Vector3.up);
+            yield return null; yield return null;
+            Assert.AreEqual(4, seq.Current.order, "rotation after arming completes it");
         }
 
         [UnityTest]

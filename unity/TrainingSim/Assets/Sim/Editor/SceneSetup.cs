@@ -41,8 +41,12 @@ namespace Vid2Sim.Editor
                 cam.backgroundColor = new Color(0.09f, 0.1f, 0.12f);
                 cam.gameObject.AddComponent<WebCameraRig>();
             }
+            // Fixed seated origin: the bench and coach panel are laid out from here, not from the orbiting camera.
+            var seat = new GameObject("Seat");
+            seat.transform.position = Vector3.zero;
+            seat.transform.rotation = Quaternion.identity;
             var boot = new GameObject("Vid2Sim");
-            boot.AddComponent<Bootstrap>();
+            boot.AddComponent<Bootstrap>().rigOrigin = seat.transform;
             System.IO.Directory.CreateDirectory("Assets/Scenes");
             EditorSceneManager.SaveScene(scene, WebScenePath);
             Debug.Log("[SceneSetup] saved " + WebScenePath);

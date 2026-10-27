@@ -10,13 +10,18 @@ namespace Vid2Sim
     [RequireComponent(typeof(Camera))]
     public class WebCameraRig : MonoBehaviour
     {
-        public Vector3 pivot = new(0f, 0.75f, 0.7f);   // bench centre: PartFactory places parts 0.7 m ahead at 0.75 m
-        public float distance = 0.9f;
-        public float yaw = 0f, pitch = 28f;
+        public Vector3 pivot = new(0f, 0.9f, 0.7f);    // between the bench (0.75 m) and the coach panel (1.2 m), 0.7 m ahead of the seat
+        public float distance = 1.1f;
+        public float yaw = 0f, pitch = 18f;
         public float orbitSpeed = 60f, zoomSpeed = 0.4f;
         public bool showHint = true;
+        public bool debugReadout = false;
 
-        void Start() { Apply(); }
+        void Start()
+        {
+            Apply();
+            if (Application.absoluteURL.Contains("debug=1")) debugReadout = true;
+        }
 
         void Update()
         {
@@ -45,9 +50,16 @@ namespace Vid2Sim
         void OnGUI()
         {
             if (!showHint) return;
-            var style = new GUIStyle(GUI.skin.label) { fontSize = 14, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
-            GUI.Box(new Rect(12, 12, 560, 26), GUIContent.none);
-            GUI.Label(new Rect(20, 16, 560, 22), "Click = press · Drag = grab / pull / lift / place · Right-drag = turn · Hover = inspect · Arrows orbit · Scroll zooms · R restart · P pause", style);
+            var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
+            GUI.Box(new Rect(12, 12, 1500, 44), GUIContent.none);
+            GUI.Label(new Rect(20, 18, 1500, 40), "Click = press · Drag = grab / pull / lift / place · Hover + Q/E = quarter turn (or right-drag) · Hover = inspect · Arrows orbit · Scroll zooms · R restart · P pause", style);
+            if (debugReadout)
+            {
+                var cam = Camera.main;
+                var ray = cam ? cam.ScreenPointToRay(Input.mousePosition) : default;
+                string under = cam && Physics.Raycast(ray, out var h, 5f) ? h.collider.gameObject.name : "-";
+                GUI.Label(new Rect(20, 60, 1800, 40), $"mouse {Input.mousePosition} screen {Screen.width}x{Screen.height} under: {under} hover: {Interaction.SimpleMouseDriver.HoverName} last click: {Interaction.SimpleMouseDriver.LastClick}", style);
+            }
         }
     }
 }
