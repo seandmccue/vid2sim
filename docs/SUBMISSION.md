@@ -33,6 +33,13 @@ A single-procedure VR training module takes Frame Sixty **[X] weeks** and **$[Y]
 
 Optional: the verify pass can run on Muse Spark Open via Baseten or Modal with three env vars (`VERIFY_*`), the open-weight bonus line.
 
+## The catch we'll show
+
+On the second test machine the clip had no narration, only burned-in captions. Spark extracted 15 steps from
+the captions alone. The verify pass, given the video as evidence, cited the caption behind 14 of them and flagged
+the 15th, "place the replacement card", as never shown. It was right: the clip ends before the install. A step
+the model invented from the title was caught before any trainee saw it, and the trainer deletes it in one click.
+
 ## Agentic behaviour (where it's true)
 
 The pipeline extracts, verifies its own extraction against the transcript, detects low-confidence parts and retries them with a different prompt type, and gates generated code behind a compiler before trusting it. The human is in the loop at exactly one place, the review step, and that step is a feature, not an apology.
