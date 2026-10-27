@@ -65,6 +65,13 @@ namespace Vid2Sim
                 _coach.text = $"Not the {p.Part.name}. {s.coach}";
                 _speech?.Say(s.coach);
             };
+            seq.Stalled += (s, part) =>
+            {
+                var name = part != null ? part.Part.name : s.part_id;
+                _coach.text = $"Stuck? Find the {name}. {s.coach}";
+                part?.Highlight();
+                _speech?.Say($"{s.instruction} Look for the {name}.");
+            };
             seq.SafetySkipped += s =>
             {
                 _coach.text = s.failure;

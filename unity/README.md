@@ -12,7 +12,8 @@ Data-driven Quest sim engine. Six scripts, no scene edits per procedure: a new p
 | `CoachUI` | World-space panel: step text, progress, pass/fail, one coaching line; Android TTS |
 | `SessionFlow` | Cold start, pause/resume, restart, recenter, dev hot reload when the dashboard pushes a spec |
 
-`ActionDetector` maps the closed vocabulary to completion rules (press = poke select, pull = moved 10 cm,
+`StepSequencer` raises `Stalled` once per step after `stallSeconds` (20 s) with no progress; `CoachUI` repeats the
+instruction, names the part and pulses it yellow (`PartBehaviour.Highlight`). `ActionDetector` maps the closed vocabulary to completion rules (press = poke select, pull = moved 10 cm,
 lift = raised 8 cm, place = released in the snap zone, turn_cw/ccw = ±45°, inspect = 1.5 s hover). A step with a
 `custom_action` binds `Assets/Generated/<Verb>Action.cs` (Muse Code output, compile-gated) through `IStepAction`.
 

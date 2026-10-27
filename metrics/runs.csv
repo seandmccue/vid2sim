@@ -377,3 +377,31 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,194,0,0,resumed from faceplate_wing_nut_concept.txt
 20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from faceplate_wing_nut_box.txt
 20261027-123225-d0981e,dive-helmet-fitting,total,pipeline,2.44,0.0000,0,0,0,upload to StreamingAssets
+20261027-123634-0ed517,nazava,upload,files,8.68,0.0000,0,0,0,p.mp4
+20261027-123634-0ed517,nazava,transcribe,muse-voice-transcribe-1.0,0.00,0.0000,0,0,0,resumed from transcript.json
+20261027-123634-0ed517,nazava,extract,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from draft.json
+20261027-123634-0ed517,nazava,verify,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from review.json
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,156,0,0,resumed from base_stand_concept.txt
+20261027-123634-0ed517,nazava,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from base_stand_box.txt
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,211,0,0,resumed from lower_container_concept.txt
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,191,0,0,resumed from rubber_seal_concept.txt
+20261027-123634-0ed517,nazava,box_fallback,muse-spark-1.3,11.90,0.0120,0,562,2648,rubber_seal
+20261027-123634-0ed517,nazava,upload,files,2.68,0.0000,0,0,0,rubber_seal.mp4
+20261027-123634-0ed517,nazava,segment_box,sam-3.1,6.77,0.0152,76,0,0,<115f>1<|box;x1=134;y1=157;x2=174;y2=173;w=848;h=480|>
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,201,0,0,resumed from ceramic_filter_concept.txt
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,221,0,0,resumed from siphon_tube_concept.txt
+20261027-123634-0ed517,nazava,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from siphon_tube_box.txt
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,490,0,0,resumed from upper_container_concept.txt
+20261027-123634-0ed517,nazava,segment_concept,sam-3.1,0.00,0.0000,291,0,0,resumed from filter_lid_concept.txt
+20261027-123634-0ed517,nazava,box_fallback,muse-spark-1.3,6.09,0.0067,0,563,1416,filter_lid
+20261027-123634-0ed517,nazava,upload,files,2.29,0.0000,0,0,0,filter_lid.mp4
+20261027-123634-0ed517,nazava,segment_box,sam-3.1,13.90,0.0352,176,0,0,<115f>1<|box;x1=409;y1=345;x2=532;y2=410;w=848;h=480|>
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,8.19,0.0400,0,0,0,step 3 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,9.10,0.0400,0,0,0,step 2 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,9.36,0.0400,0,0,0,step 1 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,10.45,0.0400,0,0,0,step 4 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,8.56,0.0400,0,0,0,step 6 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,8.95,0.0400,0,0,0,step 5 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,8.89,0.0400,0,0,0,step 7 (estimate)
+20261027-123634-0ed517,nazava,step_card,muse-image-1.0,7.99,0.0400,0,0,0,step 8 (estimate)
+20261027-123634-0ed517,nazava,total,pipeline,74.23,0.0000,0,0,0,upload to StreamingAssets

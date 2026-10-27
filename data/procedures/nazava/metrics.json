@@ -1,8 +1,8 @@
 {
-  "run_id": "20261026-195230-e65591",
+  "run_id": "20261027-123634-0ed517",
   "procedure": "nazava-water-filter-install",
-  "upload_to_spec_s": 970.0,
-  "api_cost_usd": 1.2132,
+  "upload_to_spec_s": 1044.2,
+  "api_cost_usd": 1.6023,
   "steps": 8,
   "parts": 7,
   "parts_found_concept": 3,
@@ -295,6 +295,195 @@
       "wall_s": 44.45,
       "cost_usd": 0.0407,
       "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 8.68,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from transcript.json"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from draft.json"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from review.json"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from base_stand_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from base_stand_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from lower_container_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from rubber_seal_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 11.9,
+      "cost_usd": 0.012,
+      "note": "rubber_seal"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.68,
+      "cost_usd": 0.0,
+      "note": "rubber_seal.mp4"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.77,
+      "cost_usd": 0.0152,
+      "note": "<115f>1<|box;x1=134;y1=157;x2=174;y2=173;w=848;h=480|>"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from ceramic_filter_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from siphon_tube_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from siphon_tube_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from upper_container_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from filter_lid_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 6.09,
+      "cost_usd": 0.0067,
+      "note": "filter_lid"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.29,
+      "cost_usd": 0.0,
+      "note": "filter_lid.mp4"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 13.9,
+      "cost_usd": 0.0352,
+      "note": "<115f>1<|box;x1=409;y1=345;x2=532;y2=410;w=848;h=480|>"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 8.19,
+      "cost_usd": 0.04,
+      "note": "step 3 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 9.1,
+      "cost_usd": 0.04,
+      "note": "step 2 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 9.36,
+      "cost_usd": 0.04,
+      "note": "step 1 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 10.45,
+      "cost_usd": 0.04,
+      "note": "step 4 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 8.56,
+      "cost_usd": 0.04,
+      "note": "step 6 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 8.95,
+      "cost_usd": 0.04,
+      "note": "step 5 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 8.89,
+      "cost_usd": 0.04,
+      "note": "step 7 (estimate)"
+    },
+    {
+      "stage": "step_card",
+      "model": "muse-image-1.0",
+      "wall_s": 7.99,
+      "cost_usd": 0.04,
+      "note": "step 8 (estimate)"
     }
   ],
   "ground_truth": {
@@ -325,7 +514,7 @@
         "extracted": "Insert the first black rubber seal into the upper reservoir hole.",
         "extracted_order": 3,
         "action_truth": "pull",
-        "action_extracted": "insert",
+        "action_extracted": "place",
         "similarity": 0.57,
         "matched": true,
         "action_ok": false,
@@ -334,10 +523,10 @@
       {
         "order": 3,
         "truth": "Insert the ceramic filter through the upper container and fit the rubber ring back on.",
-        "extracted": "Hold the white ceramic filter candle on the blue part.",
+        "extracted": "Insert the white ceramic filter candle into the upper reservoir.",
         "extracted_order": 4,
         "action_truth": "place",
-        "action_extracted": "insert",
+        "action_extracted": "place",
         "similarity": 0.9,
         "matched": true,
         "action_ok": true,
@@ -349,7 +538,7 @@
         "extracted": "Screw the blue siphon tube onto the ceramic filter.",
         "extracted_order": 5,
         "action_truth": "turn_cw",
-        "action_extracted": "screw",
+        "action_extracted": "turn_cw",
         "similarity": 0.9,
         "matched": true,
         "action_ok": true,
@@ -361,7 +550,7 @@
         "extracted": "Insert the assembled upper reservoir into the lower container.",
         "extracted_order": 6,
         "action_truth": "place",
-        "action_extracted": "insert",
+        "action_extracted": "place",
         "similarity": 0.75,
         "matched": true,
         "action_ok": true,
@@ -395,33 +584,20 @@
   },
   "generated_actions": [
     {
-      "verb": "insert",
-      "class": "InsertAction",
-      "path": "unity/TrainingSim/Assets/Generated/InsertAction.cs",
-      "compiled": null,
-      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
-    },
-    {
-      "verb": "screw",
-      "class": "ScrewAction",
-      "path": "unity/TrainingSim/Assets/Generated/ScrewAction.cs",
-      "compiled": null,
-      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
-    },
-    {
       "verb": "pour",
       "class": "PourAction",
-      "path": "unity/TrainingSim/Assets/Generated/PourAction.cs",
-      "compiled": null,
-      "note": "SDK guard applied; headless gate not run because the Meta Interaction SDK package is not installed yet"
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/PourAction.cs",
+      "compiled": true,
+      "note": "cached"
     }
   ],
   "textures": 7,
-  "streaming_assets": "unity/TrainingSim/Assets/StreamingAssets/procedures/nazava-water-filter-install",
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/nazava-water-filter-install",
   "runs": [
     "20261026-193738-dd4789",
     "20261026-193913-ab0165",
-    "20261026-195230-e65591"
+    "20261026-195230-e65591",
+    "20261027-123634-0ed517"
   ],
-  "note": "aggregated across 3 run(s); resumed stages cost $0 and 0 s"
+  "note": "aggregated across 4 run(s); resumed stages cost $0 and 0 s"
 }

@@ -21,7 +21,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .common import (ACTION_VOCAB, IMAGE_MODEL, PRICE_IMAGE_EACH_EST, SPARK_MODEL, UNITY_GENERATED, Metrics,
-                     Timer, client, is_mock, iter_output_text, spark_cost)
+                     Timer, client, is_mock, iter_output_text, spark_cost, with_retries)
 
 ISTEP_ACTION_INTERFACE = """
 // Engine side (Assets/Sim). Generated code implements IStepAction and is added as a component to the
@@ -306,23 +306,30 @@ def generate_textures(spec: dict, work: Path, metrics: Metrics) -> dict[str, Pat
     return {pid: path for pid, path in results if path is not None}
 
 
+def _card_one(s: dict, spec: dict, cards: Path, metrics: Metrics) -> tuple[int, Path | None]:
+    target = cards / f"step_{s['order']:02d}.png"
+    if target.exists():
+        return s["order"], target
+    if is_mock():
+        return s["order"], None
+    part = next((p for p in spec["parts"] if p["id"] == s["part_id"]), None)
+    c = client()
+    with Timer() as t:
+        gen = with_retries(lambda: c.images.generate(
+            model=IMAGE_MODEL, n=1, size="1024x1024", output_format="png",
+            prompt=f"Flat vector training card, industrial safety manual style, clean line art, one clear action: "
+                   f"{s['instruction']} The part is a {part['name'] if part else s['part_id']}. No text, no hands cut off."),
+            label=f"step card {s['order']}")
+    target.write_bytes(base64.b64decode(gen.data[0].b64_json))
+    shrink_texture(target, 768)
+    metrics.log("step_card", IMAGE_MODEL, t.wall, PRICE_IMAGE_EACH_EST, note=f"step {s['order']} (estimate)")
+    return s["order"], target
+
+
 def generate_step_cards(spec: dict, work: Path, metrics: Metrics, limit: int | None = None) -> dict[int, Path]:
+    """One Muse Image card per step for the dashboard (the Oct 31 'cut first' item: optional, cents each)."""
     cards = work / "bundle" / "cards"
     cards.mkdir(parents=True, exist_ok=True)
-    out = {}
-    for s in spec["steps"][:limit]:
-        target = cards / f"step_{s['order']:02d}.png"
-        if target.exists():
-            out[s["order"]] = target
-            continue
-        if is_mock():
-            continue
-        c = client()
-        with Timer() as t:
-            gen = c.images.generate(model=IMAGE_MODEL, n=1, size="1024x1024", output_format="png",
-                                    prompt=f"Flat vector training card, industrial safety style, illustrating: {s['instruction']} "
-                                           f"No text.")
-        target.write_bytes(base64.b64decode(gen.data[0].b64_json))
-        metrics.log("step_card", IMAGE_MODEL, t.wall, PRICE_IMAGE_EACH_EST, note=f"step {s['order']} (estimate)")
-        out[s["order"]] = target
-    return out
+    with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+        results = list(pool.map(lambda s: _card_one(s, spec, cards, metrics), spec["steps"][:limit]))
+    return {order: path for order, path in results if path is not None}
