@@ -280,7 +280,7 @@ def get_frame(pid: str, n: int):
 # ------------------------------------------------------------------ play in the browser
 
 @app.get("/api/procedures/{pid}/play")
-def play(pid: str):
+def play(pid: str, mute: bool = False):
     """Open the WebGL training sim on this procedure. Same engine as the Quest build, mouse backend;
     spec and textures are fetched from this backend, and a saved edit hot-reloads in the running page."""
     from fastapi.responses import RedirectResponse
@@ -290,8 +290,10 @@ def play(pid: str):
     if not (WEB_BUILD / "index.html").exists():
         raise HTTPException(503, "web build not present: run Vid2Sim.Editor.BuildScript.BuildWebGL")
     from urllib.parse import urlencode
-    q = urlencode({"spec": f"/api/procedures/{pid}/spec", "textures": f"/api/procedures/{pid}/files/bundle/textures"})
-    return RedirectResponse(url=f"/sim/index.html?{q}")
+    params = {"spec": f"/api/procedures/{pid}/spec", "textures": f"/api/procedures/{pid}/files/bundle/textures"}
+    if mute:
+        params["mute"] = "1"
+    return RedirectResponse(url=f"/sim/index.html?{urlencode(params)}")
 
 
 # ------------------------------------------------------------------ build
