@@ -28,6 +28,7 @@ from backend.run import run as run_pipeline
 DATA = REPO_ROOT / "data" / "procedures"
 DASHBOARD_DIST = REPO_ROOT / "dashboard" / "dist"
 UNITY_PROJECT = REPO_ROOT / "unity" / "TrainingSim"
+WEB_BUILD = UNITY_PROJECT / "Builds" / "web"          # Unity WebGL output: the browser training sim
 BUNDLE_ID = os.environ.get("UNITY_BUNDLE_ID", "com.framesixty.vid2sim")
 
 app = FastAPI(title="vid2sim", version="0.1")
@@ -70,7 +71,8 @@ def _video_for(pid: str) -> Path | None:
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "mock": os.environ.get("VID2SIM_MOCK", "0"), "has_key": bool(os.environ.get("MODEL_API_KEY"))}
+    return {"ok": True, "mock": os.environ.get("VID2SIM_MOCK", "0"), "has_key": bool(os.environ.get("MODEL_API_KEY")),
+            "web_build": (WEB_BUILD / "index.html").exists()}
 
 
 @app.get("/api/procedures")
@@ -275,6 +277,23 @@ def get_frame(pid: str, n: int):
     return FileResponse(out)
 
 
+# ------------------------------------------------------------------ play in the browser
+
+@app.get("/api/procedures/{pid}/play")
+def play(pid: str):
+    """Open the WebGL training sim on this procedure. Same engine as the Quest build, mouse backend;
+    spec and textures are fetched from this backend, and a saved edit hot-reloads in the running page."""
+    from fastapi.responses import RedirectResponse
+    d = _dir(pid)
+    if not (d / "spec.json").exists():
+        raise HTTPException(404, "no spec yet; run the pipeline")
+    if not (WEB_BUILD / "index.html").exists():
+        raise HTTPException(503, "web build not present: run Vid2Sim.Editor.BuildScript.BuildWebGL")
+    from urllib.parse import urlencode
+    q = urlencode({"spec": f"/api/procedures/{pid}/spec", "textures": f"/api/procedures/{pid}/files/bundle/textures"})
+    return RedirectResponse(url=f"/sim/index.html?{q}")
+
+
 # ------------------------------------------------------------------ build
 
 @app.post("/api/procedures/{pid}/build")
@@ -315,6 +334,10 @@ def build(pid: str, push: bool = True, apk: bool = False):
             log.append(f"unity build {'ok' if built else 'failed'} (see Logs/build.log)")
     return {"ok": True, "packaged": str(out), "pushed": pushed, "apk_built": built, "log": log}
 
+
+# serve the WebGL sim when built (Builds/web/index.html + Build/*.js|.wasm|.data), then the dashboard
+if (WEB_BUILD / "index.html").exists():
+    app.mount("/sim", StaticFiles(directory=WEB_BUILD, html=True), name="sim")
 
 # serve the built dashboard when present; API routes above take precedence
 if DASHBOARD_DIST.exists():

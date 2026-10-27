@@ -36,6 +36,14 @@ namespace Vid2Sim
         }
 
         void OnDestroy() { _tts?.Call("shutdown"); }
+#elif UNITY_WEBGL && !UNITY_EDITOR
+        [System.Runtime.InteropServices.DllImport("__Internal")] static extern void Vid2SimSpeak(string text, int interrupt);
+
+        public void Say(string text, bool interrupt = true)
+        {
+            if (!enabledSpeech || string.IsNullOrEmpty(text)) return;
+            try { Vid2SimSpeak(text, interrupt ? 1 : 0); } catch (System.Exception e) { Debug.LogWarning("[Speech] web TTS: " + e.Message); }
+        }
 #else
         public void Say(string text, bool interrupt = true)
         {

@@ -66,6 +66,16 @@ namespace Vid2Sim.Tests
         }
 
         [Test]
+        public void Loader_parses_the_web_launch_query()
+        {
+            var q = SpecLoader.ParseQuery("https://host/sim/index.html?spec=%2Fapi%2Fprocedures%2Fnazava%2Fspec&textures=/api/procedures/nazava/files/bundle/textures&procedure=nazava");
+            Assert.AreEqual("/api/procedures/nazava/spec", q["spec"]);
+            Assert.AreEqual("/api/procedures/nazava/files/bundle/textures", q["textures"]);
+            Assert.AreEqual("nazava", q["procedure"]);
+            Assert.AreEqual(0, SpecLoader.ParseQuery("https://host/sim/index.html").Count);
+        }
+
+        [Test]
         public void Validator_rejects_bad_specs()
         {
             var spec = new ProcedureSpec

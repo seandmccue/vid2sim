@@ -17,7 +17,9 @@ namespace Vid2Sim.Interaction
         public static IInteractionBackend Create()
         {
             if (Override != null) return Override;
-#if META_INTERACTION_SDK
+#if UNITY_WEBGL
+            return new SimpleInteractionBackend();   // browser output: mouse-first, same engine
+#elif META_INTERACTION_SDK
             return new MetaInteractionBackend();
 #else
             return new SimpleInteractionBackend();

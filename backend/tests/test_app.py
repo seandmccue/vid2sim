@@ -57,6 +57,12 @@ def test_upload_run_edit_build(client, synthetic_video):
     assert r.status_code == 200 and r.json()["needs_resegment"] == [good["parts"][1]["id"]]
     assert client.get(f"/api/procedures/{pid}/spec").json()["parts"][0]["name"] == "main power switch"
 
+    # play endpoint: 503 until the WebGL build exists, then a redirect carrying spec + textures URLs
+    r = client.get(f"/api/procedures/{pid}/play", follow_redirects=False)
+    assert r.status_code in (303, 307, 503)
+    if r.status_code != 503:
+        assert "spec=" in r.headers["location"] and "textures=" in r.headers["location"]
+
     b = client.post(f"/api/procedures/{pid}/build?push=false").json()
     assert b["ok"] and b["pushed"] is False
     assert client.get("/api/procedures").json()[0]["state"] == "edited"

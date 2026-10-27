@@ -142,6 +142,22 @@ events, both committed specs load and validate. They pass headless on Unity 6000
 Unity -batchmode -nographics -projectPath unity/TrainingSim -runTests -testPlatform PlayMode -testResults /tmp/playmode.xml
 ```
 
+## Two outputs, one spec
+
+The same engine ships twice from the same `spec.json`:
+
+| Output | Build | Input | Launch |
+| --- | --- | --- | --- |
+| Quest, hands-first | `BuildScript.BuildAndroid` → `Builds/vid2sim.apk` | Meta Interaction SDK: poke, hand grab, rotate | sideload; dashboard **Rebuild → Quest** hot-pushes a new spec |
+| Browser, mouse-first | `BuildScript.BuildWebGL` → `Builds/web/`, served at `/sim/` | click = press, drag = grab / pull / lift / place, right-drag = turn, hover = inspect | dashboard **Play in browser** → `/api/procedures/<id>/play`; a saved edit hot-reloads in the open page |
+
+Sequencer, scorer, coach panel and spoken lines are identical; the web build uses the browser's own speech synthesis.
+Only the interaction backend and the camera differ, selected at compile time (`InteractionBackends.Create`).
+
+```bash
+Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -buildTarget WebGL -executeMethod Vid2Sim.Editor.BuildScript.BuildWebGL
+```
+
 ## Quest build
 
 ```bash

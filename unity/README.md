@@ -71,6 +71,14 @@ Meta → Tools → Building Blocks, then "Camera Rig", "Hand Tracking", "Interac
 "Grab Interactor", "Hand Poke Interactor"; set `Bootstrap.rigOrigin` on the Vid2Sim object to `[BuildingBlock]
 Camera Rig`.
 
+## Web output
+
+`Assets/Scenes/Web.unity` (menu **Vid2Sim → Create Web Scene**) is a plain camera with `WebCameraRig` plus `Bootstrap`:
+no Meta rig. `BuildScript.BuildWebGL` builds it to `Builds/web/` (compression off, so any static server works) and
+`backend/app.py` serves it at `/sim/`. On WebGL `InteractionBackends.Create` always returns the mouse backend, the
+loader reads `?spec=&textures=` from the page URL, and `Speech` uses `window.speechSynthesis` through
+`Plugins/WebGL/Vid2SimWeb.jslib`. Generated scripts are guarded `#if META_INTERACTION_SDK && !UNITY_WEBGL`.
+
 ## Headless gates
 
 ```bash
