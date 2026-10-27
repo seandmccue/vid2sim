@@ -179,6 +179,9 @@ The same engine ships twice from the same `spec.json`:
 | Quest, hands-first | `BuildScript.BuildAndroid` → `Builds/vid2sim.apk` | Meta Interaction SDK: poke, hand grab, rotate | sideload; dashboard **Rebuild → Quest** hot-pushes a new spec |
 | Browser, mouse-first | `BuildScript.BuildWebGL` → `Builds/web/`, served at `/sim/` | click = press, drag = grab / pull / lift / place (snaps onto the zone), hover + Q/E = quarter turn, hover = inspect | dashboard **Play in browser** → `/api/procedures/<id>/play`; a saved edit hot-reloads in the open page |
 
+Both outputs guide the trainee: at each step the expected part pulses and a translucent ghost of it performs the
+motion twice while the panel says how to do it with the input in use ("Click it." / "Poke it with a finger."). H (web)
+replays the demo; it also replays on a stall. The web build opens with a start screen that lists the controls.
 Sequencer, scorer, coach panel and spoken lines are identical; the web build uses the browser's own speech synthesis.
 Only the interaction backend and the camera differ, selected at compile time (`InteractionBackends.Create`).
 Verified in a browser: the six-step compressor procedure played start to finish with the mouse to

@@ -11,6 +11,7 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 | Unity engine | Compiles against Meta XR SDK 207.0.1. 13 headless PlayMode tests pass, including the full compressor procedure to a pass with scoring. `Builds/vid2sim.apk` builds headless in ~2 min warm. **Rebuild it before sideloading**: the web build exposed two player-only failures (stripped Standard shader, missing TMP essentials) that were fixed on Oct 27; any APK from before that fix will spawn nothing. |
 | Generated code | 6 Spark-written `IStepAction` scripts compile against the SDK; 1 (`UnplugAction`) failed the gate and is pended, engine falls back to `pull`. |
 | Step cards | `--step-cards` adds a Muse Image card per step to the dashboard (8 generated for Nazava, ~$0.04 each). Optional; cut first if credits run short. |
+| Guided mode | Start screen with controls; each step lights the part, a ghost shows the motion, the panel says how (mouse or hands). Sean's first try found the sim hard to use without this. |
 | Web output | Same engine built for WebGL (`Builds/web`, served at `/sim/`). Dashboard **Play in browser** opens any procedure mouse-first; saved edits hot-reload in the page. Played the compressor procedure start to finish in a browser (score 100). The first web runs found three engine bugs that also affected the Quest build: stripped shader, missing TMP essentials, and motion before a step armed counting toward it. All fixed; APK rebuilt. |
 | Docs | `docs/SUBMISSION.md`, `docs/VIDEO.md`, `docs/FILMING.md` drafted. |
 

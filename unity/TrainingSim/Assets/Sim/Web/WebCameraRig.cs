@@ -47,12 +47,37 @@ namespace Vid2Sim
             transform.rotation = rot;
         }
 
+        bool _started;
+        GUIStyle _big, _body;
+
         void OnGUI()
         {
+            if (!_started)
+            {
+                // Start overlay: explains the controls once and absorbs the first click (which the canvas eats for focus).
+                _big ??= new GUIStyle(GUI.skin.label) { fontSize = 44, fontStyle = FontStyle.Bold, normal = { textColor = Color.white } };
+                _body ??= new GUIStyle(GUI.skin.label) { fontSize = 26, normal = { textColor = new Color(0.9f, 0.93f, 1f) }, wordWrap = true };
+                float w = Mathf.Min(1100f, Screen.width - 80f), h = 520f;
+                var r = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+                GUI.Box(r, GUIContent.none); GUI.Box(r, GUIContent.none);
+                GUILayout.BeginArea(new Rect(r.x + 40, r.y + 30, r.width - 80, r.height - 60));
+                GUILayout.Label("Training sim", _big);
+                GUILayout.Space(10);
+                GUILayout.Label("Follow the panel. At each step the part you need lights up and a yellow ghost shows the motion.", _body);
+                GUILayout.Space(12);
+                GUILayout.Label("Click = press          Drag = grab, pull, lift, or place (drop it on the green zone)", _body);
+                GUILayout.Label("Hover + Q / E = turn a quarter          Hover for 2 s = inspect", _body);
+                GUILayout.Label("Arrow keys orbit    Scroll zooms    H = show me again    R = restart    P = pause", _body);
+                GUILayout.Space(16);
+                GUILayout.Label("Click anywhere to begin.", _big);
+                GUILayout.EndArea();
+                if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.KeyDown) { _started = true; Event.current.Use(); }
+                return;
+            }
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
             GUI.Box(new Rect(12, 12, 1500, 44), GUIContent.none);
-            GUI.Label(new Rect(20, 18, 1500, 40), "Click = press · Drag = grab / pull / lift / place · Hover + Q/E = quarter turn (or right-drag) · Hover = inspect · Arrows orbit · Scroll zooms · R restart · P pause", style);
+            GUI.Label(new Rect(20, 18, 1500, 40), "Click = press · Drag = grab / pull / lift / place · Hover + Q/E = quarter turn · Hover = inspect · H = show me · Arrows orbit · Scroll zooms · R restart", style);
             if (debugReadout)
             {
                 var cam = Camera.main;

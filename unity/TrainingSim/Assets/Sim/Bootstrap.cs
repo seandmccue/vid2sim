@@ -21,6 +21,7 @@ namespace Vid2Sim
             if (!GetComponent<Scorer>()) gameObject.AddComponent<Scorer>();
             if (!GetComponent<CoachUI>()) gameObject.AddComponent<CoachUI>();
             if (!GetComponent<Speech>()) gameObject.AddComponent<Speech>();
+            if (!GetComponent<StepGuide>()) gameObject.AddComponent<StepGuide>();
             var flow = GetComponent<SessionFlow>() ?? gameObject.AddComponent<SessionFlow>();
             if (rigOrigin) flow.origin = rigOrigin;
         }

@@ -108,7 +108,7 @@ namespace Vid2Sim.Tests
             var speech = root.AddComponent<Speech>();
             ui.Build(_cam.transform, speech);
             yield return null;
-            Assert.AreEqual(5, root.GetComponentsInChildren<TMPro.TextMeshProUGUI>().Length);
+            Assert.AreEqual(6, root.GetComponentsInChildren<TMPro.TextMeshProUGUI>().Length);   // title, progress, step, how, coach, status
             ui.SetTitle("t"); ui.SetStatus("s");
             Object.Destroy(root);
         }
@@ -265,6 +265,30 @@ namespace Vid2Sim.Tests
             seq.ForceStallCheck();
             Assert.AreEqual(2, stalls);
             Assert.AreEqual("drain_valve", hinted.Part.id);
+        }
+
+        [UnityTest]
+        public IEnumerator Guide_demonstrates_each_step_with_a_ghost_and_a_how_line()
+        {
+            PartFactory factory = null; StepSequencer seq = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { factory = f; seq = s; });
+            var guide = _root.AddComponent<StepGuide>();
+            guide.demoSeconds = 0.05f; guide.demoLoops = 1;
+            var ui = _root.AddComponent<CoachUI>();
+            ui.Build(_cam.transform, _root.AddComponent<Speech>());
+            guide.Attach(seq, factory, ui);
+            seq.Begin(ReadSpec(seq), factory);
+            yield return null;
+            Assert.IsTrue(guide.IsDemoRunning, "a demo starts with the step");
+            Assert.IsNotNull(GameObject.Find("Ghost:power_switch"), "a ghost of the expected part exists");
+            Assert.IsNull(GameObject.Find("Ghost:power_switch")?.GetComponent<Collider>(), "the ghost is not interactable");
+            Assert.IsTrue(factory.Spawned["power_switch"].IsHighlighted);
+            yield return new WaitForSecondsRealtime(0.6f);
+            Assert.IsFalse(guide.IsDemoRunning, "the demo ends on its own");
+            Assert.IsNull(GameObject.Find("Ghost:power_switch"));
+            Assert.AreEqual("Click it.", StepGuide.HowTo(seq.Current, new SimpleInteractionBackend()));
+            Assert.AreEqual("Hover it and press Q (counter-clockwise).", StepGuide.HowTo(ReadSpec(seq).steps[1], new SimpleInteractionBackend()));
+            Assert.AreEqual("Drag it onto the green zone and let go.", StepGuide.HowTo(ReadSpec(seq).steps[4], new SimpleInteractionBackend()));
         }
 
         [UnityTest]
