@@ -62,6 +62,9 @@ def test_upload_run_edit_build(client, synthetic_video):
     assert r.status_code in (303, 307, 503)
     if r.status_code != 503:
         assert "spec=" in r.headers["location"] and "textures=" in r.headers["location"]
+        assert "mute" not in r.headers["location"]
+        muted = client.get(f"/api/procedures/{pid}/play?mute=true", follow_redirects=False)
+        assert "mute=1" in muted.headers["location"]   # silent runs: no browser speech
 
     b = client.post(f"/api/procedures/{pid}/build?push=false").json()
     assert b["ok"] and b["pushed"] is False

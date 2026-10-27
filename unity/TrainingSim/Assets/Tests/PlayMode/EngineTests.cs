@@ -324,6 +324,30 @@ namespace Vid2Sim.Tests
         }
 
         [UnityTest]
+        public IEnumerator Loader_fetches_a_spec_from_a_url()
+        {
+            // the web output gets its spec from the dashboard URL; a file:// URL goes through the same request path
+            var shipped = System.IO.Path.Combine(SpecLoader.StreamingDir("compressor-filter-swap"), "spec.json");
+            var tmp = System.IO.Path.Combine(Application.temporaryCachePath, "url-spec.json");
+            System.IO.File.WriteAllText(tmp, System.IO.File.ReadAllText(shipped).Replace("\"title\": \"Replace the intake filter\"", "\"title\": \"FROM URL\""));
+            var go = new GameObject("loader");
+            var loader = go.AddComponent<SpecLoader>();
+            loader.specUrl = "file://" + tmp;
+            yield return loader.Load();
+            Assert.IsNull(loader.Error, loader.Error);
+            Assert.IsTrue(loader.UsesRemoteSpec);
+            Assert.AreEqual("FROM URL", loader.Procedure.procedure.title);
+            Assert.AreEqual("compressor-filter-swap", loader.procedureId, "procedure id comes from the fetched spec");
+            bool changed = true;
+            yield return loader.RemoteSpecChanged(c => changed = c);
+            Assert.IsFalse(changed, "unchanged remote spec must not trigger a reload");
+            System.IO.File.WriteAllText(tmp, System.IO.File.ReadAllText(tmp).Replace("FROM URL", "EDITED"));
+            yield return loader.RemoteSpecChanged(c => changed = c);
+            Assert.IsTrue(changed, "an edited remote spec triggers a reload");
+            Object.Destroy(go);
+        }
+
+        [UnityTest]
         public IEnumerator Loader_rejects_an_invalid_hot_spec_without_crashing()
         {
             System.IO.Directory.CreateDirectory(_hotDir);
