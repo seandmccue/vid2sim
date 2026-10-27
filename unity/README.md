@@ -19,23 +19,72 @@ lift = raised 8 cm, place = released in the snap zone, turn_cw/ccw = ±45°, ins
 ## Interaction backends
 
 `Interaction/MetaInteractionBackend.cs` compiles only when the Meta XR Interaction SDK package is present
-(asmdef version define `META_INTERACTION_SDK`). Without it, `SimpleInteractionBackend` drives parts with the
-mouse so the whole step flow runs in the editor and the XR Simulator.
+(asmdef version define `META_INTERACTION_SDK`; `META_CORE_SDK` gates `OVRInput` in `SessionFlow`). Without it,
+`SimpleInteractionBackend` drives parts with the mouse so the whole step flow runs in the editor and the XR Simulator.
 
-## Setup (Unity 6, once)
+With the SDK: press parts get a `PokeInteractable` on their top face; turn parts a `HandGrabInteractable` with a
+`OneGrabRotateTransformer` about their up axis; everything else a `HandGrabInteractable` with the default free
+transformer. Hover/select/unselect flow into `PartBehaviour` from the SDK's pointer events.
 
-1. Open `unity/TrainingSim` in Unity 6000.3. `Packages/manifest.json` pulls Meta XR Core + Interaction SDK from
-   the Meta scoped registry; adjust the version to what the Hub offers.
-2. Menu **Vid2Sim → Create Sim Scene**, then add the Meta XR Building Blocks: Camera Rig, Hand Tracking,
-   Hand Grab Interactor, Poke Interactor. Set `Bootstrap.rigOrigin` to the rig root (or leave empty).
-3. Hand tracking on, controllers optional. Build Android (ARM64, IL2CPP), or **Vid2Sim → Build Android APK**.
+## Packages (pinned, verified)
+
+`Packages/manifest.json` pulls these from the Meta scoped registry `https://npm.developer.oculus.com` (scope
+`com.meta.xr`). The registry serves v59–v85 and v201–v207; v207.0.1 is `latest` and core requires Unity 6000.0.66f2+.
+
+| Package | Version |
+| --- | --- |
+| `com.meta.xr.sdk.core` | 207.0.1 |
+| `com.meta.xr.sdk.interaction` | 207.0.1 |
+| `com.meta.xr.sdk.interaction.ovr` | 207.0.1 |
+| `com.unity.xr.openxr` | 1.14.3 |
+| `com.unity.xr.management` | 4.5.1 |
+| `com.unity.ugui` (TextMeshPro) | 2.0.0 |
+
+The manifest lists the full set of built-in modules on purpose: the Meta packages reference Animation, AI and
+AssetBundle, and a trimmed module list fails inside the SDK with `CS1069` before any project code compiles.
+`Packages/packages-lock.json` is committed so a fresh clone resolves the same versions.
+
+Fallback if the registry is unreachable: Window → Package Manager → "+" → "Add package by name" with the names
+above (needs the scoped registry entry in the manifest), or import "Meta XR Core SDK" and "Meta XR Interaction SDK"
+from the Asset Store; the asmdef version defines fire on the package name either way.
+
+## Setup (Unity 6000.3.21f1, once)
+
+1. Open `unity/TrainingSim`; the Package Manager resolves the pins above (first open downloads ~400 MB and imports
+   for several minutes).
+2. **Vid2Sim → Apply Meta Project Setup (Android)**. Scripted, idempotent: turns the OpenXR loader on for Android
+   and Standalone in XR Plug-in Management, sets hand tracking support to Controllers And Hands, runs the Meta
+   Project Setup Tool's "Fix All" for Android (Linear colour, Vulkan, ASTC, min API 32 / target 34, GameActivity,
+   stereo instancing, MSAA, …) and regenerates `Assets/Plugins/Android/AndroidManifest.xml` with the
+   `com.oculus.permission.HAND_TRACKING` entry. Everything it writes is committed, so a clean clone needs it only
+   when settings drift.
+3. **Vid2Sim → Create Sim Scene**. Writes `Assets/Scenes/Sim.unity` with the Bootstrap object and installs the Meta
+   XR Building Blocks through the SDK's own installer: Camera Rig, Hand Tracking, Interactions Rig, Hand
+   Interactions, Grab Interactor, Hand Poke Interactor. `Bootstrap.rigOrigin` is set to the Camera Rig root. The
+   scene is committed; rerun the menu only to rebuild it. Without the Meta SDK the same menu makes a plain camera
+   scene for the mouse backend.
+4. Build Android (ARM64, IL2CPP) with **Vid2Sim → Build Android APK**, or File → Build Profiles → Android.
+
+If the Building Blocks install ever fails (the SDK's block installer is `internal`; the menu drives it by
+reflection and logs `[SceneSetup] ... SDK API changed` if a future version renames it), add them by hand:
+Meta → Tools → Building Blocks, then "Camera Rig", "Hand Tracking", "Interactions Rig", "Hand Interactions",
+"Grab Interactor", "Hand Poke Interactor"; set `Bootstrap.rigOrigin` on the Vid2Sim object to `[BuildingBlock]
+Camera Rig`.
 
 ## Headless gates
 
 ```bash
-Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.CompileGate.Run
-Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.BuildScript.BuildAndroid
+U=/Applications/Unity/Hub/Editor/6000.3.21f1/Unity.app/Contents/MacOS/Unity
+$U -batchmode -nographics -quit -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.CompileGate.Run -logFile /tmp/gate.log
+$U -batchmode -nographics -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.SceneSetup.ApplyMetaProjectSetupHeadless -logFile /tmp/setup.log
+$U -batchmode -nographics -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.SceneSetup.CreateSimSceneHeadless -logFile /tmp/scene.log
+$U -batchmode -nographics -quit -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.BuildScript.BuildAndroid -logFile /tmp/build.log
 ```
+
+The compile gate exits 0 only with zero `error CS` lines (Unity aborts batchmode with exit 1 on compiler errors
+before the method runs). The two `SceneSetup` commands take no `-quit`: they await the SDK's async installers and
+exit the editor themselves; Unity sometimes aborts with code 134 while tearing down afterwards, so read the
+`[SceneSetup] saved …` / `[SceneSetup] Meta project setup applied` log lines, not the exit code.
 
 ## Debug keys (editor) / buttons (Quest)
 
