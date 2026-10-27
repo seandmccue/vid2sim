@@ -40,6 +40,7 @@ namespace Vid2Sim.Editor
                 cam.clearFlags = CameraClearFlags.SolidColor;
                 cam.backgroundColor = new Color(0.09f, 0.1f, 0.12f);
                 cam.gameObject.AddComponent<WebCameraRig>();
+                cam.gameObject.AddComponent<WebHud>();
             }
             // Fixed seated origin: the bench and coach panel are laid out from here, not from the orbiting camera.
             var seat = new GameObject("Seat");

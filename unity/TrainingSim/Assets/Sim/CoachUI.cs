@@ -12,6 +12,7 @@ namespace Vid2Sim
     {
         public Vector3 offsetFromBench = new(0f, 0.45f, 0.15f);
         public Vector2 panelSize = new(0.6f, 0.26f);
+        public bool showWorldPanel = true;
 
         TextMeshProUGUI _title, _step, _progress, _coach, _status, _how;
         Image _bg;
@@ -21,6 +22,7 @@ namespace Vid2Sim
         public void Build(Transform origin, Speech speech)
         {
             _speech = speech;
+            if (!showWorldPanel) return;   // the web HUD carries the text instead
             var canvasGo = new GameObject("CoachCanvas", typeof(Canvas), typeof(CanvasScaler));
             canvasGo.transform.SetParent(transform, false);
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -52,45 +54,47 @@ namespace Vid2Sim
         {
             seq.StepStarted += (s, i) =>
             {
+                if (_step == null) { _speech?.Say(s.instruction); return; }
                 _step.text = $"{s.order}. {s.instruction}";
                 _progress.text = $"{i + 1} / {seq.Spec.steps.Length}";
                 _status.text = s.safety ? "SAFETY STEP: cannot be skipped. " + s.check : s.check;
                 _coach.text = "";
                 _speech?.Say(s.instruction);
             };
-            seq.StepCompleted += (s, secs) => _status.text = $"Done in {secs:0.0}s.";
+            seq.StepCompleted += (s, secs) => { if (_status) _status.text = $"Done in {secs:0.0}s."; };
             seq.WrongPart += (s, p) =>
             {
                 // the coach calls it out once per step
                 if (Time.unscaledTime < _coachUntil) return;
                 _coachUntil = Time.unscaledTime + 4f;
-                _coach.text = $"Not the {p.Part.name}. {s.coach}";
+                if (_coach) _coach.text = $"Not the {p.Part.name}. {s.coach}";
                 _speech?.Say(s.coach);
             };
             seq.Stalled += (s, part) =>
             {
                 var name = part != null ? part.Part.name : s.part_id;
-                _coach.text = $"Stuck? Find the {name}. {s.coach}";
+                if (_coach) _coach.text = $"Stuck? Find the {name}. {s.coach}";
                 part?.Highlight();
                 _speech?.Say($"{s.instruction} Look for the {name}.");
             };
             seq.SafetySkipped += s =>
             {
-                _coach.text = s.failure;
+                if (_coach) _coach.text = s.failure;
                 _speech?.Say("Safety step skipped. " + s.failure);
             };
             seq.Finished += passed =>
             {
                 var r = scorer.Current;
                 if (_how) _how.text = "";
-                _step.text = passed ? "Procedure complete." : "Attempt failed.";
-                _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches." : "";
-                _status.text = "Say or press Restart to try again.";
+                if (_step) _step.text = passed ? "Procedure complete." : "Attempt failed.";
+                if (_coach) _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches." : "";
+                if (_status) _status.text = "Say or press Restart to try again.";
                 _speech?.Say(passed ? "Procedure complete. Well done." : "Attempt failed.");
             };
         }
 
         public void SetTitle(string title) { if (_title) _title.text = title; }
+        void Safe(System.Action a) { if (_step != null) a(); }
         public void SetHow(string how) { if (_how) _how.text = how; }
         public void SetStatus(string s) { if (_status) _status.text = s; }
 

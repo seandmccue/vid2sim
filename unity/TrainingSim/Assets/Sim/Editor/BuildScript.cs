@@ -21,6 +21,7 @@ namespace Vid2Sim.Editor
             ProjectAssets.Ensure();
             if (!File.Exists(SceneSetup.WebScenePath)) SceneSetup.CreateWebScene();
             Directory.CreateDirectory("Builds");
+            SelectTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL);
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.decompressionFallback = false;
             PlayerSettings.WebGL.dataCaching = true;
@@ -38,12 +39,26 @@ namespace Vid2Sim.Editor
                 EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
 
+        /// <summary>
+        /// Package build hooks (Meta XR's OVRGradleGeneration among them) read
+        /// EditorUserBuildSettings.selectedBuildTargetGroup, which BuildPlayer does not
+        /// change. After a WebGL build it still says WebGL, the Meta hook returns early,
+        /// and the Android APK then fails on two copies of libopenxr_loader.so.
+        /// </summary>
+        static void SelectTarget(BuildTargetGroup group, BuildTarget target)
+        {
+            EditorUserBuildSettings.selectedBuildTargetGroup = group;
+            if (EditorUserBuildSettings.activeBuildTarget != target)
+                EditorUserBuildSettings.SwitchActiveBuildTarget(group, target);
+        }
+
         [MenuItem("Vid2Sim/Build Android APK")]
         public static void BuildAndroid()
         {
             ProjectAssets.Ensure();
             if (!File.Exists(ScenePath)) SceneSetup.CreateSimScene();
             Directory.CreateDirectory("Builds");
+            SelectTarget(BuildTargetGroup.Android, BuildTarget.Android);
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel32;

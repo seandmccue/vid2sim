@@ -32,10 +32,13 @@ namespace Vid2Sim
 
         public void NotifySelect()   { if (IsSelected) return; IsSelected = true; Selected?.Invoke(this); }
         public void NotifyUnselect() { if (!IsSelected) return; IsSelected = false; Unselected?.Invoke(this); }
+        Vector3 _baseScale;
         public void NotifyHover(bool on)
         {
             if (on == IsHovered) return;
             IsHovered = on;
+            if (_baseScale == Vector3.zero) _baseScale = transform.localScale;
+            transform.localScale = on ? _baseScale * 1.08f : _baseScale;   // visible hover feedback on any backend
             if (on) { HoverSeconds = 0f; HoverStarted?.Invoke(this); } else HoverEnded?.Invoke(this);
         }
 

@@ -22,6 +22,9 @@ namespace Vid2Sim
             if (!GetComponent<CoachUI>()) gameObject.AddComponent<CoachUI>();
             if (!GetComponent<Speech>()) gameObject.AddComponent<Speech>();
             if (!GetComponent<StepGuide>()) gameObject.AddComponent<StepGuide>();
+#if UNITY_WEBGL
+            if (FindFirstObjectByType<WebHud>() == null && Camera.main) Camera.main.gameObject.AddComponent<WebHud>();
+#endif
             var flow = GetComponent<SessionFlow>() ?? gameObject.AddComponent<SessionFlow>();
             if (rigOrigin) flow.origin = rigOrigin;
         }

@@ -19,6 +19,9 @@ namespace Vid2Sim
         GameObject _ghost;
         Coroutine _running;
         public bool IsDemoRunning => _running != null;
+        /// <summary>Caption for the HUD while the full run-through demo plays; empty otherwise.</summary>
+        public event System.Action<string> CaptionChanged;
+        public bool FullDemoRunning { get; private set; }
 
         public void Attach(StepSequencer seq, PartFactory factory, CoachUI ui)
         {
@@ -26,8 +29,10 @@ namespace Vid2Sim
             seq.StepStarted += (s, i) =>
             {
                 ui?.SetHow(HowTo(s, factory.Backend));
+                LightLabel(s.part_id);
                 if (demoOnStepStart) Demonstrate(s);
             };
+            seq.Finished += _ => LightLabel(null);
             seq.Stalled += (s, p) => Demonstrate(s);
             seq.Finished += _ => StopDemo();
         }
@@ -48,6 +53,49 @@ namespace Vid2Sim
                 case Actions.Inspect: return mouse ? "Hold the cursor on it for two seconds." : "Look at it closely for two seconds.";
             }
             return "";
+        }
+
+        void LightLabel(string partId)
+        {
+            if (_factory == null) return;
+            foreach (var kv in _factory.Spawned)
+                kv.Value.GetComponentInParent<Transform>();   // no-op; labels are siblings, found by name below
+            foreach (var label in Object.FindObjectsByType<PartLabel>(FindObjectsSortMode.None))
+                label.SetCurrent(partId != null && label.name == $"Label:{partId}");
+        }
+
+        /// <summary>
+        /// Run-through of the whole procedure before the trainee starts: each step's part lights and its ghost
+        /// performs the motion once, with a caption. The sequencer is not started until this ends.
+        /// </summary>
+        public IEnumerator PlayFullDemo(ProcedureSpec spec, float secondsPerStep = 1.6f)
+        {
+            if (spec == null || _factory == null) yield break;
+            FullDemoRunning = true;
+            int n = spec.steps.Length;
+            for (int i = 0; i < n; i++)
+            {
+                var s = spec.steps[i];
+                CaptionChanged?.Invoke($"How it's done, {i + 1} of {n}: {s.instruction}");
+                LightLabel(s.part_id);
+                if (_factory.Spawned.TryGetValue(s.part_id, out var part))
+                {
+                    StopDemo();
+                    part.Highlight(secondsPerStep);
+                    var saved = (demoSeconds, demoLoops);
+                    demoSeconds = secondsPerStep * 0.8f; demoLoops = 1;
+                    _running = StartCoroutine(DemoRoutine(part, s));
+                    yield return new WaitForSecondsRealtime(secondsPerStep);
+                    demoSeconds = saved.demoSeconds; demoLoops = saved.demoLoops;
+                }
+                else yield return new WaitForSecondsRealtime(0.4f);
+            }
+            StopDemo();
+            CaptionChanged?.Invoke("Your turn. Do the steps in order.");
+            yield return new WaitForSecondsRealtime(1.2f);
+            CaptionChanged?.Invoke("");
+            LightLabel(null);
+            FullDemoRunning = false;
         }
 
         public void Demonstrate(Step s)
