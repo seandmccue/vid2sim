@@ -53,3 +53,24 @@ def test_full_mock_run(synthetic_video, tmp_path):
     assert card["parts_found_box"] == 1 and card["parts_found_concept"] == 4
     # custom action 'unscrew' produced a generated script
     assert any(g["verb"] == "unscrew" and g["compiled"] for g in card["generated_actions"])
+
+
+def test_long_audio_is_chunked_with_offsets(monkeypatch, tmp_path):
+    """Voice Transcribe takes 10 min per request; a 20 min track becomes 3 chunks whose turns carry offsets."""
+    import subprocess
+    from backend.pipeline import transcribe as tr
+    wav = tmp_path / "long.wav"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", "1200",
+                    "-acodec", "pcm_s16le", str(wav)], check=True)
+    calls = []
+
+    def fake_post(path):
+        calls.append(path.name)
+        return {"transcript": f"chunk {len(calls)}", "turns": [{"turnId": "t", "startMs": 1000, "endMs": 2000, "transcript": f"c{len(calls)}"}]}
+
+    monkeypatch.setattr(tr, "_post_wav", fake_post)
+    merged = tr._transcribe_chunked(wav, 1200.0)
+    assert len(calls) == 3                                   # 540 + 540 + 120 s
+    assert [t["startMs"] for t in merged["turns"]] == [1000, 541000, 1081000]
+    assert merged["transcript"] == "chunk 1 chunk 2 chunk 3"
+    assert not list(tmp_path.glob("long_chunk*.wav"))        # temp chunks cleaned up
