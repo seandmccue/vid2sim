@@ -1,4 +1,4 @@
-#if META_INTERACTION_SDK
+#if META_INTERACTION_SDK && !UNITY_WEBGL
 using Oculus.Interaction.HandGrab;
 using System;
 using UnityEngine;

@@ -71,6 +71,24 @@ Meta → Tools → Building Blocks, then "Camera Rig", "Hand Tracking", "Interac
 "Grab Interactor", "Hand Poke Interactor"; set `Bootstrap.rigOrigin` on the Vid2Sim object to `[BuildingBlock]
 Camera Rig`.
 
+## Web output
+
+`Assets/Scenes/Web.unity` (menu **Vid2Sim → Create Web Scene**) is a plain camera with `WebCameraRig` plus `Bootstrap`:
+no Meta rig. `BuildScript.BuildWebGL` builds it to `Builds/web/` (compression off, so any static server works) and
+`backend/app.py` serves it at `/sim/`. On WebGL `InteractionBackends.Create` always returns the mouse backend, the
+loader reads `?spec=&textures=` from the page URL, and `Speech` uses `window.speechSynthesis` through
+`Plugins/WebGL/Vid2SimWeb.jslib`. Generated scripts are guarded `#if META_INTERACTION_SDK && !UNITY_WEBGL`. Mouse mapping: click = press, drag = grab / pull / lift /
+place (drops snap onto the zone when the cursor is over it), hover + Q / E = quarter turn, hover = inspect; `?debug=1`
+shows a hover/click readout. Engine rules found by the web runs: a step's pull/lift/turn thresholds are measured from the
+part's pose when the step armed, not from spawn, so earlier fiddling never completes a later step.
+
+## Player-build assets
+
+`Vid2Sim → Ensure Project Assets` (called by both build methods) imports the TextMeshPro essentials and creates
+`Assets/Sim/Resources/Vid2SimPart.mat` and `Vid2SimZone.mat`. Without them a player build throws on the first
+spawned part (`Shader.Find` returns null once unreferenced shaders are stripped) and on every coach label; the
+editor hides both. `Player_build_assets_are_present` guards it in the test suite.
+
 ## Headless gates
 
 ```bash

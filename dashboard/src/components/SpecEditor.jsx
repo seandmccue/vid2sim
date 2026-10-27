@@ -4,7 +4,7 @@ import Overlay from './Overlay.jsx'
 
 const clone = (x) => JSON.parse(JSON.stringify(x))
 
-export default function SpecEditor({ id, spec: initial, review, bundle, notify, onSaved }) {
+export default function SpecEditor({ id, spec: initial, review, bundle, notify, onSaved, webBuild }) {
   const [spec, setSpec] = useState(() => clone(initial))
   const [dirty, setDirty] = useState(false)
   const [errors, setErrors] = useState([])
@@ -49,6 +49,8 @@ export default function SpecEditor({ id, spec: initial, review, bundle, notify, 
         {review?.flagged_count > 0 && <span className="flag">⚠ {review.flagged_count} step(s) not supported by the {review.evidence_mode === "narration+video" ? "narration or video" : "narration"}</span>}
         <button onClick={save} disabled={!dirty || saving} className="primary">{saving ? 'Saving…' : dirty ? 'Save + repackage' : 'Saved'}</button>
         <button onClick={build} disabled={dirty} title={dirty ? 'save first' : 'package StreamingAssets and hot-push to the Quest'}>Rebuild → Quest</button>
+        <button onClick={() => window.open(`/api/procedures/${id}/play`, '_blank')} disabled={dirty || !webBuild}
+          title={!webBuild ? 'build the web sim first: Vid2Sim.Editor.BuildScript.BuildWebGL' : dirty ? 'save first' : 'same engine in the browser, mouse-first; edits hot-reload'}>Play in browser</button>
       </div>
       {buildLog && <pre className="log small">{buildLog.join('\n')}</pre>}
 

@@ -1,11 +1,27 @@
 {
   "name": "Vid2Sim.Sim.Editor",
   "rootNamespace": "Vid2Sim.Editor",
-  "references": [ "Vid2Sim.Sim", "Unity.XR.Management", "Unity.XR.Management.Editor" ],
-  "includePlatforms": [ "Editor" ],
+  "references": [
+    "Unity.TextMeshPro",
+    "Unity.TextMeshPro.Editor",
+    "Unity.XR.Management",
+    "Unity.XR.Management.Editor",
+    "Vid2Sim.Sim"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "autoReferenced": true,
   "versionDefines": [
-    { "name": "com.meta.xr.sdk.core", "expression": "", "define": "META_CORE_SDK" },
-    { "name": "com.unity.xr.management", "expression": "", "define": "XR_MANAGEMENT" }
+    {
+      "name": "com.meta.xr.sdk.core",
+      "expression": "",
+      "define": "META_CORE_SDK"
+    },
+    {
+      "name": "com.unity.xr.management",
+      "expression": "",
+      "define": "XR_MANAGEMENT"
+    }
   ]
 }

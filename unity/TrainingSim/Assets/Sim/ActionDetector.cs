@@ -29,18 +29,23 @@ namespace Vid2Sim
         PartFactory _factory;
         bool _done;
         MonoBehaviour _custom;
+        Vector3 _basePos;      // pose when the step armed: motion before that must not count
+        float _baseYaw;
 
         public void Arm(Step step, PartFactory factory, Action<StepEvent> emit, Action<PartBehaviour> wrongPart)
         {
             Disarm();
             _step = step; _factory = factory; _emit = emit; _wrong = wrongPart; _done = false;
             factory.Spawned.TryGetValue(step.part_id, out _part);
+            Debug.Log($"[Detector] armed step {step.order} {step.action} on '{step.part_id}' found={_part != null} custom={step.custom_action}");
             foreach (var p in factory.Spawned.Values)
             {
                 if (p == _part) continue;
                 p.Selected += OnWrongSelect;
             }
             if (_part == null) return;
+            _basePos = _part.transform.position;
+            _baseYaw = _part.SignedYawFromSpawn();
             _part.Selected += OnSelect;
             _part.Unselected += OnUnselect;
 
@@ -76,7 +81,12 @@ namespace Vid2Sim
 
         // While paused the sequencer disables this component; events must then be ignored *without* marking
         // the step done, or nothing can complete it after resume.
-        void OnWrongSelect(PartBehaviour p) { if (enabled && !_done) _wrong?.Invoke(p); }
+        void OnWrongSelect(PartBehaviour p)
+        {
+            if (!enabled || _done) return;
+            Debug.Log($"[Detector] wrong part '{p.Part.id}' while step {_step?.order} expects '{_step?.part_id}'");
+            _wrong?.Invoke(p);
+        }
 
         void OnSelect(PartBehaviour p)
         {
@@ -100,16 +110,16 @@ namespace Vid2Sim
             switch (_step.action)
             {
                 case Actions.Pull:
-                    if (_part.IsSelected && Vector3.Distance(_part.transform.position, _part.SpawnPosition) >= pullDistance) Complete();
+                    if (_part.IsSelected && Vector3.Distance(_part.transform.position, _basePos) >= pullDistance) Complete();
                     break;
                 case Actions.Lift:
-                    if (_part.IsSelected && _part.transform.position.y - _part.SpawnPosition.y >= liftHeight) Complete();
+                    if (_part.IsSelected && _part.transform.position.y - _basePos.y >= liftHeight) Complete();
                     break;
                 case Actions.TurnCw:
-                    if (_part.SignedYawFromSpawn() >= turnDegrees) Complete();
+                    if (Mathf.DeltaAngle(_baseYaw, _part.SignedYawFromSpawn()) >= turnDegrees) Complete();
                     break;
                 case Actions.TurnCcw:
-                    if (_part.SignedYawFromSpawn() <= -turnDegrees) Complete();
+                    if (Mathf.DeltaAngle(_baseYaw, _part.SignedYawFromSpawn()) <= -turnDegrees) Complete();
                     break;
                 case Actions.Inspect:
                     if (_part.HoverSeconds >= inspectSeconds) Complete();

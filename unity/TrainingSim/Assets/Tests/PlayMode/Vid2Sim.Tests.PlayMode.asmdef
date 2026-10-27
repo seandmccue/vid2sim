@@ -1,14 +1,23 @@
 {
   "name": "Vid2Sim.Tests.PlayMode",
   "rootNamespace": "Vid2Sim.Tests",
-  "references": [ "Vid2Sim.Sim", "UnityEngine.TestRunner", "UnityEditor.TestRunner" ],
+  "references": [
+    "Unity.TextMeshPro",
+    "UnityEditor.TestRunner",
+    "UnityEngine.TestRunner",
+    "Vid2Sim.Sim"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": true,
-  "precompiledReferences": [ "nunit.framework.dll" ],
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
   "autoReferenced": false,
-  "defineConstraints": [ "UNITY_INCLUDE_TESTS" ],
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
   "versionDefines": [],
   "noEngineReferences": false
 }

@@ -145,29 +145,33 @@ namespace Vid2Sim
             zone.transform.localScale = part.transform.localScale * 1.15f;
             zone.transform.localPosition = part.transform.localPosition + new Vector3(0f, 0f, -0.14f);
             Destroy(zone.GetComponent<Collider>());
-            var m = NewMaterial(new Color(0.2f, 0.8f, 0.4f, 0.35f));
-            SetTransparent(m);
-            zone.GetComponent<Renderer>().material = m;
+            zone.GetComponent<Renderer>().material = NewZoneMaterial(new Color(0.2f, 0.8f, 0.4f, 0.35f));
             return zone.transform;
         }
 
+        // Shaders found only by name are stripped from player builds (WebGL and Android alike); the material
+        // assets in Assets/Sim/Resources keep the Standard variants in the build. Shader.Find is the editor fallback.
         Material NewMaterial(Color c)
         {
-            var m = baseMaterial ? new Material(baseMaterial) : new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
+            var src = baseMaterial ? baseMaterial : Resources.Load<Material>("Vid2SimPart");
+            var m = src ? new Material(src) : new Material(Shader.Find("Standard"));
             m.color = c;
             if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
             return m;
         }
 
-        static void SetTransparent(Material m)
+        Material NewZoneMaterial(Color c)
         {
-            if (m.HasProperty("_Surface")) { m.SetFloat("_Surface", 1f); m.renderQueue = 3000; m.SetOverrideTag("RenderType", "Transparent"); }
-            m.SetFloat("_Mode", 3f);
+            var src = Resources.Load<Material>("Vid2SimZone");
+            if (src) { var z = new Material(src); z.color = c; return z; }
+            var m = NewMaterial(c);
+            m.SetFloat("_Mode", 2f);
             m.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
             m.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             m.SetInt("_ZWrite", 0);
             m.EnableKeyword("_ALPHABLEND_ON");
             m.renderQueue = 3000;
+            return m;
         }
 
         static Color ColorFor(Part part) => part.interaction switch

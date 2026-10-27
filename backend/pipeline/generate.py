@@ -111,7 +111,7 @@ def strip_fences(code: str) -> str:
     return (m.group(1) if m else code).strip() + "\n"
 
 
-SDK_GUARD = "#if META_INTERACTION_SDK"
+SDK_GUARD = "#if META_INTERACTION_SDK && !UNITY_WEBGL"
 # Types the generated scripts reach for and the using each one needs. Spark drops a using about one time
 # in four; adding the missing line is cheaper than a failed gate and a regeneration.
 REQUIRED_USINGS = {

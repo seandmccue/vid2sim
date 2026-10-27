@@ -56,7 +56,7 @@ export default function App() {
             <RunPanel id={selected} status={status} health={health}
               onRun={async (opts) => { try { await api.run(selected, opts); setStatus({ state: 'running', log: ['queued'] }) } catch (e) { notify(e.message, 'err') } }} />
             {metrics && metrics.run_id && <MetricsCard metrics={metrics} />}
-            {spec && <SpecEditor id={selected} spec={spec} review={review} bundle={bundle} notify={notify}
+            {spec && <SpecEditor id={selected} spec={spec} review={review} bundle={bundle} notify={notify} webBuild={!!health?.web_build}
               onSaved={(s) => { setSpec(s); refreshList() }} />}
           </>
         )}

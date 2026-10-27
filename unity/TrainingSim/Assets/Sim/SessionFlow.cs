@@ -85,6 +85,17 @@ namespace Vid2Sim
             while (true)
             {
                 yield return new WaitForSecondsRealtime(hotReloadPollSeconds);
+                if (_loader.UsesRemoteSpec)
+                {
+                    bool changed = false;
+                    yield return _loader.RemoteSpecChanged(c => changed = c);
+                    if (changed)
+                    {
+                        Debug.Log("[SessionFlow] remote spec changed; hot reloading");
+                        yield return LoadAndRun();
+                    }
+                    continue;
+                }
                 var m = _loader.HotSpecMtime();
                 if (m > _lastSpecMtime)
                 {
@@ -101,7 +112,7 @@ namespace Vid2Sim
             if (Input.GetKeyDown(pauseKey)) TogglePause();
             if (Input.GetKeyDown(skipKey)) _seq.Skip();
             if (Input.GetKeyDown(reloadKey)) Reload();
-#if META_CORE_SDK
+#if META_CORE_SDK && !UNITY_WEBGL
             // Quest: A = restart, B = pause, Y = skip (debug), X = recenter. Hands-only users never need these.
             if (OVRInput.GetDown(OVRInput.Button.One)) Restart();
             if (OVRInput.GetDown(OVRInput.Button.Two)) TogglePause();

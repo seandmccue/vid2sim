@@ -26,6 +26,32 @@ namespace Vid2Sim.Editor
     /// </summary>
     public static class SceneSetup
     {
+        public const string WebScenePath = "Assets/Scenes/Web.unity";
+
+        /// <summary>Browser output scene: plain camera with WebCameraRig, light, Bootstrap. No Meta rig.</summary>
+        [MenuItem("Vid2Sim/Create Web Scene")]
+        public static void CreateWebScene()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+            var cam = Camera.main;
+            if (cam)
+            {
+                cam.nearClipPlane = 0.05f;
+                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.backgroundColor = new Color(0.09f, 0.1f, 0.12f);
+                cam.gameObject.AddComponent<WebCameraRig>();
+            }
+            // Fixed seated origin: the bench and coach panel are laid out from here, not from the orbiting camera.
+            var seat = new GameObject("Seat");
+            seat.transform.position = Vector3.zero;
+            seat.transform.rotation = Quaternion.identity;
+            var boot = new GameObject("Vid2Sim");
+            boot.AddComponent<Bootstrap>().rigOrigin = seat.transform;
+            System.IO.Directory.CreateDirectory("Assets/Scenes");
+            EditorSceneManager.SaveScene(scene, WebScenePath);
+            Debug.Log("[SceneSetup] saved " + WebScenePath);
+        }
+
         const string ScenePath = "Assets/Scenes/Sim.unity";
 
         // Block ids are GUIDs that are stable across SDK versions (BlockDataIds.cs in com.meta.xr.sdk.core and
