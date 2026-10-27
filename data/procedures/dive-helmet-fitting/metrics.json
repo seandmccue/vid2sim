@@ -1,0 +1,964 @@
+{
+  "run_id": "20261027-123225-d0981e",
+  "procedure": "fit-deep-sea-diving-helmet",
+  "upload_to_spec_s": 1126.5,
+  "api_cost_usd": 3.6726,
+  "steps": 24,
+  "parts": 15,
+  "parts_found_concept": 4,
+  "parts_found_box": 8,
+  "parts_manual": 3,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 43.53,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 34.13,
+      "cost_usd": 0.0196,
+      "note": "3.27 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 105.44,
+      "cost_usd": 0.1326,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 12.63,
+      "cost_usd": 0.0227,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.76,
+      "cost_usd": 0.0,
+      "note": "diving_helmet.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 12.71,
+      "cost_usd": 0.0618,
+      "note": "heavy brass diving helmet"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 7.08,
+      "cost_usd": 0.0,
+      "note": "helmet_collar.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 11.55,
+      "cost_usd": 0.0778,
+      "note": "ridged brass helmet collar"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 4.19,
+      "cost_usd": 0.0036,
+      "note": "helmet_collar"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 13.1,
+      "cost_usd": 0.027,
+      "note": "<254f>1<|box;x1=264;y1=128;x2=471;y2=170;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 12.0,
+      "cost_usd": 0.0,
+      "note": "air_hose.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 54.85,
+      "cost_usd": 0.3164,
+      "note": "thick black air hose"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 15.32,
+      "cost_usd": 0.0,
+      "note": "lifeline.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 88.6,
+      "cost_usd": 0.6238,
+      "note": "braided lifeline rope"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.53,
+      "cost_usd": 0.0,
+      "note": "dumbbell_lock.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.78,
+      "cost_usd": 0.0312,
+      "note": "small metal dumbbell lock"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 10.33,
+      "cost_usd": 0.0093,
+      "note": "dumbbell_lock"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.73,
+      "cost_usd": 0.0,
+      "note": "safety_latch.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.52,
+      "cost_usd": 0.034,
+      "note": "hinged metal safety latch"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 13.75,
+      "cost_usd": 0.0124,
+      "note": "safety_latch"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 4.29,
+      "cost_usd": 0.01,
+      "note": "<134f>1<|box;x1=392;y1=245;x2=522;y2=282;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.65,
+      "cost_usd": 0.0,
+      "note": "cotter_pin.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.46,
+      "cost_usd": 0.0394,
+      "note": "small metal cotter pin"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 12.83,
+      "cost_usd": 0.0111,
+      "note": "cotter_pin"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 8.88,
+      "cost_usd": 0.0206,
+      "note": "<94f>1<|box;x1=388;y1=267;x2=441;y2=292;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.7,
+      "cost_usd": 0.0,
+      "note": "air_control_valve.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.51,
+      "cost_usd": 0.032,
+      "note": "brass air control valve"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 14.77,
+      "cost_usd": 0.0126,
+      "note": "air_control_valve"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 5.48,
+      "cost_usd": 0.01,
+      "note": "<114f>1<|box;x1=345;y1=298;x2=479;y2=405;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.07,
+      "cost_usd": 0.0,
+      "note": "breastplate_stud.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.74,
+      "cost_usd": 0.026,
+      "note": "threaded metal breastplate stud"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 12.07,
+      "cost_usd": 0.0095,
+      "note": "breastplate_stud"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 8.14,
+      "cost_usd": 0.0192,
+      "note": "<34f>1<|box;x1=410;y1=245;x2=442;y2=315;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.17,
+      "cost_usd": 0.0,
+      "note": "breastplate_wing_nut.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.08,
+      "cost_usd": 0.0232,
+      "note": "ridged metal wing nut"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 21.1,
+      "cost_usd": 0.0176,
+      "note": "breastplate_wing_nut"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 6.98,
+      "cost_usd": 0.0,
+      "note": "halyard.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 32.68,
+      "cost_usd": 0.2694,
+      "note": "thin rope halyard"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 6.91,
+      "cost_usd": 0.0065,
+      "note": "halyard"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 86.19,
+      "cost_usd": 0.2408,
+      "note": "<143f>1<|box;x1=438;y1=345;x2=450;y2=479;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 4.06,
+      "cost_usd": 0.0,
+      "note": "intercom_unit.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 12.46,
+      "cost_usd": 0.095,
+      "note": "gray metal intercom box"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 7.28,
+      "cost_usd": 0.0074,
+      "note": "intercom_unit"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 12.62,
+      "cost_usd": 0.0312,
+      "note": "<319f>1<|box;x1=355;y1=148;x2=680;y2=430;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.65,
+      "cost_usd": 0.0,
+      "note": "exhaust_valve.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 9.16,
+      "cost_usd": 0.0528,
+      "note": "round exhaust handwheel"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 17.24,
+      "cost_usd": 0.0176,
+      "note": "exhaust_valve"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.45,
+      "cost_usd": 0.0,
+      "note": "faceplate.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.74,
+      "cost_usd": 0.0178,
+      "note": "hinged circular faceplate"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.88,
+      "cost_usd": 0.0,
+      "note": "faceplate_wing_nut.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.19,
+      "cost_usd": 0.0388,
+      "note": "knurled faceplate wing nut"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 8.69,
+      "cost_usd": 0.009,
+      "note": "faceplate_wing_nut"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 8.29,
+      "cost_usd": 0.019,
+      "note": "<99f>1<|box;x1=527;y1=305;x2=629;y2=382;w=720;h=480|>"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 22.91,
+      "cost_usd": 0.0299,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 33.9,
+      "cost_usd": 0.043,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 40.93,
+      "cost_usd": 0.0546,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 30.14,
+      "cost_usd": 0.038,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 56.33,
+      "cost_usd": 0.0686,
+      "note": "Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 26.65,
+      "cost_usd": 0.0351,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 27.16,
+      "cost_usd": 0.0332,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 29.44,
+      "cost_usd": 0.034,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 26.05,
+      "cost_usd": 0.0315,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 33.92,
+      "cost_usd": 0.0394,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 28.62,
+      "cost_usd": 0.0338,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 20.01,
+      "cost_usd": 0.028,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 28.26,
+      "cost_usd": 0.037,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 41.86,
+      "cost_usd": 0.0541,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 66.09,
+      "cost_usd": 0.0686,
+      "note": "Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 30.45,
+      "cost_usd": 0.0351,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 14.74,
+      "cost_usd": 0.04,
+      "note": "helmet_collar (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 16.63,
+      "cost_usd": 0.04,
+      "note": "air_hose (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 18.23,
+      "cost_usd": 0.04,
+      "note": "lifeline (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 19.33,
+      "cost_usd": 0.04,
+      "note": "diving_helmet (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 8.68,
+      "cost_usd": 0.04,
+      "note": "safety_latch (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.69,
+      "cost_usd": 0.04,
+      "note": "cotter_pin (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 24.11,
+      "cost_usd": 0.04,
+      "note": "dumbbell_lock (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 14.49,
+      "cost_usd": 0.04,
+      "note": "breastplate_stud (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 22.2,
+      "cost_usd": 0.04,
+      "note": "air_control_valve (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 9.34,
+      "cost_usd": 0.04,
+      "note": "breastplate_wing_nut (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.25,
+      "cost_usd": 0.04,
+      "note": "faceplate (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.58,
+      "cost_usd": 0.04,
+      "note": "exhaust_valve (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 17.62,
+      "cost_usd": 0.04,
+      "note": "halyard (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 17.42,
+      "cost_usd": 0.04,
+      "note": "intercom_unit (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 25.89,
+      "cost_usd": 0.04,
+      "note": "faceplate_wing_nut (cost is an estimate)"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "reused file-1529726225778566"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from transcript.json"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from draft.json"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from review.json"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from diving_helmet_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from helmet_collar_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from helmet_collar_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from air_hose_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from lifeline_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from dumbbell_lock_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed: dumbbell_lock not found before"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from safety_latch_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from safety_latch_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from cotter_pin_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from cotter_pin_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from air_control_valve_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from air_control_valve_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from breastplate_stud_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from breastplate_stud_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from breastplate_wing_nut_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed: breastplate_wing_nut not found before"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from halyard_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from halyard_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from intercom_unit_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from intercom_unit_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from exhaust_valve_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed: exhaust_valve not found before"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from faceplate_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from faceplate_wing_nut_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from faceplate_wing_nut_box.txt"
+    }
+  ],
+  "ground_truth": {
+    "steps_truth": 10,
+    "steps_extracted": 24,
+    "steps_correct": 8,
+    "steps_matched": 10,
+    "accuracy": 0.8,
+    "extra_steps": [
+      "Lead the lifeline over the opposite port out of the way.",
+      "Grasp the helmet by the side ports and lift it.",
+      "Place the helmet gently down over the diver's head.",
+      "Close the safety latch over the dumbbell.",
+      "Insert the cotter pin to secure the safety latch.",
+      "Pass the air hose under the diver's arm.",
+      "Reinstall the wing nut onto the breastplate stud.",
+      "Take two round turns with halyard around the air hose to lash it down.",
+      "Take two round turns with halyard to lash the lifeline.",
+      "Tie off the lifeline lashing with a square knot.",
+      "Test the diver intercom with topside call and response.",
+      "Close the exhaust valve all the way.",
+      "Close the faceplate on diver's signal to button up.",
+      "Wind the faceplate wing nut down finger tight."
+    ],
+    "rows": [
+      {
+        "order": 1,
+        "truth": "Lead the air hose over the top of the left port and the lifeline over the right.",
+        "extracted": "Lead the air hose over the port out of the way.",
+        "extracted_order": 1,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 2,
+        "truth": "Lift the helmet by the side ports and set it over the diver's head onto the breastplate.",
+        "extracted": "Position the helmet with faceplate angled slightly off center.",
+        "extracted_order": 5,
+        "action_truth": "lift",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 3,
+        "truth": "Turn the helmet into place until the faceplate faces forward and the scribed marks line up.",
+        "extracted": "Turn the helmet into place until faceplate faces forward and scribe marks align.",
+        "extracted_order": 6,
+        "action_truth": "turn_cw",
+        "action_extracted": "place",
+        "similarity": 0.91,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 4,
+        "truth": "Drop the dumbbell into place, close the safety latch and secure it with a cotter pin.",
+        "extracted": "Drop the dumbbell into place.",
+        "extracted_order": 7,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 5,
+        "truth": "Pass the air hose under the left arm and slip the air control valve eye pad over the long stud.",
+        "extracted": "Slip the eye of the air control valve over the breastplate stud.",
+        "extracted_order": 11,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 6,
+        "truth": "Reinstall the wing nut on the long stud and tighten it firmly with the wrench.",
+        "extracted": "Tighten the wing nut firmly with the wrench.",
+        "extracted_order": 13,
+        "action_truth": "turn_cw",
+        "action_extracted": "turn_cw",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 7,
+        "truth": "Lash down the air hose with two round turns of the halyard and tie off with a square knot.",
+        "extracted": "Tie off the halyard ends with a square knot.",
+        "extracted_order": 15,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 8,
+        "truth": "Pass the lifeline under the right arm and lash it with two round turns and a square knot.",
+        "extracted": "Pass the lifeline under the diver's arm.",
+        "extracted_order": 16,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 9,
+        "truth": "Close the exhaust valve all the way, then open it two and one half turns.",
+        "extracted": "Open the exhaust valve two and one-half turns.",
+        "extracted_order": 21,
+        "action_truth": "turn_ccw",
+        "action_extracted": "turn_ccw",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 10,
+        "truth": "Close the faceplate, wind the wing nut finger tight and secure it with the wing nut wrench.",
+        "extracted": "Secure the faceplate wing nut tightly with the wing nut wrench.",
+        "extracted_order": 24,
+        "action_truth": "turn_cw",
+        "action_extracted": "turn_cw",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      }
+    ]
+  },
+  "generated_actions": [],
+  "textures": 15,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/fit-deep-sea-diving-helmet",
+  "runs": [
+    "20261027-121128-019166",
+    "20261027-123225-d0981e"
+  ],
+  "note": "aggregated across 2 run(s); resumed stages cost $0 and 0 s"
+}

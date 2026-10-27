@@ -52,7 +52,7 @@ def test_full_mock_run(synthetic_video, tmp_path):
     assert card["ground_truth"]["steps_correct"] == 6
     assert card["parts_found_box"] == 1 and card["parts_found_concept"] == 4
     # custom action 'unscrew' produced a generated script
-    assert any(g["verb"] == "unscrew" and g["compiled"] for g in card["generated_actions"])
+    assert any(g["verb"] == "pry" and g["compiled"] for g in card["generated_actions"])   # a synonym like "unscrew" folds onto the vocabulary instead
 
 
 def test_long_audio_is_chunked_with_offsets(monkeypatch, tmp_path):

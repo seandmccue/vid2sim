@@ -261,3 +261,119 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,13.75,0.0400,0,0,0,clutch_pedal_linkage (cost is an estimate)
 20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,13.38,0.0400,0,0,0,clutch_cross_shaft_housing (cost is an estimate)
 20261027-114450-3681ca,m151-power-pack,total,pipeline,694.88,0.0000,0,0,0,upload to StreamingAssets
+20261027-121128-019166,dive-helmet-fitting,upload,files,43.53,0.0000,0,0,0,p.mp4
+20261027-121128-019166,dive-helmet-fitting,transcribe,muse-voice-transcribe-1.0,34.13,0.0196,0,0,0,"3.27 min, cost is an estimate"
+20261027-121128-019166,dive-helmet-fitting,extract,muse-spark-1.3,105.44,0.1326,0,53536,15450,"completed, budget 16000"
+20261027-121128-019166,dive-helmet-fitting,verify,muse-spark-1.3,12.63,0.0227,0,4342,4060,"completed, budget 16000"
+20261027-121128-019166,dive-helmet-fitting,upload,files,5.76,0.0000,0,0,0,diving_helmet.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,12.71,0.0618,309,0,0,heavy brass diving helmet
+20261027-121128-019166,dive-helmet-fitting,upload,files,7.08,0.0000,0,0,0,helmet_collar.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,11.55,0.0778,389,0,0,ridged brass helmet collar
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,4.19,0.0036,0,499,695,helmet_collar
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,13.10,0.0270,135,0,0,<254f>1<|box;x1=264;y1=128;x2=471;y2=170;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,12.00,0.0000,0,0,0,air_hose.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,54.85,0.3164,1582,0,0,thick black air hose
+20261027-121128-019166,dive-helmet-fitting,upload,files,15.32,0.0000,0,0,0,lifeline.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,88.60,0.6238,3119,0,0,braided lifeline rope
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.53,0.0000,0,0,0,dumbbell_lock.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,5.78,0.0312,156,0,0,small metal dumbbell lock
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,10.33,0.0093,0,497,2048,dumbbell_lock
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.73,0.0000,0,0,0,safety_latch.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,5.52,0.0340,170,0,0,hinged metal safety latch
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,13.75,0.0124,0,496,2764,safety_latch
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,4.29,0.0100,36,0,0,<134f>1<|box;x1=392;y1=245;x2=522;y2=282;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.65,0.0000,0,0,0,cotter_pin.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,6.46,0.0394,197,0,0,small metal cotter pin
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,12.83,0.0111,0,496,2462,cotter_pin
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,8.88,0.0206,103,0,0,<94f>1<|box;x1=388;y1=267;x2=441;y2=292;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.70,0.0000,0,0,0,air_control_valve.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,5.51,0.0320,160,0,0,brass air control valve
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,14.77,0.0126,0,496,2810,air_control_valve
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,5.48,0.0100,46,0,0,<114f>1<|box;x1=345;y1=298;x2=479;y2=405;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.07,0.0000,0,0,0,breastplate_stud.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,4.74,0.0260,130,0,0,threaded metal breastplate stud
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,12.07,0.0095,0,497,2083,breastplate_stud
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,8.14,0.0192,96,0,0,<34f>1<|box;x1=410;y1=245;x2=442;y2=315;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,3.17,0.0000,0,0,0,breastplate_wing_nut.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,4.08,0.0232,116,0,0,ridged metal wing nut
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,21.10,0.0176,0,497,4000,breastplate_wing_nut
+20261027-121128-019166,dive-helmet-fitting,upload,files,6.98,0.0000,0,0,0,halyard.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,32.68,0.2694,1347,0,0,thin rope halyard
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,6.91,0.0065,0,494,1380,halyard
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,86.19,0.2408,1204,0,0,<143f>1<|box;x1=438;y1=345;x2=450;y2=479;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,4.06,0.0000,0,0,0,intercom_unit.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,12.46,0.0950,475,0,0,gray metal intercom box
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,7.28,0.0074,0,496,1605,intercom_unit
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,12.62,0.0312,156,0,0,<319f>1<|box;x1=355;y1=148;x2=680;y2=430;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.65,0.0000,0,0,0,exhaust_valve.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,9.16,0.0528,264,0,0,round exhaust handwheel
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,17.24,0.0176,0,494,4000,exhaust_valve
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.45,0.0000,0,0,0,faceplate.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,4.74,0.0178,89,0,0,hinged circular faceplate
+20261027-121128-019166,dive-helmet-fitting,upload,files,2.88,0.0000,0,0,0,faceplate_wing_nut.mp4
+20261027-121128-019166,dive-helmet-fitting,segment_concept,sam-3.1,6.19,0.0388,194,0,0,knurled faceplate wing nut
+20261027-121128-019166,dive-helmet-fitting,box_fallback,muse-spark-1.3,8.69,0.0090,0,499,1964,faceplate_wing_nut
+20261027-121128-019166,dive-helmet-fitting,segment_box,sam-3.1,8.29,0.0190,95,0,0,<99f>1<|box;x1=527;y1=305;x2=629;y2=382;w=720;h=480|>
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,22.91,0.0299,0,459,6894,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,33.90,0.0430,0,462,9972,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,40.93,0.0546,0,454,12710,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,30.14,0.0380,0,453,8815,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,56.33,0.0686,0,470,16000,"Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,26.65,0.0351,0,455,8116,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,27.16,0.0332,0,455,7689,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,29.44,0.0340,0,470,7868,"Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,26.05,0.0315,0,458,7278,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,33.92,0.0394,0,462,9137,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,28.62,0.0338,0,464,7805,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,20.01,0.0280,0,459,6464,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,28.26,0.0370,0,458,8573,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,41.86,0.0541,0,462,12587,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,66.09,0.0686,0,458,16000,"Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+20261027-121128-019166,dive-helmet-fitting,generate_code,muse-spark-1.3,30.45,0.0351,0,458,8135,"Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,14.74,0.0400,0,0,0,helmet_collar (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,16.63,0.0400,0,0,0,air_hose (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,18.23,0.0400,0,0,0,lifeline (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,19.33,0.0400,0,0,0,diving_helmet (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,8.68,0.0400,0,0,0,safety_latch (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,13.69,0.0400,0,0,0,cotter_pin (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,24.11,0.0400,0,0,0,dumbbell_lock (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,14.49,0.0400,0,0,0,breastplate_stud (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,22.20,0.0400,0,0,0,air_control_valve (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,9.34,0.0400,0,0,0,breastplate_wing_nut (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,13.25,0.0400,0,0,0,faceplate (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,13.58,0.0400,0,0,0,exhaust_valve (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,17.62,0.0400,0,0,0,halyard (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,17.42,0.0400,0,0,0,intercom_unit (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,texture,muse-image-1.0,25.89,0.0400,0,0,0,faceplate_wing_nut (cost is an estimate)
+20261027-121128-019166,dive-helmet-fitting,total,pipeline,1124.08,0.0000,0,0,0,upload to StreamingAssets
+20261027-123225-d0981e,dive-helmet-fitting,upload,files,0.00,0.0000,0,0,0,reused file-1529726225778566
+20261027-123225-d0981e,dive-helmet-fitting,transcribe,muse-voice-transcribe-1.0,0.00,0.0000,0,0,0,resumed from transcript.json
+20261027-123225-d0981e,dive-helmet-fitting,extract,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from draft.json
+20261027-123225-d0981e,dive-helmet-fitting,verify,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from review.json
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,309,0,0,resumed from diving_helmet_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,389,0,0,resumed from helmet_collar_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from helmet_collar_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,1582,0,0,resumed from air_hose_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,3119,0,0,resumed from lifeline_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,156,0,0,resumed from dumbbell_lock_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,box_fallback,muse-spark-1.3,0.00,0.0000,0,0,0,resumed: dumbbell_lock not found before
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,170,0,0,resumed from safety_latch_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from safety_latch_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,197,0,0,resumed from cotter_pin_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from cotter_pin_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,160,0,0,resumed from air_control_valve_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from air_control_valve_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,130,0,0,resumed from breastplate_stud_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from breastplate_stud_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,116,0,0,resumed from breastplate_wing_nut_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,box_fallback,muse-spark-1.3,0.00,0.0000,0,0,0,resumed: breastplate_wing_nut not found before
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,1347,0,0,resumed from halyard_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from halyard_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,475,0,0,resumed from intercom_unit_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from intercom_unit_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,264,0,0,resumed from exhaust_valve_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,box_fallback,muse-spark-1.3,0.00,0.0000,0,0,0,resumed: exhaust_valve not found before
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,89,0,0,resumed from faceplate_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_concept,sam-3.1,0.00,0.0000,194,0,0,resumed from faceplate_wing_nut_concept.txt
+20261027-123225-d0981e,dive-helmet-fitting,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from faceplate_wing_nut_box.txt
+20261027-123225-d0981e,dive-helmet-fitting,total,pipeline,2.44,0.0000,0,0,0,upload to StreamingAssets

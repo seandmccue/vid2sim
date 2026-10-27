@@ -19,6 +19,37 @@ from .transcribe import transcript_as_text
 
 SAM_OWNED_PART_FIELDS = ("box", "size_hint_m", "confidence", "source")
 
+# Verbs Spark likes to invent that the engine already covers. A custom_action is only worth a Muse Code
+# script (and a compile) when the motion is genuinely outside the vocabulary (pour, unplug, pry, slide...).
+VERB_SYNONYMS = {
+    "press": {"push", "click", "depress", "switch", "toggle", "activate", "test", "check"},
+    "grab": {"hold", "grasp", "take", "pick", "pickup", "pick_up", "grip"},
+    "pull": {"disconnect", "detach", "remove", "unhook", "unclip", "extract", "withdraw", "release", "unplug"},
+    "lift": {"raise", "hoist", "lift_off", "elevate"},
+    "place": {"insert", "seat", "set", "put", "position", "fit", "mount", "attach", "connect", "install", "reinstall",
+              "drop", "slip", "lead", "pass", "lash", "tie", "hang", "clip", "hook", "align", "lay", "route", "cover",
+              "secure", "pin", "plug", "snap", "load"},
+    "turn_cw": {"tighten", "screw", "screw_on", "fasten", "close", "shut", "wind", "clockwise"},
+    "turn_ccw": {"loosen", "unscrew", "unfasten", "open", "unwind", "counterclockwise", "counter_clockwise"},
+    "inspect": {"look", "examine", "verify", "read", "observe", "watch"},
+}
+_SYNONYM_TO_VERB = {syn: verb for verb, syns in VERB_SYNONYMS.items() for syn in syns}
+
+
+def fold_custom_action(step: dict) -> dict:
+    """Map a synonym custom_action onto the vocabulary and drop it; keep genuinely novel verbs."""
+    ca = (step.get("custom_action") or "").strip().lower()
+    if not ca:
+        step.pop("custom_action", None)
+        return step
+    if ca in ACTION_VOCAB:
+        step["action"] = ca
+        step.pop("custom_action", None)
+    elif ca in _SYNONYM_TO_VERB:
+        step["action"] = _SYNONYM_TO_VERB[ca]
+        step.pop("custom_action", None)
+    return step
+
 
 def draft_schema() -> dict:
     """The schema Spark fills: the frozen spec minus fields SAM and the bundler own."""
@@ -83,8 +114,10 @@ Video: {info.width}x{info.height} at {info.fps:.2f} fps, {info.nb_frames} frames
 {('Title hint: ' + title_hint) if title_hint else ''}
 
 Rules:
-- `action` must be one of: {', '.join(ACTION_VOCAB)}. Pick the closest. If no verb fits exactly
-  (e.g. "unscrew", "clip", "slide"), still pick the closest and also put the exact verb in `custom_action`.
+- `action` must be one of: {', '.join(ACTION_VOCAB)}. Pick the closest: tighten/screw/close = turn_cw,
+  loosen/unscrew/open = turn_ccw, disconnect/detach/remove/unplug = pull, insert/seat/attach/tie/lash = place,
+  push/toggle = press. Set `custom_action` only when a trainee could not complete the step with any of those
+  motions (e.g. "pour", "pry", "slide"); leave it null otherwise.
 - `interaction` on each part: press -> "press"; turn_cw/turn_ccw -> "turn"; inspect -> "inspect"; everything else -> "grab".
 - `prompt_phrase` is what a segmentation model will search for. It must be a concrete noun phrase naming
   one object with a visible attribute: "red rocker switch", "brass drain valve". Never "the switch you turn off",
@@ -181,6 +214,7 @@ def normalize_draft(draft: dict, info: VideoInfo) -> dict:
         if s["action"] not in ACTION_VOCAB:
             s["custom_action"] = s.get("custom_action") or slugify(s["action"])
             s["action"] = "grab"
+        fold_custom_action(s)
         if s.get("custom_action") in (None, "", s["action"]):
             s.pop("custom_action", None)
         s["start_frame"] = int(min(max(s["start_frame"], 0), max(info.nb_frames - 1, 0)))
@@ -209,7 +243,9 @@ def extract(file_id: str, info: VideoInfo, transcript: dict, out_dir: Path, metr
     """Pass 1. Returns the normalized draft and writes draft.json."""
     if resume and (out_dir / "draft.json").exists():
         metrics.log("extract", SPARK_MODEL, 0.0, 0.0, note="resumed from draft.json")
-        return json.loads((out_dir / "draft.json").read_text())
+        draft = normalize_draft(json.loads((out_dir / "draft.json").read_text()), info)   # idempotent; applies newer synonym folding
+        write_json(out_dir / "draft.json", draft)
+        return draft
     ttext = transcript_as_text(transcript)
     if is_mock():
         from ..mock import mock_draft

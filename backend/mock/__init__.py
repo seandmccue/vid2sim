@@ -38,7 +38,7 @@ def mock_draft(info: VideoInfo) -> dict:
         s = {k: v for k, v in s.items() if k not in ("start_frame", "end_frame")}
         s["start_frame"] = i * per
         s["end_frame"] = min(info.nb_frames - 1, (i + 1) * per - 1)
-        s["custom_action"] = "unscrew" if s["order"] == 3 else None
+        s["custom_action"] = "pry" if s["order"] == 3 else None
         steps.append(s)
     parts = []
     for p in spec["parts"]:

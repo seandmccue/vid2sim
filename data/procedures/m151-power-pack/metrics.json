@@ -568,13 +568,6 @@
       "wall_s": 13.38,
       "cost_usd": 0.04,
       "note": "clutch_cross_shaft_housing (cost is an estimate)"
-    },
-    {
-      "stage": "total",
-      "model": "pipeline",
-      "wall_s": 694.88,
-      "cost_usd": 0.0,
-      "note": "upload to StreamingAssets"
     }
   ],
   "ground_truth": {
@@ -755,5 +748,9 @@
     }
   ],
   "textures": 16,
-  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/release-left-side-engine-connections-m151"
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/release-left-side-engine-connections-m151",
+  "runs": [
+    "20261027-114450-3681ca"
+  ],
+  "note": "aggregated across 1 run(s); resumed stages cost $0 and 0 s"
 }
