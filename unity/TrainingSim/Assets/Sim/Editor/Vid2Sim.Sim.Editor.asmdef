@@ -1,7 +1,11 @@
 {
   "name": "Vid2Sim.Sim.Editor",
   "rootNamespace": "Vid2Sim.Editor",
-  "references": [ "Vid2Sim.Sim" ],
+  "references": [ "Vid2Sim.Sim", "Unity.XR.Management", "Unity.XR.Management.Editor" ],
   "includePlatforms": [ "Editor" ],
-  "autoReferenced": true
+  "autoReferenced": true,
+  "versionDefines": [
+    { "name": "com.meta.xr.sdk.core", "expression": "", "define": "META_CORE_SDK" },
+    { "name": "com.unity.xr.management", "expression": "", "define": "XR_MANAGEMENT" }
+  ]
 }

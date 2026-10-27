@@ -1,5 +1,7 @@
 #if META_INTERACTION_SDK
+using System.Collections.Generic;
 using Oculus.Interaction;
+using Oculus.Interaction.Grab;
 using Oculus.Interaction.HandGrab;
 using Oculus.Interaction.Surfaces;
 using UnityEngine;
@@ -7,9 +9,11 @@ using UnityEngine;
 namespace Vid2Sim.Interaction
 {
     /// <summary>
-    /// Meta XR Interaction SDK wiring, hands-first. press -> PokeInteractable; turn -> HandGrabInteractable +
-    /// OneGrabRotateTransformer; everything else -> HandGrabInteractable. Controllers also work via the
-    /// Grab interactors on the rig but are never required. Every collider is >= 4 cm so hand tracking lands.
+    /// Meta XR Interaction SDK wiring, hands-first. press -> PokeInteractable on the part's top face;
+    /// turn -> HandGrabInteractable + OneGrabRotateTransformer about the part's up axis; everything else ->
+    /// HandGrabInteractable with the default free transformer. Controllers also work via the Grab interactors
+    /// on the rig but are never required. Every collider is >= 4 cm so hand tracking lands.
+    /// Verified against com.meta.xr.sdk.interaction 207.0.1 (Inject* signatures are version-stable since v59).
     /// </summary>
     public class MetaInteractionBackend : IInteractionBackend
     {
@@ -17,7 +21,8 @@ namespace Vid2Sim.Interaction
 
         public void Attach(PartBehaviour part, GameObject go, string interaction, bool needsRotate)
         {
-            var rb = go.GetComponent<Rigidbody>() ?? go.AddComponent<Rigidbody>();
+            var rb = go.GetComponent<Rigidbody>();
+            if (rb == null) rb = go.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.isKinematic = true;
 
@@ -35,8 +40,10 @@ namespace Vid2Sim.Interaction
             grabbable.InjectOptionalRigidbody(rb);
             if (rotateOnly)
             {
+                // knob / cap lying flat on the bench: rotate about its own up axis, pivot at its centre
                 var rot = go.AddComponent<OneGrabRotateTransformer>();
                 rot.InjectOptionalPivotTransform(go.transform);
+                rot.InjectOptionalRotationAxis(OneGrabRotateTransformer.Axis.Up);
                 grabbable.InjectOptionalOneGrabTransformer(rot);
             }
             var hg = go.AddComponent<HandGrabInteractable>();
@@ -59,16 +66,18 @@ namespace Vid2Sim.Interaction
 
         void AttachPoke(PartBehaviour part, GameObject go)
         {
-            // Button face is the +Z side of the primitive; the plane surface sits on it.
+            // Button face is the top (+Y) of the primitive: the bench faces away from the seated user, so a
+            // front (+Z) face would point the wrong way. PlaneSurface's normal is its local -Z (NormalFacing.Backward),
+            // so aim the surface's +Z down the part's -Y. Sizes are in the part's unit-cube space, scaled by the part.
             var surfaceGo = new GameObject("PokeSurface");
             surfaceGo.transform.SetParent(go.transform, false);
-            surfaceGo.transform.localPosition = new Vector3(0f, 0f, 0.5f);
-            surfaceGo.transform.localRotation = Quaternion.LookRotation(Vector3.back, Vector3.up);
+            surfaceGo.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            surfaceGo.transform.localRotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
             var plane = surfaceGo.AddComponent<PlaneSurface>();
             var bounds = surfaceGo.AddComponent<BoundsClipper>();
-            bounds.InjectOptionalSize(new Vector3(1f, 1f, 0.1f));
+            bounds.Size = new Vector3(1f, 1f, 0.1f);
             var clipped = surfaceGo.AddComponent<ClippedPlaneSurface>();
-            clipped.InjectAllClippedPlaneSurface(plane, new System.Collections.Generic.List<IBoundsClipper> { bounds });
+            clipped.InjectAllClippedPlaneSurface(plane, new List<IBoundsClipper> { bounds });
 
             var poke = go.AddComponent<PokeInteractable>();
             poke.InjectAllPokeInteractable(clipped);

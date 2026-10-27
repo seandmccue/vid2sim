@@ -46,11 +46,8 @@ namespace Vid2Sim.Generated
             _settleTimer = 0f;
             _maxDisplacement = 0f;
 
+            // Part is spec data, not a Component; ActionDetector adds this script to the part's GameObject.
             GameObject partGo = gameObject;
-            if (part is Component pc && pc != null)
-            {
-                partGo = pc.gameObject;
-            }
 
             _tracked = partGo != null ? partGo.transform : transform;
             _initialPos = _tracked.position;

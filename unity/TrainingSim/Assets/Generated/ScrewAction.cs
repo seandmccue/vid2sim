@@ -41,10 +41,11 @@ namespace Vid2Sim.Generated
             _step = step;
             _emit = emit;
 
-            _target = _part.transform;
+            // Part is spec data, not a Component; ActionDetector adds this script to the part's GameObject.
+            _target = transform;
 
-            _handGrab = _part.GetComponentInChildren<HandGrabInteractable>(true);
-            _grab = _part.GetComponentInChildren<GrabInteractable>(true);
+            _handGrab = GetComponentInChildren<HandGrabInteractable>(true);
+            _grab = GetComponentInChildren<GrabInteractable>(true);
 
             if (_handGrab != null)
                 _target = _handGrab.transform;
@@ -52,7 +53,7 @@ namespace Vid2Sim.Generated
                 _target = _grab.transform;
 
             if (_target == null)
-                _target = _part.transform;
+                _target = transform;
 
             _initialAxisWorld = _target.TransformDirection(ScrewAxisLocal).normalized;
             _initialPosition = _target.position;
