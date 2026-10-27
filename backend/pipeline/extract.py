@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 from .common import (ACTION_VOCAB, INTERACTION_FOR_ACTION, SPARK_MODEL, Metrics, Timer, VideoInfo,
-                     client, is_mock, iter_output_text, load_schema, slugify, spark_cost, write_json)
+                     client, is_mock, iter_output_text, load_schema, slugify, spark_cost, with_retries, write_json)
 from .transcribe import transcript_as_text
 
 SAM_OWNED_PART_FIELDS = ("box", "size_hint_m", "confidence", "source")
@@ -133,7 +133,8 @@ def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, me
     kwargs = {}
     if REASONING_EFFORT:
         kwargs["reasoning"] = {"effort": REASONING_EFFORT}
-    with Timer() as t:
+    def once():
+        txt, st, ui, uo = "", "completed", 0, 0
         stream = c.responses.create(
             model=model,
             input=[{"type": "message", "role": "user", "content": prompt_blocks}],
@@ -144,12 +145,16 @@ def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, me
         )
         for kind, payload in iter_output_text(stream):
             if kind == "delta":
-                text += payload
+                txt += payload
             else:
-                status = getattr(payload, "status", "completed")
+                st = getattr(payload, "status", "completed")
                 u = getattr(payload, "usage", None)
                 if u:
-                    usage_in, usage_out = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
+                    ui, uo = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
+        return txt, st, ui, uo
+
+    with Timer() as t:
+        text, status, usage_in, usage_out = with_retries(once, label=f"Spark {stage}")
     metrics.log(stage, model, t.wall, spark_cost(usage_in, usage_out),
                 tokens_in=usage_in, tokens_out=usage_out, note=f"{status}, budget {budget}")
     if status != "completed" or not text.strip():
@@ -200,8 +205,11 @@ def normalize_draft(draft: dict, info: VideoInfo) -> dict:
 
 
 def extract(file_id: str, info: VideoInfo, transcript: dict, out_dir: Path, metrics: Metrics,
-            title_hint: str | None = None) -> dict:
+            title_hint: str | None = None, resume: bool = False) -> dict:
     """Pass 1. Returns the normalized draft and writes draft.json."""
+    if resume and (out_dir / "draft.json").exists():
+        metrics.log("extract", SPARK_MODEL, 0.0, 0.0, note="resumed from draft.json")
+        return json.loads((out_dir / "draft.json").read_text())
     ttext = transcript_as_text(transcript)
     if is_mock():
         from ..mock import mock_draft
@@ -217,8 +225,11 @@ def extract(file_id: str, info: VideoInfo, transcript: dict, out_dir: Path, metr
     return draft
 
 
-def verify(draft: dict, transcript: dict, out_dir: Path, metrics: Metrics) -> dict:
+def verify(draft: dict, transcript: dict, out_dir: Path, metrics: Metrics, resume: bool = False) -> dict:
     """Pass 2. Flags steps the narration does not support. Writes review.json."""
+    if resume and (out_dir / "review.json").exists():
+        metrics.log("verify", SPARK_MODEL, 0.0, 0.0, note="resumed from review.json")
+        return json.loads((out_dir / "review.json").read_text())
     ttext = transcript_as_text(transcript)
     if is_mock():
         review = {"steps": [{"order": s["order"], "supported": True, "evidence": "mock", "suggested_fix": ""}

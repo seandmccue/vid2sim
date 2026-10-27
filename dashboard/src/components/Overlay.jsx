@@ -11,7 +11,7 @@ export default function Overlay({ id, spec, part, track, onBox }) {
   useEffect(() => { setIdx(Math.max(0, frames.findIndex(f => f.frame === part.keyframe))) }, [part.id, part.keyframe])
   const cur = frames[Math.min(idx, frames.length - 1)]
   const W = spec.procedure.width, H = spec.procedure.height
-  const mask = track?.masks?.find(m => m.includes(`_f${String(cur.frame).padStart(6, '0')}_`))
+  const maskUrl = track?.raw ? `/api/procedures/${id}/mask/${part.id}/${cur.frame}.png` : null
   const [drag, setDrag] = useState(null)
   const ref = useRef()
   const dragRef = useRef(null)
@@ -46,7 +46,7 @@ export default function Overlay({ id, spec, part, track, onBox }) {
       <div className="frame" ref={ref} style={{ aspectRatio: `${W}/${H}` }}
         onMouseDown={e => { e.preventDefault(); const [x, y] = toFrame(e); setDrag([x, y, x, y]) }}>
         <img src={api.frameUrl(id, cur.frame)} alt={`frame ${cur.frame}`} draggable={false} />
-        {mask && <div className="mask" style={{ WebkitMaskImage: `url(${api.fileUrl(id, mask)})`, maskImage: `url(${api.fileUrl(id, mask)})` }} />}
+        {maskUrl && <img key={maskUrl} className="maskimg" src={maskUrl} alt="" draggable={false} onError={e => { e.target.style.display = 'none' }} />}
         {box && <div className="box" style={{ left: `${box[0] / W * 100}%`, top: `${box[1] / H * 100}%`, width: `${(box[2] - box[0] + 1) / W * 100}%`, height: `${(box[3] - box[1] + 1) / H * 100}%` }} />}
       </div>
       <div className="row small">

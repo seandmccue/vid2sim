@@ -35,8 +35,11 @@ def _turns_to_transcript(payload: dict, fps: float) -> dict:
     }
 
 
-def transcribe(video: Path, info: VideoInfo, out_dir: Path, metrics: Metrics) -> dict:
+def transcribe(video: Path, info: VideoInfo, out_dir: Path, metrics: Metrics, resume: bool = False) -> dict:
     out_json = out_dir / "transcript.json"
+    if resume and out_json.exists():
+        metrics.log("transcribe", ASR_MODEL, 0.0, 0.0, note="resumed from transcript.json")
+        return json.loads(out_json.read_text())
     if not info.has_audio:
         data = {"model": ASR_MODEL, "transcript": "", "audio_duration_ms": 0, "fps": info.fps, "turns": [],
                 "note": "source video has no audio track"}

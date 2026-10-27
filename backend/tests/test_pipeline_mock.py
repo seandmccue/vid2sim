@@ -17,12 +17,13 @@ def test_probe(synthetic_video):
 def test_parse_sam_real_protocol_text(tmp_path):
     from backend.mock import mock_sam_output
     hits = parse_sam(mock_sam_output("red rocker switch", 10), trim_start=100, masks_dir=tmp_path / "m", part_id="sw",
-                     frame_size=(320, 334))
+                     frame_size=(320, 334), mask_frames={100})
     assert len(hits) == 6
     assert hits[0].frame == 100 and hits[-1].frame == 105
     assert hits[0].box == (211, 228, 270, 254)
     assert hits[0].confidence == 0.9
     assert hits[0].mask_png and hits[0].mask_png.exists()
+    assert hits[1].mask_png is None                     # only requested frames are decoded
     from PIL import Image
     img = Image.open(hits[0].mask_png)
     assert img.size == (320, 334)                                   # full-frame canvas
