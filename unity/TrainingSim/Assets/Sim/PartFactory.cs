@@ -58,6 +58,7 @@ namespace Vid2Sim
 
                 var pb = go.AddComponent<PartBehaviour>();
                 pb.Init(part);
+                PartLabel.Create(pb, go.transform.localScale.y + 0.045f);
                 bool needsRotate = UsesAction(spec, part.id, Actions.TurnCw) || UsesAction(spec, part.id, Actions.TurnCcw);
                 Backend.Attach(pb, go, part.interaction, needsRotate);
                 if (UsesAction(spec, part.id, Actions.Place)) pb.SnapZone = CreateSnapZone(go, part);

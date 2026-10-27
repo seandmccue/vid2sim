@@ -292,6 +292,25 @@ namespace Vid2Sim.Tests
         }
 
         [UnityTest]
+        public IEnumerator Parts_have_labels_and_the_full_demo_walks_every_step()
+        {
+            PartFactory factory = null; StepSequencer seq = null; SpecLoader loader = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { loader = l; factory = f; seq = s; });
+            Assert.AreEqual(factory.Spawned.Count, Object.FindObjectsByType<PartLabel>(FindObjectsSortMode.None).Length, "one label per part");
+            var guide = _root.AddComponent<StepGuide>();
+            guide.Attach(seq, factory, null);
+            var captions = new List<string>();
+            guide.CaptionChanged += c => captions.Add(c);
+            yield return guide.PlayFullDemo(loader.Procedure, secondsPerStep: 0.08f);
+            Assert.IsFalse(guide.FullDemoRunning);
+            Assert.AreEqual(loader.Procedure.steps.Length + 2, captions.Count, "one caption per step, then 'your turn', then clear");
+            Assert.That(captions[0], Does.Contain("1 of 6"));
+            Assert.AreEqual("", captions[captions.Count - 1]);
+            Assert.IsNull(GameObject.Find("Ghost:filter_cover"), "no ghost left behind");
+            Assert.AreEqual(-1, seq.Index, "the sequencer has not started during the demo");
+        }
+
+        [UnityTest]
         public IEnumerator Pause_blocks_completion_and_resume_allows_it()
         {
             PartFactory factory = null; StepSequencer seq = null;

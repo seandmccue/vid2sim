@@ -8,11 +8,12 @@ namespace Vid2Sim
     /// (click = press, drag = grab/pull/lift/place, right-drag = turn, hover = inspect).
     /// </summary>
     [RequireComponent(typeof(Camera))]
-    public class WebCameraRig : MonoBehaviour
+    public class WebCameraRig : MonoBehaviour, IStartGate
     {
-        public Vector3 pivot = new(0f, 0.9f, 0.7f);    // between the bench (0.75 m) and the coach panel (1.2 m), 0.7 m ahead of the seat
-        public float distance = 1.1f;
-        public float yaw = 0f, pitch = 18f;
+        public bool Started => _started;
+        public Vector3 pivot = new(0f, 0.8f, 0.7f);    // just above the bench, 0.7 m ahead of the seat
+        public float distance = 0.85f;
+        public float yaw = 0f, pitch = 30f;
         public float orbitSpeed = 60f, zoomSpeed = 0.4f;
         public bool showHint = true;
         public bool debugReadout = false;
@@ -63,7 +64,7 @@ namespace Vid2Sim
                 GUILayout.BeginArea(new Rect(r.x + 40, r.y + 30, r.width - 80, r.height - 60));
                 GUILayout.Label("Training sim", _big);
                 GUILayout.Space(10);
-                GUILayout.Label("Follow the panel. At each step the part you need lights up and a yellow ghost shows the motion.", _body);
+                GUILayout.Label("First you'll watch the whole procedure once: each part lights up and a yellow ghost shows the motion. Then it's your turn, one step at a time, with the step and how to do it at the top of the screen.", _body);
                 GUILayout.Space(12);
                 GUILayout.Label("Click = press          Drag = grab, pull, lift, or place (drop it on the green zone)", _body);
                 GUILayout.Label("Hover + Q / E = turn a quarter          Hover for 2 s = inspect", _body);
@@ -76,14 +77,14 @@ namespace Vid2Sim
             }
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
-            GUI.Box(new Rect(12, 12, 1500, 44), GUIContent.none);
-            GUI.Label(new Rect(20, 18, 1500, 40), "Click = press · Drag = grab / pull / lift / place · Hover + Q/E = quarter turn · Hover = inspect · H = show me · Arrows orbit · Scroll zooms · R restart", style);
+            GUI.Box(new Rect(12, Screen.height - 52, Screen.width - 24, 40), GUIContent.none);
+            GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click = press · Drag = grab / pull / lift / place · Hover + Q/E = quarter turn · Hover = inspect · H = show me · Arrows orbit · Scroll zooms · R restart", style);
             if (debugReadout)
             {
                 var cam = Camera.main;
                 var ray = cam ? cam.ScreenPointToRay(Input.mousePosition) : default;
                 string under = cam && Physics.Raycast(ray, out var h, 5f) ? h.collider.gameObject.name : "-";
-                GUI.Label(new Rect(20, 60, 1800, 40), $"mouse {Input.mousePosition} screen {Screen.width}x{Screen.height} under: {under} hover: {Interaction.SimpleMouseDriver.HoverName} last click: {Interaction.SimpleMouseDriver.LastClick}", style);
+                GUI.Label(new Rect(20, Screen.height - 96, 1800, 40), $"mouse {Input.mousePosition} screen {Screen.width}x{Screen.height} under: {under} hover: {Interaction.SimpleMouseDriver.HoverName} last click: {Interaction.SimpleMouseDriver.LastClick}", style);
             }
         }
     }

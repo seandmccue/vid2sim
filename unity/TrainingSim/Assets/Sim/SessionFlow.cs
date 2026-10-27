@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Vid2Sim
 {
+    /// <summary>Something that holds the procedure until the trainee is ready (the web start screen).</summary>
+    public interface IStartGate { bool Started { get; } }
+
     /// <summary>
     /// Cold start to first step in under 15 s, pause/resume, restart without relaunch, seated recenter,
     /// and the dev hot-reload: when the dashboard pushes a new spec.json to persistentDataPath, reload it.
@@ -32,6 +35,9 @@ namespace Vid2Sim
         IEnumerator Start()
         {
             _bootStart = Time.realtimeSinceStartup;
+#if UNITY_WEBGL
+            _ui.showWorldPanel = false;   // the screen HUD carries the text in the browser
+#endif
             _ui.Build(origin, _speech);
             _scorer.Attach(_seq);
             _ui.Attach(_seq, _scorer);
@@ -55,6 +61,14 @@ namespace Vid2Sim
             _lastSpecMtime = _loader.HotSpecMtime();
             _ui.SetTitle(_loader.Procedure.procedure.title);
             yield return _factory.Spawn(_loader.Procedure, _loader, origin);
+            var gate = GetComponent<IStartGate>() ?? (IStartGate)FindFirstObjectByType<WebCameraRig>();
+            var hud = FindFirstObjectByType<WebHud>();
+            if (hud) hud.Attach(_seq, _guide, _scorer, _factory, _loader.Procedure.procedure.title, _loader.Procedure);
+            if (gate != null)
+            {
+                while (!gate.Started) yield return null;              // the start screen's click
+                yield return _guide.PlayFullDemo(_loader.Procedure);  // show the whole thing once, then play
+            }
             _seq.Begin(_loader.Procedure, _factory);
             Debug.Log($"[SessionFlow] cold start to first step: {Time.realtimeSinceStartup - _bootStart:0.0}s");
         }
@@ -114,7 +128,7 @@ namespace Vid2Sim
             if (Input.GetKeyDown(pauseKey)) TogglePause();
             if (Input.GetKeyDown(skipKey)) _seq.Skip();
             if (Input.GetKeyDown(reloadKey)) Reload();
-            if (Input.GetKeyDown(helpKey)) _guide.Demonstrate(_seq.Current);
+            if (Input.GetKeyDown(helpKey) && !_guide.FullDemoRunning) _guide.Demonstrate(_seq.Current);
 #if META_CORE_SDK && !UNITY_WEBGL
             // Quest: A = restart, B = pause, Y = skip (debug), X = recenter. Hands-only users never need these.
             if (OVRInput.GetDown(OVRInput.Button.One)) Restart();
