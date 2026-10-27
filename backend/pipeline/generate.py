@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .common import (ACTION_VOCAB, IMAGE_MODEL, PRICE_IMAGE_EACH_EST, SPARK_MODEL, UNITY_GENERATED, Metrics,
@@ -140,26 +141,33 @@ def headless_compile(unity_project: Path, unity_exe: str | None = None) -> tuple
 
 
 def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bool = True) -> list[dict]:
-    """Returns one record per custom action: {verb, class, path, compiled, note}."""
+    """One script per custom verb, generated in parallel, then one headless compile gate for the batch.
+    Returns one record per verb: {verb, class, path, compiled, note}."""
     parts = {p["id"]: p for p in spec["parts"]}
-    out = []
-    seen: set[str] = set()
     staging = unity_project / "Assets" / "Generated"
     staging.mkdir(parents=True, exist_ok=True)
+    jobs: list[tuple[str, str, dict, dict]] = []
+    out: list[dict] = []
+    seen: set[str] = set()
     for step in spec["steps"]:
         verb = step.get("custom_action")
         if not verb or verb in ACTION_VOCAB or verb in seen:
             continue
         seen.add(verb)  # one script per verb, however many steps use it
         cls = _class_name(verb)
-        target = staging / f"{cls}.cs"
-        if target.exists():
-            out.append({"verb": verb, "class": cls, "path": str(target), "compiled": True, "note": "cached"})
+        if (staging / f"{cls}.cs").exists():
+            out.append({"verb": verb, "class": cls, "path": str(staging / f"{cls}.cs"), "compiled": True, "note": "cached"})
             continue
-        prompt = _codegen_prompt(step, parts[step["part_id"]])
+        jobs.append((verb, cls, step, parts[step["part_id"]]))
+    if not jobs:
+        return out
+
+    def produce(job):
+        verb, cls, step, part = job
+        prompt = _codegen_prompt(step, part)
         if is_mock():
             from ..mock import mock_csharp
-            code = mock_csharp(cls, verb, step, parts[step["part_id"]])
+            code = mock_csharp(cls, verb, step, part)
             metrics.log("generate_code", "muse-code", 0.0, 0.0, note="mock")
         else:
             with Timer() as t:
@@ -168,61 +176,68 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
                 metrics.log("generate_code", "muse-code", t.wall, 0.0, note=f"{verb} -> {cls}")
             else:
                 code = _spark_code(prompt, metrics)
+        return verb, cls, code
+
+    with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+        produced = list(pool.map(produce, jobs))
+
+    pending: list[tuple[str, str, Path]] = []
+    for verb, cls, code in produced:
         if not code or not code.strip():
-            out.append({"verb": verb, "class": cls, "path": "", "compiled": False, "note": "generator returned no code; engine falls back to the vocabulary verb"})
+            out.append({"verb": verb, "class": cls, "path": "", "compiled": False,
+                        "note": "generator returned no code; engine falls back to the vocabulary verb"})
             continue
-        code = guard_for_sdk(strip_fences(code))
         candidate = staging / f"{cls}.cs.pending"
-        candidate.write_text(code)
-        compiled, note = (True, "gate skipped") if not gate else (True, "mock gate") if is_mock() else headless_compile(unity_project)
-        if compiled:
-            candidate.rename(target)
+        candidate.write_text(guard_for_sdk(strip_fences(code)))
+        pending.append((verb, cls, candidate))
+    if not pending:
+        return out
+
+    # Gate the batch once: every pending file is renamed in, compiled together, and all rolled back on failure.
+    for _, cls, candidate in pending:
+        candidate.rename(staging / f"{cls}.cs")
+    compiled, note = (True, "gate skipped") if not gate else (True, "mock gate") if is_mock() else headless_compile(unity_project)
+    for verb, cls, candidate in pending:
+        target = staging / f"{cls}.cs"
+        if not compiled:
+            target.rename(candidate)
         out.append({"verb": verb, "class": cls, "path": str(target if compiled else candidate), "compiled": compiled, "note": note[-500:]})
     return out
 
 
-TEXTURE_MAX_PX = int(os.environ.get("VID2SIM_TEXTURE_MAX_PX", "1024"))
+MAX_PARALLEL = int(os.environ.get("VID2SIM_PARALLEL", "4"))
 
 
-def shrink_texture(path: Path, max_px: int = TEXTURE_MAX_PX) -> None:
-    """Muse Image returns ~2000 px PNGs (~1.4 MB each). A primitive on a bench never needs more than 1024."""
-    from PIL import Image
-    img = Image.open(path)
-    if max(img.size) <= max_px:
-        return
-    img.thumbnail((max_px, max_px), Image.LANCZOS)
-    img.save(path, optimize=True)
+def _texture_one(p: dict, work: Path, tex_dir: Path, metrics: Metrics) -> tuple[str, Path | None]:
+    target = tex_dir / f"{p['id']}.png"
+    crop = work / "bundle" / "crops" / f"{p['id']}.png"
+    if target.exists():
+        return p["id"], target
+    if not crop.exists():
+        return p["id"], None
+    if is_mock():
+        shutil.copy(crop, target)
+        metrics.log("texture", IMAGE_MODEL, 0.0, 0.0, note="mock, crop copied")
+        return p["id"], target
+    c = client()
+    with Timer() as t:
+        with crop.open("rb") as fh:
+            edit = c.images.edit(model=IMAGE_MODEL, image=fh, n=1, output_format="png",
+                                 prompt=f"Clean product texture of this {p['name']}, flat even lighting, "
+                                        f"no hands, no background, centred, photographic")
+    target.write_bytes(base64.b64decode(edit.data[0].b64_json))
+    shrink_texture(target)
+    metrics.log("texture", IMAGE_MODEL, t.wall, PRICE_IMAGE_EACH_EST, note=f"{p['id']} (cost is an estimate)")
+    return p["id"], target
 
 
 def generate_textures(spec: dict, work: Path, metrics: Metrics) -> dict[str, Path]:
-    """One texture per part from its keyframe crop. Cached by part id under bundle/textures."""
+    """One texture per part from its keyframe crop, cached by part id, up to MAX_PARALLEL requests at once."""
     tex_dir = work / "bundle" / "textures"
     tex_dir.mkdir(parents=True, exist_ok=True)
-    out = {}
-    for p in spec["parts"]:
-        target = tex_dir / f"{p['id']}.png"
-        crop = work / "bundle" / "crops" / f"{p['id']}.png"
-        if target.exists():
-            out[p["id"]] = target
-            continue
-        if not crop.exists():
-            continue
-        if is_mock():
-            shutil.copy(crop, target)
-            metrics.log("texture", IMAGE_MODEL, 0.0, 0.0, note="mock, crop copied")
-            out[p["id"]] = target
-            continue
-        c = client()
-        with Timer() as t:
-            with crop.open("rb") as fh:
-                edit = c.images.edit(model=IMAGE_MODEL, image=fh, n=1, output_format="png",
-                                     prompt=f"Clean product texture of this {p['name']}, flat even lighting, "
-                                            f"no hands, no background, centred, photographic")
-        target.write_bytes(base64.b64decode(edit.data[0].b64_json))
-        shrink_texture(target)
-        metrics.log("texture", IMAGE_MODEL, t.wall, PRICE_IMAGE_EACH_EST, note=f"{p['id']} (cost is an estimate)")
-        out[p["id"]] = target
-    return out
+    with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+        results = list(pool.map(lambda p: _texture_one(p, work, tex_dir, metrics), spec["parts"]))
+    return {pid: path for pid, path in results if path is not None}
 
 
 def generate_step_cards(spec: dict, work: Path, metrics: Metrics, limit: int | None = None) -> dict[int, Path]:
