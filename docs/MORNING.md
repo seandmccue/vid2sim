@@ -7,7 +7,7 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 | Lane | State |
 | --- | --- |
 | Pipeline | Two real clips end to end on the live API: Nazava filter (79 s, narrated) and a 1080p GPU swap (260 s, captions only). Numbers in the README table and `docs/metrics-card.png`. `--resume` reuses finished stages. |
-| Backend + dashboard | Upload → run → steps → masks on demand → edit → draw a box → save → Rebuild → Quest, verified in the browser on both clips. |
+| Backend + dashboard | Upload → run → steps → masks on demand → edit → draw a box → save → Rebuild → Quest, verified in the browser on both clips. `POST /api/procedures/<id>/build?apk=true` built `Builds/vid2sim.apk` (71 MB, three procedures) from the dashboard's own endpoint. |
 | Unity engine | Compiles against Meta XR SDK 207.0.1. 10 headless PlayMode tests pass, including the full compressor procedure to a pass with scoring. `Builds/vid2sim.apk` builds headless in ~2 min warm. |
 | Generated code | 6 Spark-written `IStepAction` scripts compile against the SDK; 1 (`UnplugAction`) failed the gate and is pended, engine falls back to `pull`. |
 | Docs | `docs/SUBMISSION.md`, `docs/VIDEO.md`, `docs/FILMING.md` drafted. |
