@@ -50,7 +50,7 @@ button.icon { padding:3px 7px; } button.link { border:none; background:none; col
 .partdetail { display:flex; flex-direction:column; gap:8px; } .partdetail label { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); } .partdetail label input, .partdetail label select { flex:1; }
 .overlay .frame { position:relative; width:100%; background:#000; border-radius:8px; overflow:hidden; cursor:crosshair; user-select:none; }
 .overlay .frame img { width:100%; height:100%; display:block; object-fit:fill; }
-.overlay .mask { position:absolute; inset:0; background:rgba(76,195,255,.55); mask-size:100% 100%; -webkit-mask-size:100% 100%; mask-mode:luminance; -webkit-mask-mode:luminance; mask-repeat:no-repeat; pointer-events:none; }
+.overlay .maskimg { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; opacity:.6; mix-blend-mode:screen; filter: sepia(1) saturate(6) hue-rotate(150deg); pointer-events:none; }
 .overlay .box { position:absolute; border:2px solid var(--ok); box-shadow:0 0 0 1px rgba(0,0,0,.6); pointer-events:none; }
 .overlay input[type=range] { flex:1; padding:0; }
 .muted { color:var(--muted); } .tiny { font-size:11px; } .chain { color:var(--accent); font-weight:600; }

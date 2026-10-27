@@ -65,6 +65,8 @@ def bundle(video: Path, info: VideoInfo, file_id: str, draft: dict, results: dic
             "id": p["id"], "crop": str(crop_png.relative_to(work)), "frames_tracked": len(r.hits) if r else 0,
             "frames_billed": r.frames_billed if r else 0, "mean_confidence": round(r.mean_confidence, 3) if r else 0.0,
             "masks": [str(h.mask_png.relative_to(work)) for h in (r.hits if r else []) if h.mask_png],
+            "raw": str(r.raw_path.relative_to(work)) if r and r.raw_path else None,
+            "trim_start": (r.hits[0].frame - 0) if False else (getattr(r, "trim_start", None) if r else None),
             "track": [{"frame": h.frame, "box": list(h.box), "c": h.confidence} for h in (r.hits if r else [])],
         })
     spec = {

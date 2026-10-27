@@ -227,6 +227,40 @@ def get_file(pid: str, path: str):
     return FileResponse(f)
 
 
+@app.get("/api/procedures/{pid}/mask/{part_id}/{n}.png")
+def get_mask(pid: str, part_id: str, n: int):
+    """One part's mask on one frame, decoded from the saved SAM output on demand and cached.
+    404 when SAM has no mask for that frame (the dashboard then draws the box alone)."""
+    from backend.pipeline.segment import decode_mask_png, parse_boxes
+    d = _dir(pid)
+    cached = next(iter((d / "bundle" / "masks").glob(f"{part_id}_f{n:06d}_o*.png")), None)
+    if cached:
+        return FileResponse(cached)
+    spec = get_spec(pid)
+    part = next((p for p in spec["parts"] if p["id"] == part_id), None)
+    meta = next((b for b in get_bundle(pid) if b["id"] == part_id), None) or {}
+    if part is None or part["source"] == "manual":
+        raise HTTPException(404, "no SAM output for this part")
+    raw_path = d / meta["raw"] if meta.get("raw") else d / "bundle" / "raw" / f"{part_id}_{part['source']}.txt"
+    if not raw_path.exists():
+        raise HTTPException(404, "no SAM output for this part")
+    raw = raw_path.read_text()
+    trim_start = meta.get("trim_start")
+    if trim_start is None:
+        # older bundles: infer from the first tracked frame vs the first wire frame
+        first_local = next((int(l[1:l.index("f")]) for l in raw.splitlines() if l.startswith("<")), 0)
+        trim_start = (meta["track"][0]["frame"] - first_local) if meta.get("track") else 0
+    by_obj = parse_boxes(raw, trim_start)
+    if not by_obj:
+        raise HTTPException(404)
+    oid = max(by_obj, key=lambda o: (len(by_obj[o]), sum((h.confidence or 0) for h in by_obj[o])))
+    out = d / "bundle" / "masks" / f"{part_id}_f{n:06d}_o{oid}.png"
+    png = decode_mask_png(raw, trim_start, n, oid, (spec["procedure"]["width"], spec["procedure"]["height"]), out)
+    if png is None:
+        raise HTTPException(404, "no mask on that frame")
+    return FileResponse(png)
+
+
 @app.get("/api/procedures/{pid}/frame/{n}.jpg")
 def get_frame(pid: str, n: int):
     """Keyframe image for the mask overlay, extracted on demand and cached."""

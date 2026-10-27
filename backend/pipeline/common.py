@@ -202,17 +202,68 @@ def faststart(video: Path, out_mp4: Path) -> Path:
 
 # ---------------------------------------------------------------- files api
 
-def upload_video(video: Path, metrics: Metrics | None = None) -> str:
-    """Upload once with purpose=user_data; Spark and SAM both take the returned file_id."""
+def upload_video(video: Path, metrics: Metrics | None = None, cache: Path | None = None) -> str:
+    """Upload once with purpose=user_data; Spark and SAM both take the returned file_id.
+    With `cache` (a JSON path), a previous upload of the same bytes (size + mtime) is reused."""
     if is_mock():
         return "file-mock-" + video.stem
+    key = f"{video.stat().st_size}:{int(video.stat().st_mtime)}"
+    if cache and cache.exists():
+        try:
+            c = json.loads(cache.read_text())
+            if c.get("key") == key and c.get("file_id"):
+                if metrics:
+                    metrics.log("upload", "files", 0.0, 0.0, note=f"reused {c['file_id']}")
+                return c["file_id"]
+        except Exception:
+            pass
     with Timer() as t:
         with video.open("rb") as fh:
-            f = client().files.create(purpose="user_data", file=fh,
-                                      expires_after={"anchor": "created_at", "seconds": 7 * 24 * 3600})
+            f = with_retries(lambda: client().files.create(purpose="user_data", file=fh,
+                                                           expires_after={"anchor": "created_at", "seconds": 7 * 24 * 3600}),
+                             label="upload")
     if metrics:
         metrics.log("upload", "files", t.wall, 0.0, note=video.name)
+    if cache:
+        write_json(cache, {"key": key, "file_id": f.id, "name": video.name})
     return f.id
+
+
+# ---------------------------------------------------------------- retries
+
+def with_retries(fn, *, tries: int = 3, base_delay: float = 2.0, label: str = "call"):
+    """Run fn() with exponential backoff on transient API errors (timeouts, 5xx, connection drops).
+    Everything that talks to the Model API goes through this so one dropped stream never kills a run."""
+    last: Exception | None = None
+    for attempt in range(1, tries + 1):
+        try:
+            return fn()
+        except Exception as e:  # noqa: BLE001 - the SDK raises several families; retry all but auth/4xx
+            status = getattr(e, "status_code", None)
+            if status is not None and 400 <= int(status) < 500 and int(status) != 429:
+                raise
+            last = e
+            if attempt == tries:
+                break
+            delay = base_delay * (2 ** (attempt - 1))
+            print(f"    retry {attempt}/{tries - 1} for {label} after {type(e).__name__}: {str(e)[:120]} (sleep {delay:.0f}s)")
+            time.sleep(delay)
+    raise RuntimeError(f"{label} failed after {tries} attempts: {last}") from last
+
+
+def keyframe_jpeg_b64(png: Path, max_px: int = 1280) -> tuple[str, int, int]:
+    """Downscale a keyframe for a vision prompt. A 1080p PNG is ~3 MB of base64; a 1280-wide JPEG is ~150 KB.
+    Returns (base64, width, height) of the image actually sent, so boxes can be scaled back."""
+    import base64
+    import io
+    from PIL import Image
+    img = Image.open(png).convert("RGB")
+    w0, h0 = img.size
+    if max(w0, h0) > max_px:
+        img.thumbnail((max_px, max_px), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=88)
+    return base64.b64encode(buf.getvalue()).decode(), img.size[0], img.size[1]
 
 
 # ---------------------------------------------------------------- misc

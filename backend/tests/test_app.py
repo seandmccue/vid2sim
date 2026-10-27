@@ -41,6 +41,10 @@ def test_upload_run_edit_build(client, synthetic_video):
     assert len(spec["parts"]) == 5
     assert client.get(f"/api/procedures/{pid}/bundle").json()[0]["id"] == spec["parts"][0]["id"]
     assert client.get(f"/api/procedures/{pid}/frame/3.jpg").status_code == 200
+    # masks are decoded on demand from the saved SAM output; a frame without a record is a 404
+    tracked = next(b for b in client.get(f"/api/procedures/{pid}/bundle").json() if b["track"])
+    assert client.get(f"/api/procedures/{pid}/mask/{tracked['id']}/{tracked['track'][0]['frame']}.png").status_code == 200
+    assert client.get(f"/api/procedures/{pid}/mask/{tracked['id']}/999999.png").status_code == 404
     assert client.get(f"/api/procedures/{pid}/files/bundle/crops/{spec['parts'][0]['id']}.png").status_code == 200
     assert client.get(f"/api/procedures/{pid}/files/../../../etc/passwd").status_code == 404
 
