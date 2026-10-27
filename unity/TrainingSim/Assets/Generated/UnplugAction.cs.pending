@@ -1,0 +1,151 @@
+#if META_INTERACTION_SDK
+using UnityEngine;
+using Oculus.Interaction;
+using Oculus.Interaction.HandGrab;
+
+namespace Vid2Sim.Generated
+{
+    public class UnplugAction : MonoBehaviour, Vid2Sim.IStepAction
+    {
+        [SerializeField]
+        [Tooltip("Distance the wire must be pulled from its plugged pose to count as unplugged.")]
+        private float pullDistanceM = 0.06f;
+
+        [SerializeField]
+        [Tooltip("Minimum hold time after grab before pull can complete.")]
+        private float minGrabTimeS = 0.1f;
+
+        private Vid2Sim.Part _part;
+        private Vid2Sim.Step _step;
+        private System.Action<Vid2Sim.StepEvent> _emit;
+
+        private HandGrabInteractable _handGrab;
+        private IInteractableView _view;
+
+        private bool _completed;
+        private bool _isSelected;
+        private bool _wasEverSelected;
+        private float _selectStartTime;
+
+        private Vector3 _pluggedWorldPos;
+        private Vector3 _pluggedLocalPos;
+        private Transform _parentAtBind;
+
+        public void Bind(Vid2Sim.Part part, Vid2Sim.Step step, System.Action<Vid2Sim.StepEvent> emit)
+        {
+            _part = part;
+            _step = step;
+            _emit = emit;
+            _completed = false;
+            _isSelected = false;
+            _wasEverSelected = false;
+            _selectStartTime = -100f;
+
+            _pluggedWorldPos = transform.position;
+            _pluggedLocalPos = transform.localPosition;
+            _parentAtBind = transform.parent;
+
+            if (_handGrab == null)
+            {
+                _handGrab = GetComponent<HandGrabInteractable>();
+            }
+
+            IInteractableView newView = _handGrab as IInteractableView;
+            if (newView == null)
+            {
+                newView = GetComponent<IInteractableView>();
+            }
+
+            if (_view != null && _view != newView)
+            {
+                _view.WhenPointerEventRaised -= HandlePointerEvent;
+            }
+
+            _view = newView;
+
+            if (_view != null)
+            {
+                _view.WhenPointerEventRaised -= HandlePointerEvent;
+                _view.WhenPointerEventRaised += HandlePointerEvent;
+            }
+        }
+
+        private void HandlePointerEvent(PointerEvent evt)
+        {
+            if (_completed)
+            {
+                return;
+            }
+
+            if (evt.Type == PointerEventType.Select)
+            {
+                _isSelected = true;
+                _wasEverSelected = true;
+                _selectStartTime = Time.time;
+            }
+            else if (evt.Type == PointerEventType.Unselect)
+            {
+                _isSelected = false;
+            }
+        }
+
+        private void Update()
+        {
+            if (_completed)
+            {
+                return;
+            }
+
+            if (_part == null || _step == null || _emit == null)
+            {
+                return;
+            }
+
+            if (_wasEverSelected && (Time.time - _selectStartTime) < minGrabTimeS)
+            {
+                return;
+            }
+
+            float worldDist = Vector3.Distance(transform.position, _pluggedWorldPos);
+            float localDist = worldDist;
+            if (transform.parent == _parentAtBind)
+            {
+                localDist = Vector3.Distance(transform.localPosition, _pluggedLocalPos);
+            }
+
+            float d = worldDist > localDist ? worldDist : localDist;
+            if (d >= pullDistanceM)
+            {
+                Complete();
+            }
+        }
+
+        private void Complete()
+        {
+            if (_completed)
+            {
+                return;
+            }
+
+            _completed = true;
+
+            string partId = _part != null ? _part.id : "antenna_wire";
+            string action = _step != null ? _step.action : "unplug";
+
+            if (_emit != null)
+            {
+                _emit.Invoke(new Vid2Sim.StepEvent(partId, action));
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_view != null)
+            {
+                _view.WhenPointerEventRaised -= HandlePointerEvent;
+                _view = null;
+            }
+        }
+    }
+}
+#endif

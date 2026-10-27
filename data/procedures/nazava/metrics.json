@@ -1,14 +1,35 @@
 {
-  "run_id": "20261026-193913-ab0165",
+  "run_id": "20261026-195230-e65591",
   "procedure": "nazava-water-filter-install",
-  "upload_to_spec_s": 577.4,
-  "api_cost_usd": 0.9059,
+  "upload_to_spec_s": 873.6,
+  "api_cost_usd": 1.2132,
   "steps": 8,
   "parts": 7,
   "parts_found_concept": 3,
   "parts_found_box": 2,
   "parts_manual": 2,
   "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 13.86,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 10.05,
+      "cost_usd": 0.0079,
+      "note": "1.31 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 35.0,
+      "cost_usd": 0.0528,
+      "note": "incomplete"
+    },
     {
       "stage": "upload",
       "model": "files",
@@ -248,11 +269,32 @@
       "note": "filter_lid (cost is an estimate)"
     },
     {
-      "stage": "total",
-      "model": "pipeline",
-      "wall_s": 577.44,
-      "cost_usd": 0.0,
-      "note": "upload to StreamingAssets"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 74.27,
+      "cost_usd": 0.0572,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 101.26,
+      "cost_usd": 0.0684,
+      "note": "Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 113.69,
+      "cost_usd": 0.0803,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 44.45,
+      "cost_usd": 0.0407,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     }
   ],
   "ground_truth": {
@@ -292,7 +334,7 @@
       {
         "order": 3,
         "truth": "Insert the ceramic filter through the upper container and fit the rubber ring back on.",
-        "extracted": "Insert the white ceramic filter candle into the upper reservoir.",
+        "extracted": "Hold the white ceramic filter candle on the blue part.",
         "extracted_order": 4,
         "action_truth": "place",
         "action_extracted": "insert",
@@ -376,5 +418,10 @@
   ],
   "textures": 7,
   "streaming_assets": "unity/TrainingSim/Assets/StreamingAssets/procedures/nazava-water-filter-install",
-  "api_cost_usd_codegen_rerun": 0.247
+  "runs": [
+    "20261026-193738-dd4789",
+    "20261026-193913-ab0165",
+    "20261026-195230-e65591"
+  ],
+  "note": "aggregated across 3 run(s) with --resume; resumed stages cost $0 and 0 s"
 }

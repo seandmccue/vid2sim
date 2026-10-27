@@ -11,7 +11,7 @@ export default function Overlay({ id, spec, part, track, onBox }) {
   useEffect(() => { setIdx(Math.max(0, frames.findIndex(f => f.frame === part.keyframe))) }, [part.id, part.keyframe])
   const cur = frames[Math.min(idx, frames.length - 1)]
   const W = spec.procedure.width, H = spec.procedure.height
-  const maskUrl = track?.raw ? `/api/procedures/${id}/mask/${part.id}/${cur.frame}.png` : null
+  const maskUrl = part.source !== 'manual' ? `/api/procedures/${id}/mask/${part.id}/${cur.frame}.png` : null
   const [drag, setDrag] = useState(null)
   const ref = useRef()
   const dragRef = useRef(null)

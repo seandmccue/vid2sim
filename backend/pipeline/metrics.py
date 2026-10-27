@@ -25,39 +25,60 @@ def _sim(a: str, b: str) -> float:
     return max(ratio, len(small & big) / len(small))
 
 
+def _align(gt_steps: list[dict], ext: list[dict], parts: dict, floor: float = 0.45) -> list[tuple[int, int, float]]:
+    """Monotonic alignment maximising total similarity (dynamic programming, like sequence alignment with
+    gaps free). Returns (gt_index, ext_index, similarity) pairs. A greedy best-match shifted every later
+    pair when the extraction was finer-grained than the trainer's list, which is the common case."""
+    n, m = len(gt_steps), len(ext)
+    sim = [[0.0] * m for _ in range(n)]
+    for i, g in enumerate(gt_steps):
+        for j, s in enumerate(ext):
+            part_name = parts.get(s["part_id"], {}).get("name", s["part_id"])
+            v = max(_sim(s["instruction"], g["text"]), 0.9 * _sim(part_name, g.get("part", "")))
+            sim[i][j] = v if v >= floor else 0.0
+    # dp[i][j] = best total using gt[:i] and ext[:j]
+    dp = [[0.0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1] + sim[i - 1][j - 1])
+    pairs = []
+    i, j = n, m
+    while i > 0 and j > 0:
+        if sim[i - 1][j - 1] > 0 and dp[i][j] == dp[i - 1][j - 1] + sim[i - 1][j - 1]:
+            pairs.append((i - 1, j - 1, sim[i - 1][j - 1]))
+            i, j = i - 1, j - 1
+        elif dp[i - 1][j] >= dp[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+    return list(reversed(pairs))
+
+
 def compare_to_ground_truth(spec: dict, gt: dict) -> dict:
-    """Monotonic best-match alignment: each trainer step is matched to the best later extracted step
-    (text similarity against instruction or part name >= 0.45), so one inserted or merged step shifts
-    nothing else. A step counts as correct when it matched and the action agrees (custom_action counts).
-    Unmatched extracted steps are reported as extras."""
+    """Each trainer step is aligned (in order) to the best extracted step; a step counts as correct when it
+    aligned and the action agrees (custom_action counts). Unaligned extracted steps are reported as extras:
+    a finer-grained extraction is not penalised, a missing or re-ordered trainer step is."""
     gt_steps = gt.get("steps", [])
     parts = {p["id"]: p for p in spec["parts"]}
     ext = spec["steps"]
-    correct, rows, cursor, used = 0, [], 0, set()
-    for g in gt_steps:
-        best, best_i = 0.0, None
-        for i in range(cursor, len(ext)):
-            s = ext[i]
-            part_name = parts.get(s["part_id"], {}).get("name", s["part_id"])
-            score = max(_sim(s["instruction"], g["text"]), 0.9 * _sim(part_name, g.get("part", "")))
-            if score > best:
-                best, best_i = score, i
-        if best_i is None or best < 0.45:
+    pairs = {gi: (ej, v) for gi, ej, v in _align(gt_steps, ext, parts)}
+    correct, rows = 0, []
+    for gi, g in enumerate(gt_steps):
+        if gi not in pairs:
             rows.append({"order": g["order"], "truth": g["text"], "extracted": None, "action_truth": g.get("action"),
                          "action_extracted": None, "matched": False, "action_ok": False, "ok": False})
             continue
-        s = ext[best_i]
-        cursor = best_i + 1
-        used.add(best_i)
+        ej, v = pairs[gi]
+        s = ext[ej]
         action_ok = bool(s["action"] == g.get("action") or (s.get("custom_action") and s["custom_action"] == g.get("action")))
-        ok = action_ok
-        correct += int(ok)
+        correct += int(action_ok)
         rows.append({"order": g["order"], "truth": g["text"], "extracted": s["instruction"], "extracted_order": s["order"],
                      "action_truth": g.get("action"), "action_extracted": s.get("custom_action") or s["action"],
-                     "similarity": round(best, 2), "matched": True, "action_ok": action_ok, "ok": ok})
-    extras = [s["instruction"] for i, s in enumerate(ext) if i not in used]
+                     "similarity": round(v, 2), "matched": True, "action_ok": action_ok, "ok": action_ok})
+    used = {ej for ej, _ in pairs.values()}
+    extras = [s["instruction"] for j, s in enumerate(ext) if j not in used]
     return {"steps_truth": len(gt_steps), "steps_extracted": len(ext), "steps_correct": correct,
-            "steps_matched": sum(1 for r in rows if r["matched"]),
+            "steps_matched": len(pairs),
             "accuracy": round(correct / len(gt_steps), 3) if gt_steps else None, "extra_steps": extras, "rows": rows}
 
 

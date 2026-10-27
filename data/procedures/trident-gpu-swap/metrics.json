@@ -1,0 +1,917 @@
+{
+  "run_id": "20261026-223153-c5dc22",
+  "procedure": "swap-graphics-card-msi-trident-3",
+  "upload_to_spec_s": 1448.1,
+  "api_cost_usd": 2.39,
+  "steps": 15,
+  "parts": 12,
+  "parts_found_concept": 3,
+  "parts_found_box": 7,
+  "parts_manual": 2,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 150.26,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 26.8,
+      "cost_usd": 0.026,
+      "note": "4.33 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 76.98,
+      "cost_usd": 0.1268,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 11.92,
+      "cost_usd": 0.0183,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.32,
+      "cost_usd": 0.0,
+      "note": "vent_panel.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 14.14,
+      "cost_usd": 0.0422,
+      "note": "black vented chassis panel"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 180.54,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from transcript.json"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from draft.json"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from review.json"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from vent_panel_concept.txt"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 6.97,
+      "cost_usd": 0.0,
+      "note": "chassis_screw.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 7.88,
+      "cost_usd": 0.0362,
+      "note": "silver cross-head chassis screw"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 11.86,
+      "cost_usd": 0.0127,
+      "note": "chassis_screw"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 15.63,
+      "cost_usd": 0.0362,
+      "note": "<0f>1<|box;x1=1280;y1=796;x2=1323;y2=837;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.3,
+      "cost_usd": 0.0,
+      "note": "side_cover.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 8.77,
+      "cost_usd": 0.0422,
+      "note": "black metal computer cover"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 5.53,
+      "cost_usd": 0.0064,
+      "note": "side_cover"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 14.53,
+      "cost_usd": 0.0272,
+      "note": "<75f>1<|box;x1=153;y1=122;x2=1396;y2=930;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 6.39,
+      "cost_usd": 0.0,
+      "note": "cpu_cooler.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 12.64,
+      "cost_usd": 0.0542,
+      "note": "silver circular CPU cooler"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 3.74,
+      "cost_usd": 0.0051,
+      "note": "cpu_cooler"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 6.76,
+      "cost_usd": 0.0,
+      "note": "retaining_screw.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 12.31,
+      "cost_usd": 0.0722,
+      "note": "small silver motherboard screw"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 11.54,
+      "cost_usd": 0.012,
+      "note": "retaining_screw"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 14.37,
+      "cost_usd": 0.0292,
+      "note": "<215f>1<|box;x1=393;y1=400;x2=442;y2=450;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 28.41,
+      "cost_usd": 0.0,
+      "note": "bracket_screw.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 41.13,
+      "cost_usd": 0.2522,
+      "note": "silver bracket mounting screw"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 7.72,
+      "cost_usd": 0.0087,
+      "note": "bracket_screw"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 101.71,
+      "cost_usd": 0.2522,
+      "note": "<0f>1<|box;x1=501;y1=544;x2=548;y2=591;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.87,
+      "cost_usd": 0.0,
+      "note": "support_clip.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 9.75,
+      "cost_usd": 0.0422,
+      "note": "black plastic support clip"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.45,
+      "cost_usd": 0.0,
+      "note": "antenna_wire.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 8.24,
+      "cost_usd": 0.0422,
+      "note": "thin black antenna wire"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 16.04,
+      "cost_usd": 0.015,
+      "note": "antenna_wire"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 9.44,
+      "cost_usd": 0.0172,
+      "note": "<125f>1<|box;x1=993;y1=279;x2=1638;y2=540;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 8.07,
+      "cost_usd": 0.0,
+      "note": "back_cover.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 10.87,
+      "cost_usd": 0.0602,
+      "note": "silver perforated metal cover"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.11,
+      "cost_usd": 0.0103,
+      "note": "back_cover"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 8.62,
+      "cost_usd": 0.0132,
+      "note": "<235f>1<|box;x1=18;y1=0;x2=1600;y2=1078;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 27.06,
+      "cost_usd": 0.0,
+      "note": "gpu_power_cable.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 38.07,
+      "cost_usd": 0.2282,
+      "note": "black braided power cable"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 4.78,
+      "cost_usd": 0.0051,
+      "note": "gpu_power_cable"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 84.19,
+      "cost_usd": 0.2112,
+      "note": "<85f>1<|box;x1=1128;y1=284;x2=1221;y2=712;w=1920;h=1080|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 7.57,
+      "cost_usd": 0.0,
+      "note": "old_gpu.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 19.06,
+      "cost_usd": 0.0662,
+      "note": "dusty black fan graphics card"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 11.89,
+      "cost_usd": 0.0,
+      "note": "new_gpu.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 11.61,
+      "cost_usd": 0.0662,
+      "note": "clean black single-fan graphics card"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 5.31,
+      "cost_usd": 0.005,
+      "note": "new_gpu"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 25.4,
+      "cost_usd": 0.032,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 25.9,
+      "cost_usd": 0.0338,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 37.0,
+      "cost_usd": 0.0463,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 68.29,
+      "cost_usd": 0.0685,
+      "note": "Muse Code CLI not found; Spark wrote the script (incomplete, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 33.33,
+      "cost_usd": 0.0391,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "reused file-2192994987919403"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from transcript.json"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from draft.json"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from review.json"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from vent_panel_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from chassis_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from chassis_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from side_cover_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from side_cover_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from cpu_cooler_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 3.32,
+      "cost_usd": 0.0041,
+      "note": "cpu_cooler"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from retaining_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from retaining_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from bracket_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from bracket_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from support_clip_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from antenna_wire_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from antenna_wire_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from back_cover_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from back_cover_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from gpu_power_cable_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from gpu_power_cable_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from old_gpu_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from new_gpu_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 4.61,
+      "cost_usd": 0.0046,
+      "note": "new_gpu"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 12.28,
+      "cost_usd": 0.04,
+      "note": "back_cover (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 12.59,
+      "cost_usd": 0.04,
+      "note": "old_gpu (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.97,
+      "cost_usd": 0.04,
+      "note": "antenna_wire (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 23.33,
+      "cost_usd": 0.04,
+      "note": "gpu_power_cable (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 14.53,
+      "cost_usd": 0.04,
+      "note": "new_gpu (cost is an estimate)"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "reused file-2192994987919403"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from transcript.json"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from draft.json"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 77.47,
+      "cost_usd": 0.1106,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from vent_panel_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from chassis_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from chassis_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from side_cover_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from side_cover_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from cpu_cooler_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 4.22,
+      "cost_usd": 0.0041,
+      "note": "cpu_cooler"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from retaining_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from retaining_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from bracket_screw_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from bracket_screw_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from support_clip_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from antenna_wire_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from antenna_wire_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from back_cover_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from back_cover_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from gpu_power_cable_concept.txt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from gpu_power_cable_box.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from old_gpu_concept.txt"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 0.0,
+      "cost_usd": 0.0,
+      "note": "resumed from new_gpu_concept.txt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 3.75,
+      "cost_usd": 0.0047,
+      "note": "new_gpu"
+    }
+  ],
+  "ground_truth": {
+    "steps_truth": 7,
+    "steps_extracted": 15,
+    "steps_correct": 5,
+    "steps_matched": 6,
+    "accuracy": 0.714,
+    "extra_steps": [
+      "Pry up the vented chassis panel to remove it",
+      "Inspect the CPU cooler and GPU area",
+      "Unscrew the three GPU retaining screws",
+      "Unscrew the GPU bracket screws",
+      "Pull the support clip out of the way",
+      "Disconnect the antenna wire",
+      "Gently pull both sides apart to remove the metal cover",
+      "Unplug the GPU power cable",
+      "Detach the power adapter cable from the old card"
+    ],
+    "rows": [
+      {
+        "order": 1,
+        "truth": "Remove the two screws on the rear panel.",
+        "extracted": "Unscrew the two cover screws",
+        "extracted_order": 2,
+        "action_truth": "turn_ccw",
+        "action_extracted": "unscrew",
+        "similarity": 0.51,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 2,
+        "truth": "Remove the side panel screws; note they are different sizes.",
+        "extracted": null,
+        "action_truth": "turn_ccw",
+        "action_extracted": null,
+        "matched": false,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 3,
+        "truth": "Gently pull both side panels apart.",
+        "extracted": "Slide the whole computer cover off",
+        "extracted_order": 3,
+        "action_truth": "pull",
+        "action_extracted": "slide",
+        "similarity": 0.51,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 4,
+        "truth": "Remove the plastic shield.",
+        "extracted": "Unscrew the support clip screw",
+        "extracted_order": 7,
+        "action_truth": "lift",
+        "action_extracted": "unscrew",
+        "similarity": 0.46,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 5,
+        "truth": "Remove the screws holding the graphics card.",
+        "extracted": "Unscrew the supporting bracket screws",
+        "extracted_order": 9,
+        "action_truth": "turn_ccw",
+        "action_extracted": "unscrew",
+        "similarity": 0.49,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 6,
+        "truth": "Pull the old graphics card out of its slot.",
+        "extracted": "Pull the old graphics card from its slot",
+        "extracted_order": 13,
+        "action_truth": "pull",
+        "action_extracted": "pull",
+        "similarity": 0.89,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 7,
+        "truth": "Insert the new graphics card and push lightly until it clicks into place.",
+        "extracted": "Place the replacement graphics card into the slot",
+        "extracted_order": 15,
+        "action_truth": "place",
+        "action_extracted": "place",
+        "similarity": 0.6,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      }
+    ]
+  },
+  "generated_actions": [
+    {
+      "verb": "pry",
+      "class": "PryAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/PryAction.cs",
+      "compiled": true,
+      "note": "compiles against Meta XR SDK 207.0.1 (gate run after the pipeline; a missing using was auto-added)"
+    },
+    {
+      "verb": "unscrew",
+      "class": "UnscrewAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/UnscrewAction.cs",
+      "compiled": true,
+      "note": "compiles against Meta XR SDK 207.0.1 (gate run after the pipeline; a missing using was auto-added)"
+    },
+    {
+      "verb": "slide",
+      "class": "SlideAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/SlideAction.cs",
+      "compiled": true,
+      "note": "compiles against Meta XR SDK 207.0.1 (gate run after the pipeline; a missing using was auto-added)"
+    },
+    {
+      "verb": "unplug",
+      "class": "UnplugAction",
+      "path": "unity/TrainingSim/Assets/Generated/UnplugAction.cs.pending",
+      "compiled": false,
+      "note": "failed the headless compile gate: calls WhenPointerEventRaised on IInteractableView (CS1061); engine falls back to 'pull'"
+    }
+  ],
+  "textures": 12,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/swap-graphics-card-msi-trident-3",
+  "runs": [
+    "20261026-213728-6584c1",
+    "20261026-221259-37bb38",
+    "20261026-223019-126271",
+    "20261026-223153-c5dc22"
+  ],
+  "note": "aggregated across 4 run(s) with --resume; resumed stages cost $0 and 0 s"
+}

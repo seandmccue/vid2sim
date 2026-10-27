@@ -1,0 +1,284 @@
+{
+  "parts": [
+    {
+      "id": "vent_panel",
+      "interaction": "grab",
+      "keyframe": 620,
+      "name": "Chassis vent panel",
+      "prompt_phrase": "black vented chassis panel"
+    },
+    {
+      "id": "chassis_screw",
+      "interaction": "turn",
+      "keyframe": 950,
+      "name": "Cover screw",
+      "prompt_phrase": "silver cross-head chassis screw"
+    },
+    {
+      "id": "side_cover",
+      "interaction": "grab",
+      "keyframe": 1350,
+      "name": "Side cover",
+      "prompt_phrase": "black metal computer cover"
+    },
+    {
+      "id": "cpu_cooler",
+      "interaction": "inspect",
+      "keyframe": 1650,
+      "name": "CPU cooler",
+      "prompt_phrase": "silver circular CPU cooler"
+    },
+    {
+      "id": "retaining_screw",
+      "interaction": "turn",
+      "keyframe": 2150,
+      "name": "GPU retaining screw",
+      "prompt_phrase": "small silver motherboard screw"
+    },
+    {
+      "id": "bracket_screw",
+      "interaction": "turn",
+      "keyframe": 2700,
+      "name": "Bracket screw",
+      "prompt_phrase": "silver bracket mounting screw"
+    },
+    {
+      "id": "support_clip",
+      "interaction": "grab",
+      "keyframe": 3050,
+      "name": "GPU support clip",
+      "prompt_phrase": "black plastic support clip"
+    },
+    {
+      "id": "antenna_wire",
+      "interaction": "grab",
+      "keyframe": 4100,
+      "name": "Antenna wire",
+      "prompt_phrase": "thin black antenna wire"
+    },
+    {
+      "id": "back_cover",
+      "interaction": "grab",
+      "keyframe": 4600,
+      "name": "Inner back cover",
+      "prompt_phrase": "silver perforated metal cover"
+    },
+    {
+      "id": "gpu_power_cable",
+      "interaction": "grab",
+      "keyframe": 4900,
+      "name": "GPU power cable",
+      "prompt_phrase": "black braided power cable"
+    },
+    {
+      "id": "old_gpu",
+      "interaction": "grab",
+      "keyframe": 5400,
+      "name": "Old GPU",
+      "prompt_phrase": "dusty black fan graphics card"
+    },
+    {
+      "id": "new_gpu",
+      "interaction": "grab",
+      "keyframe": 90,
+      "name": "Replacement GPU",
+      "prompt_phrase": "clean black single-fan graphics card"
+    }
+  ],
+  "procedure": {
+    "id": "swap-graphics-card-msi-trident-3",
+    "title": "Swap the graphics card in an MSI Trident 3"
+  },
+  "steps": [
+    {
+      "action": "pull",
+      "check": "Vented strip is free in hand and chassis edge is exposed",
+      "coach": "Pry gently around the edge to pop it free.",
+      "custom_action": "pry",
+      "end_frame": 750,
+      "failure": "Forcing it snaps the plastic tabs",
+      "instruction": "Pry up the vented chassis panel to remove it",
+      "order": 1,
+      "part_id": "vent_panel",
+      "safety": false,
+      "start_frame": 570
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Both screws are out and set aside",
+      "coach": "Keep these two together, they are the cover screws.",
+      "custom_action": "unscrew",
+      "end_frame": 1140,
+      "failure": "Cover will not slide if screws remain",
+      "instruction": "Unscrew the two cover screws",
+      "order": 2,
+      "part_id": "chassis_screw",
+      "safety": false,
+      "start_frame": 990
+    },
+    {
+      "action": "pull",
+      "check": "Side cover slides off and internals are exposed",
+      "coach": "Slide it straight to release the hooks.",
+      "custom_action": "slide",
+      "end_frame": 1470,
+      "failure": "Lifting without sliding bends the tabs",
+      "instruction": "Slide the whole computer cover off",
+      "order": 3,
+      "part_id": "side_cover",
+      "safety": true,
+      "start_frame": 1290
+    },
+    {
+      "action": "inspect",
+      "check": "GPU fan and CPU blower are both visible and dusty but intact",
+      "coach": "Take a good look before you touch anything.",
+      "end_frame": 1740,
+      "failure": "Missing damage or cable routing causes later errors",
+      "instruction": "Inspect the CPU cooler and GPU area",
+      "order": 4,
+      "part_id": "cpu_cooler",
+      "safety": false,
+      "start_frame": 1500
+    },
+    {
+      "action": "turn_ccw",
+      "check": "All three retaining screws including the one under the motherboard are out",
+      "coach": "Don't miss the hidden third one.",
+      "custom_action": "unscrew",
+      "end_frame": 2280,
+      "failure": "GPU stays locked to the frame",
+      "instruction": "Unscrew the three GPU retaining screws",
+      "order": 5,
+      "part_id": "retaining_screw",
+      "safety": false,
+      "start_frame": 1950
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Bracket screws are removed and kept separate as different screws",
+      "coach": "Remember these are different, keep them apart.",
+      "custom_action": "unscrew",
+      "end_frame": 2910,
+      "failure": "Mixing screws causes cross-threading on reassembly",
+      "instruction": "Unscrew the GPU bracket screws",
+      "order": 6,
+      "part_id": "bracket_screw",
+      "safety": false,
+      "start_frame": 2730
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Clip screw is out",
+      "coach": "This one is different too.",
+      "custom_action": "unscrew",
+      "end_frame": 3300,
+      "failure": "Clip cannot move with screw in",
+      "instruction": "Unscrew the support clip screw",
+      "order": 7,
+      "part_id": "bracket_screw",
+      "safety": false,
+      "start_frame": 3090
+    },
+    {
+      "action": "pull",
+      "check": "Clip is pulled clear of the GPU",
+      "coach": "Pull it straight out of the way.",
+      "end_frame": 3600,
+      "failure": "GPU catches on the clip and damages the slot",
+      "instruction": "Pull the support clip out of the way",
+      "order": 8,
+      "part_id": "support_clip",
+      "safety": false,
+      "start_frame": 3420
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Supporting bracket screws at the connector end are out",
+      "coach": "Get both bracket screws here as well.",
+      "custom_action": "unscrew",
+      "end_frame": 3960,
+      "failure": "Rear bracket holds the card in",
+      "instruction": "Unscrew the supporting bracket screws",
+      "order": 9,
+      "part_id": "bracket_screw",
+      "safety": false,
+      "start_frame": 3780
+    },
+    {
+      "action": "pull",
+      "check": "Wire is free from its clip and board",
+      "coach": "Ease the cable up with the tool.",
+      "custom_action": "unplug",
+      "end_frame": 4170,
+      "failure": "Pulling chassis apart with cable attached tears the connector",
+      "instruction": "Disconnect the antenna wire",
+      "order": 10,
+      "part_id": "antenna_wire",
+      "safety": false,
+      "start_frame": 3990
+    },
+    {
+      "action": "pull",
+      "check": "Back cover separates and can be lifted away",
+      "coach": "Nice - pull both sides apart gently.",
+      "end_frame": 4650,
+      "failure": "Forcing it cracks the frame or cables",
+      "instruction": "Gently pull both sides apart to remove the metal cover",
+      "order": 11,
+      "part_id": "back_cover",
+      "safety": false,
+      "start_frame": 4380
+    },
+    {
+      "action": "pull",
+      "check": "Power plug is detached from the GPU",
+      "coach": "Unplug the GPU power first.",
+      "custom_action": "unplug",
+      "end_frame": 4980,
+      "failure": "Pulling the card with power attached damages the plug",
+      "instruction": "Unplug the GPU power cable",
+      "order": 12,
+      "part_id": "gpu_power_cable",
+      "safety": true,
+      "start_frame": 4830
+    },
+    {
+      "action": "pull",
+      "check": "GPU lifts evenly out of the PCIe slot with gold fingers visible",
+      "coach": "Apply even pressure and lift it straight out.",
+      "end_frame": 5610,
+      "failure": "Rocking or twisting cracks the slot",
+      "instruction": "Pull the old graphics card from its slot",
+      "order": 13,
+      "part_id": "old_gpu",
+      "safety": true,
+      "start_frame": 5310
+    },
+    {
+      "action": "pull",
+      "check": "Adapter cable is free from old card for reuse",
+      "coach": "Save this cable, you will need it later.",
+      "custom_action": "unplug",
+      "end_frame": 5940,
+      "failure": "New card has no power without this cable",
+      "instruction": "Detach the power adapter cable from the old card",
+      "order": 14,
+      "part_id": "gpu_power_cable",
+      "safety": false,
+      "start_frame": 5730
+    },
+    {
+      "action": "place",
+      "check": "New card is seated fully in the slot",
+      "coach": "Seat the replacement straight down.",
+      "end_frame": 6300,
+      "failure": "Partial seating causes no video",
+      "instruction": "Place the replacement graphics card into the slot",
+      "order": 15,
+      "part_id": "new_gpu",
+      "safety": true,
+      "start_frame": 6000
+    }
+  ]
+}

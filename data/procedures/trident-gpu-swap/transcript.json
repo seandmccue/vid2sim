@@ -1,0 +1,16 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "Nice.",
+  "audio_duration_ms": 260080,
+  "fps": 30.0,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 151420,
+      "end_ms": 152220,
+      "start_frame": 4542,
+      "end_frame": 4566,
+      "text": "Nice."
+    }
+  ]
+}

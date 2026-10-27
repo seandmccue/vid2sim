@@ -1,0 +1,13 @@
+{
+  "procedure_id": "trident-gpu-swap",
+  "written_by": "Claude, from the clip's burned-in captions and a frame contact sheet, before running the pipeline. Not a trainer's list; test data only. Clip has no spoken narration.",
+  "steps": [
+    { "order": 1, "part": "rear panel screws", "action": "turn_ccw", "text": "Remove the two screws on the rear panel." },
+    { "order": 2, "part": "side panel screws", "action": "turn_ccw", "text": "Remove the side panel screws; note they are different sizes." },
+    { "order": 3, "part": "side panels", "action": "pull", "text": "Gently pull both side panels apart." },
+    { "order": 4, "part": "plastic shield", "action": "lift", "text": "Remove the plastic shield." },
+    { "order": 5, "part": "graphics card screws", "action": "turn_ccw", "text": "Remove the screws holding the graphics card." },
+    { "order": 6, "part": "old graphics card", "action": "pull", "text": "Pull the old graphics card out of its slot." },
+    { "order": 7, "part": "new graphics card", "action": "place", "text": "Insert the new graphics card and push lightly until it clicks into place." }
+  ]
+}

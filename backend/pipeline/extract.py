@@ -225,32 +225,42 @@ def extract(file_id: str, info: VideoInfo, transcript: dict, out_dir: Path, metr
     return draft
 
 
-def verify(draft: dict, transcript: dict, out_dir: Path, metrics: Metrics, resume: bool = False) -> dict:
-    """Pass 2. Flags steps the narration does not support. Writes review.json."""
+def verify(draft: dict, transcript: dict, out_dir: Path, metrics: Metrics, resume: bool = False,
+           file_id: str | None = None) -> dict:
+    """Pass 2. Flags steps the evidence does not support. Writes review.json.
+    Evidence is the narration when there is one; when the transcript is empty or thin (a clip with music and
+    burned-in captions, like procedure #2), the video itself is sent as well so on-screen text counts.
+    Flagging every step of a captions-only clip as 'unsupported by narration' is noise, not review."""
     if resume and (out_dir / "review.json").exists():
         metrics.log("verify", SPARK_MODEL, 0.0, 0.0, note="resumed from review.json")
         return json.loads((out_dir / "review.json").read_text())
     ttext = transcript_as_text(transcript)
+    thin = len(ttext.split()) < 8 * max(1, len(draft["steps"]))   # fewer than ~8 words per step
     if is_mock():
         review = {"steps": [{"order": s["order"], "supported": True, "evidence": "mock", "suggested_fix": ""}
                             for s in draft["steps"]]}
         metrics.log("verify", SPARK_MODEL, 0.0, 0.0, note="mock")
-    elif not ttext.strip():
+    elif not ttext.strip() and not file_id:
         review = {"steps": [], "note": "no narration to verify against"}
         metrics.log("verify", SPARK_MODEL, 0.0, 0.0, note="skipped, no narration")
     else:
-        prompt = f"""Below is a draft training procedure extracted from a video, followed by the narration transcript.
-For each step, decide whether the narration supports it as written. A step is unsupported if the narration
-describes a different part, a different action, a different order, or never mentions it. Quote the narration.
+        use_video = bool(file_id) and thin
+        prompt = f"""Below is a draft training procedure extracted from a video{', followed by the narration transcript' if ttext.strip() else ''}.
+For each step, decide whether the evidence supports it as written. Evidence is the narration{' and, because the narration is thin or absent, the video itself: what is visibly done and any on-screen captions' if use_video else ''}.
+A step is unsupported if the evidence shows a different part, a different action, a different order, or never shows it.
+Quote the narration or caption, or describe the frames, as evidence.
 
 DRAFT:
 {json.dumps(draft, indent=1)}
 
 NARRATION:
-{ttext}
+{ttext or '(none)'}
 """
-        review = _responses_structured([{"type": "input_text", "text": prompt}], VERIFY_SCHEMA,
-                                       "procedure_review", metrics, "verify")
+        blocks = [{"type": "input_text", "text": prompt}]
+        if use_video:
+            blocks.append({"type": "input_file", "file_id": file_id})
+        review = _responses_structured(blocks, VERIFY_SCHEMA, "procedure_review", metrics, "verify")
+        review["evidence_mode"] = "narration+video" if use_video else "narration"
     flagged = [r for r in review.get("steps", []) if not r.get("supported", True)]
     review["flagged_count"] = len(flagged)
     write_json(out_dir / "review.json", review)

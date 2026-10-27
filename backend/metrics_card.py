@@ -52,7 +52,7 @@ def render(rows: list[dict], out: Path = OUT) -> Path:
     d = ImageDraw.Draw(img)
     d.text((pad, 50), "vid2sim", font=_font(56, True), fill=(230, 233, 239))
     d.text((pad, 125), "Phone video in. Hands-first Quest training module out. Measured on the Meta Model API.", font=_font(28), fill=(139, 147, 163))
-    cols = [("Procedure", pad), ("Upload → playable", 720), ("API cost", 1000), ("Steps vs trainer", 1200), ("Parts text / box / manual", 1330)]
+    cols = [("Procedure", pad), ("Upload → playable", 720), ("API cost", 1000), ("Steps vs trainer", 1200), ("Parts T / B / M", 1400)]
     y = head - 50
     for label, x in cols:
         d.text((x, y), label.upper(), font=_font(20), fill=(139, 147, 163))
@@ -64,7 +64,7 @@ def render(rows: list[dict], out: Path = OUT) -> Path:
         d.text((720, y + 20), f"{r['minutes']:.1f} min", font=_font(44, True), fill=(76, 195, 255))
         d.text((1000, y + 20), f"${r['cost']:.2f}", font=_font(44, True), fill=(61, 220, 132))
         d.text((1200, y + 20), r["steps"], font=_font(44, True), fill=(230, 233, 239))
-        d.text((1330, y + 20), r["parts"], font=_font(36, True), fill=(230, 233, 239))
+        d.text((1400, y + 20), r["parts"], font=_font(36, True), fill=(230, 233, 239))
         y += rowh
         d.line([(pad, y), (W - pad, y)], fill=(38, 43, 53), width=1)
     d.text((pad, H - 90), "Spark understands · SAM segments · Muse Code builds · Muse Image paints", font=_font(30, True), fill=(76, 195, 255))

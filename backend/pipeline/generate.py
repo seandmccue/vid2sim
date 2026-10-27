@@ -56,6 +56,7 @@ Engine interface:
 
 Constraints:
 - Use only UnityEngine and Oculus.Interaction (Meta XR Interaction SDK) APIs. No third-party packages.
+  HandGrabInteractable lives in Oculus.Interaction.HandGrab; GrabTypeFlags in Oculus.Interaction.Grab. Add the usings.
 - Detect completion from hand interaction on the part's GameObject (e.g. a HandGrabInteractable's
   WhenStateChanged / WhenPointerEventRaised, or transform rotation/translation thresholds) and call emit once.
 - Expose thresholds as [SerializeField] floats with sensible defaults.
@@ -111,6 +112,26 @@ def strip_fences(code: str) -> str:
 
 
 SDK_GUARD = "#if META_INTERACTION_SDK"
+# Types the generated scripts reach for and the using each one needs. Spark drops a using about one time
+# in four; adding the missing line is cheaper than a failed gate and a regeneration.
+REQUIRED_USINGS = {
+    "HandGrabInteractable": "Oculus.Interaction.HandGrab",
+    "GrabTypeFlags": "Oculus.Interaction.Grab",
+    "PokeInteractable": "Oculus.Interaction",
+    "Grabbable": "Oculus.Interaction",
+    "InteractableState": "Oculus.Interaction",
+    "PointerEventType": "Oculus.Interaction",
+}
+
+
+def ensure_usings(code: str) -> str:
+    present = set(re.findall(r"^\s*using\s+([\w.]+)\s*;", code, re.M))
+    needed = [ns for t, ns in REQUIRED_USINGS.items() if re.search(rf"\b{t}\b", code) and ns not in present]
+    if not needed:
+        return code
+    lines = "".join(f"using {ns};\n" for ns in dict.fromkeys(needed))
+    m = re.search(r"^\s*using\s+[\w.]+\s*;\s*$", code, re.M)
+    return code[:m.start()] + lines + code[m.start():] if m else lines + code
 
 
 def guard_for_sdk(code: str) -> str:
@@ -188,7 +209,7 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
                         "note": "generator returned no code; engine falls back to the vocabulary verb"})
             continue
         candidate = staging / f"{cls}.cs.pending"
-        candidate.write_text(guard_for_sdk(strip_fences(code)))
+        candidate.write_text(guard_for_sdk(ensure_usings(strip_fences(code))))
         pending.append((verb, cls, candidate))
     if not pending:
         return out
@@ -206,6 +227,17 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
 
 
 MAX_PARALLEL = int(os.environ.get("VID2SIM_PARALLEL", "4"))
+TEXTURE_MAX_PX = int(os.environ.get("VID2SIM_TEXTURE_MAX_PX", "1024"))
+
+
+def shrink_texture(path: Path, max_px: int = TEXTURE_MAX_PX) -> None:
+    """Muse Image returns ~2000 px PNGs (~1.4 MB each). A primitive on a bench never needs more than 1024."""
+    from PIL import Image
+    img = Image.open(path)
+    if max(img.size) <= max_px:
+        return
+    img.thumbnail((max_px, max_px), Image.LANCZOS)
+    img.save(path, optimize=True)
 
 
 def _texture_one(p: dict, work: Path, tex_dir: Path, metrics: Metrics) -> tuple[str, Path | None]:
@@ -217,6 +249,7 @@ def _texture_one(p: dict, work: Path, tex_dir: Path, metrics: Metrics) -> tuple[
         return p["id"], None
     if is_mock():
         shutil.copy(crop, target)
+        shrink_texture(target)
         metrics.log("texture", IMAGE_MODEL, 0.0, 0.0, note="mock, crop copied")
         return p["id"], target
     c = client()

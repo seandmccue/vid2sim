@@ -82,9 +82,14 @@ Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs ha
 
 | Procedure | Upload → playable | API cost | Steps correct vs ground truth | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
-| Nazava water-filter install, 79 s, CC BY test clip (run 20261026-193913) | 9.6 min | $0.91 + $0.25 code-gen rerun | 6/7 matched and correct, 1 extra step (Spark split "take the base" into its own step) | 3 / 2 / 2 |
-| synthetic colour-bar clip, 6 s (run 20261026-173002, chain check only) | 2.8 min | $0.32 | n/a (no content; Spark invented steps from the title hint) | 0 / 0 / 5 |
+| Nazava water-filter install, 79 s, 848×480, narrated, CC BY test clip | 9.6 min single pass (14.6 min incl. a code-gen rerun) | $1.21 | 6/7, 1 extra | 3 / 2 / 2 |
+| MSI Trident GPU swap, 260 s, 1080p, no narration, CC BY test clip | 24.1 min incl. two crash-and-resume passes | $2.39 | 5/7, 9 finer-grained extras; verify correctly flagged 1 invented step | 3 / 7 / 2 |
+| synthetic colour-bar clip, 6 s (chain check only) | 2.8 min | $0.32 | n/a | 0 / 0 / 5 |
 | compressor-filter-swap (Sean's own footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
+
+Both test clips are attributed in `data/procedures/*/ATTRIBUTION.md` and are never part of the demo. Numbers are
+aggregated over every run of that clip (resumed stages cost $0 and 0 s); the per-stage rows are in `metrics/runs.csv`.
+Rendered card: `docs/metrics-card.png`.
 
 Notes on the Nazava run (`data/procedures/nazava/metrics.json`):
 
@@ -96,10 +101,22 @@ Notes on the Nazava run (`data/procedures/nazava/metrics.json`):
   (94 frames) from the text prompt alone. The base stand and tube went through the box fallback; the tube box is
   wrong (Spark boxed the container in the presenter's hands), which the dashboard overlay shows at a glance. The
   rubber seal and the lid were found by neither path and are marked `manual` for the trainer to draw.
-- Spark's reasoning shares its output budget: at 6000 tokens the first extraction returned nothing, and at 8000
-  the three generated C# scripts came back empty. Both now default to 16000 with one retry at double; one script needed the 32000 retry.
-- Wall time is dominated by sequential Muse Image (7 × ~17 s) and code generation (3 × ~48 s); both are
-  parallelisable. The SAM calls total under a minute.
+
+Notes on the GPU-swap run (`data/procedures/trident-gpu-swap/metrics.json`), the Nov 2 "different machine,
+zero code changes" test:
+
+- No narration at all (the transcript is the word "Nice."). Spark 1.3 read the burned-in captions and extracted
+  15 steps and 12 parts in order; our 7-step ground truth is coarser, so 9 extracted steps count as extras.
+- The verify pass, given the video as evidence when the transcript is thin, cited the caption behind each of 14
+  steps and flagged the 15th ("place the replacement card") as never shown: the trim ends before the install.
+  That is a hallucinated step caught before it reached a trainee.
+- SAM found 10 of 12 parts, 7 of them only through the box fallback (screws, cables, covers at 0.84 to 0.99
+  confidence). The CPU cooler and the new card were found by neither path.
+- It did not run with zero code changes. It found that meta-sam-parser validates every mask on push in pure
+  Python (8 CPU minutes for one 1080p part), that a 1080p PNG keyframe stalls the box fallback, and a NameError
+  in the texture stage the mock tests had not reached. All three fixes are in the pipeline, none in the spec.
+- Spark's reasoning shares its output budget: at 6000 tokens the first Nazava extraction returned nothing, and at
+  8000 the three generated C# scripts came back empty. Both now default to 16000 with one retry at double.
 
 Prices used: Spark $1.25/M in, $4.25/M out; SAM $0.20 per 1k frames, 50-frame minimum per request.
 Transcribe and Image rows are labelled estimates until Billing confirms the unit price.
