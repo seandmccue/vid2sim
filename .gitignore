@@ -28,3 +28,8 @@ unity/TrainingSim/*.csproj
 unity/TrainingSim/*.sln
 # os
 .DS_Store
+# dashboard runtime artifacts
+data/procedures/*/frames/
+data/procedures/*/history/
+data/procedures/*/status.json
+data/procedures/*/smoke_masks/

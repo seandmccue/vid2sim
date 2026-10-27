@@ -4,7 +4,7 @@
     "id": "nazava-water-filter-install",
     "title": "Install the Nazava water filter",
     "source_video": "file-935204432782296",
-    "fps": 24.0,
+    "fps": 24,
     "width": 848,
     "height": 480,
     "duration_s": 78.62
@@ -49,13 +49,13 @@
       "interaction": "grab",
       "keyframe": 460,
       "box": [
-        354,
-        200,
-        494,
-        280
+        260,
+        191,
+        359,
+        298
       ],
       "size_hint_m": 0.1,
-      "confidence": 0.0,
+      "confidence": 1,
       "source": "manual"
     },
     {
@@ -119,7 +119,7 @@
         280
       ],
       "size_hint_m": 0.1,
-      "confidence": 0.0,
+      "confidence": 0,
       "source": "manual"
     }
   ],
@@ -168,7 +168,7 @@
       "custom_action": "insert",
       "end_frame": 690,
       "failure": "Water bypasses the filter and stays dirty.",
-      "instruction": "Insert the white ceramic filter candle into the upper reservoir.",
+      "instruction": "Hold the white ceramic filter candle on the blue part.",
       "order": 4,
       "part_id": "ceramic_filter",
       "safety": true,
