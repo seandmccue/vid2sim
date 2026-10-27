@@ -3,8 +3,8 @@
   "procedure": {
     "id": "nazava-water-filter-install",
     "title": "Install the Nazava water filter",
-    "source_video": "file-935204432782296",
-    "fps": 24,
+    "source_video": "file-1445350167699064",
+    "fps": 24.0,
     "width": 848,
     "height": 480,
     "duration_s": 78.62
@@ -15,16 +15,16 @@
       "name": "Base Stand",
       "prompt_phrase": "dark blue plastic base stand",
       "interaction": "grab",
-      "keyframe": 155,
+      "keyframe": 180,
       "box": [
-        304,
-        300,
-        402,
-        377
+        354,
+        200,
+        494,
+        280
       ],
-      "size_hint_m": 0.07,
-      "confidence": 0.66,
-      "source": "box"
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
     },
     {
       "id": "lower_container",
@@ -47,16 +47,16 @@
       "name": "Rubber Seal",
       "prompt_phrase": "black rubber sealing ring",
       "interaction": "grab",
-      "keyframe": 460,
+      "keyframe": 461,
       "box": [
-        260,
-        191,
-        359,
-        298
+        140,
+        157,
+        171,
+        172
       ],
-      "size_hint_m": 0.1,
-      "confidence": 1,
-      "source": "manual"
+      "size_hint_m": 0.03,
+      "confidence": 0.906,
+      "source": "box"
     },
     {
       "id": "ceramic_filter",
@@ -79,16 +79,16 @@
       "name": "Siphon Tube",
       "prompt_phrase": "blue plastic siphon tube",
       "interaction": "turn",
-      "keyframe": 801,
+      "keyframe": 800,
       "box": [
-        56,
-        212,
-        218,
-        352
+        354,
+        200,
+        494,
+        280
       ],
-      "size_hint_m": 0.115,
-      "confidence": 0.9,
-      "source": "box"
+      "size_hint_m": 0.1,
+      "confidence": 0.0,
+      "source": "manual"
     },
     {
       "id": "upper_container",
@@ -111,16 +111,16 @@
       "name": "Filter Lid",
       "prompt_phrase": "dark blue circular filter lid",
       "interaction": "grab",
-      "keyframe": 1700,
+      "keyframe": 1728,
       "box": [
-        354,
-        200,
-        494,
-        280
+        410,
+        342,
+        533,
+        410
       ],
-      "size_hint_m": 0.1,
-      "confidence": 0,
-      "source": "manual"
+      "size_hint_m": 0.088,
+      "confidence": 0.984,
+      "source": "box"
     }
   ],
   "steps": [
@@ -152,7 +152,6 @@
       "action": "place",
       "check": "Seal is fully seated with no gaps.",
       "coach": "Push that seal in tight.",
-      "custom_action": "insert",
       "end_frame": 520,
       "failure": "Unfiltered water leaks past the filter.",
       "instruction": "Insert the first black rubber seal into the upper reservoir hole.",
@@ -165,10 +164,9 @@
       "action": "place",
       "check": "Filter stands upright and sealed in the reservoir.",
       "coach": "Hold the blue part and press it in.",
-      "custom_action": "insert",
       "end_frame": 690,
       "failure": "Water bypasses the filter and stays dirty.",
-      "instruction": "Hold the white ceramic filter candle on the blue part.",
+      "instruction": "Insert the white ceramic filter candle into the upper reservoir.",
       "order": 4,
       "part_id": "ceramic_filter",
       "safety": true,
@@ -178,7 +176,6 @@
       "action": "turn_cw",
       "check": "Tube is hand-tight and straight on the filter.",
       "coach": "Turn it slowly until snug.",
-      "custom_action": "screw",
       "end_frame": 920,
       "failure": "Tube detaches and filtration stops.",
       "instruction": "Screw the blue siphon tube onto the ceramic filter.",
@@ -191,7 +188,6 @@
       "action": "place",
       "check": "Reservoir nests fully and tube hangs into lower container.",
       "coach": "Lower it straight in.",
-      "custom_action": "insert",
       "end_frame": 1201,
       "failure": "Water spills and siphon cannot prime.",
       "instruction": "Insert the assembled upper reservoir into the lower container.",

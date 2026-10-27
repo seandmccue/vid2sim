@@ -17,7 +17,8 @@ A single-procedure VR training module takes Frame Sixty **[X] weeks** and **$[Y]
 3. **Segment.** SAM 3.1 finds and tracks every part across its step's frames from a text prompt. When the text prompt misses, Spark proposes a box on the keyframe and SAM re-runs from it. Every part records how it was found.
 4. **Build.** A data-driven Unity engine reads the spec: one object per part, sized from SAM's box, textured by Muse Image from the keyframe crop, with the Meta Interaction SDK component the action needs. Muse Code generates a script only for verbs the engine doesn't know, and every generated script passes a headless Unity compile before it's referenced.
 5. **Review.** The trainer sees the steps and the masks in a dashboard, renames a part, reorders a step, draws a box where SAM missed, and hits Rebuild. The spec hot-loads into the running headset build.
-6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored. Skipping a safety step fails the attempt, which is what industrial clients ask for.
+6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored. Skipping a safety step fails the attempt, which is what industrial clients ask for. Touch the wrong part and the
+   coach says so; stall for twenty seconds and it repeats the instruction and lights up the part it means.
 
 **Spark understands, SAM segments, Muse Code builds, Muse Image paints.**
 

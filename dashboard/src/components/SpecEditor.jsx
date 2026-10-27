@@ -75,7 +75,10 @@ export default function SpecEditor({ id, spec: initial, review, bundle, notify, 
                 <button className="icon" onClick={() => move(i, 1)}>↓</button>
                 <button className="icon" onClick={() => removeStep(i)}>✕</button>
               </div>
-              <input className="instr" value={s.instruction} onChange={e => update(n => n.steps[i].instruction = e.target.value)} />
+              <div className="row">
+                <img className="card" src={api.fileUrl(id, `bundle/cards/step_${String(s.order).padStart(2, '0')}.png`)} alt="" onError={e => { e.target.style.display = 'none' }} title="Muse Image step card" />
+                <input className="instr" value={s.instruction} onChange={e => update(n => n.steps[i].instruction = e.target.value)} />
+              </div>
               <div className="row small">
                 <input placeholder="check" value={s.check} onChange={e => update(n => n.steps[i].check = e.target.value)} />
                 <input placeholder="coach line" value={s.coach} onChange={e => update(n => n.steps[i].coach = e.target.value)} />

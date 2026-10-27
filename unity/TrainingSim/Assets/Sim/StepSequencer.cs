@@ -21,6 +21,11 @@ namespace Vid2Sim
         public event Action<Step, PartBehaviour> WrongPart;
         public event Action<Step> SafetySkipped;
         public event Action<bool> Finished;                // passed?
+        /// <summary>Raised once per step when nothing has happened for stallSeconds: the coach repeats the
+        /// instruction and the expected part is highlighted (the pitch's "coaching when the trainee stalls").</summary>
+        public event Action<Step, PartBehaviour> Stalled;
+        public float stallSeconds = 20f;
+        bool _stallRaised;
 
         PartFactory _factory;
         ActionDetector _detector;
@@ -75,10 +80,23 @@ namespace Vid2Sim
                 return;
             }
             _stepStart = Time.unscaledTime;
+            _stallRaised = false;
             var step = Current;
-            _detector.Arm(step, _factory, OnEvent, p => WrongPart?.Invoke(step, p));
+            _detector.Arm(step, _factory, OnEvent, p => { _stepStart = Time.unscaledTime; WrongPart?.Invoke(step, p); });
             StepStarted?.Invoke(step, Index);
         }
+
+        void Update()
+        {
+            if (!Running || Paused || _stallRaised || Current == null) return;
+            if (Time.unscaledTime - _stepStart < stallSeconds) return;
+            _stallRaised = true;
+            _factory.Spawned.TryGetValue(Current.part_id, out var expected);
+            Stalled?.Invoke(Current, expected);
+        }
+
+        /// <summary>Tests and debug menus: pretend the stall timer elapsed.</summary>
+        public void ForceStallCheck() { _stepStart = Time.unscaledTime - stallSeconds - 1f; Update(); }
 
         void OnEvent(StepEvent e)
         {

@@ -243,6 +243,31 @@ namespace Vid2Sim.Tests
         }
 
         [UnityTest]
+        public IEnumerator Stall_coaches_once_and_highlights_the_expected_part()
+        {
+            PartFactory factory = null; StepSequencer seq = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { factory = f; seq = s; });
+            int stalls = 0; PartBehaviour hinted = null;
+            seq.Stalled += (st, p) => { stalls++; hinted = p; };
+            seq.Begin(ReadSpec(seq), factory);
+            yield return null;
+            Assert.AreEqual(0, stalls, "no stall right after a step starts");
+            seq.ForceStallCheck();
+            Assert.AreEqual(1, stalls);
+            Assert.AreEqual("power_switch", hinted.Part.id);
+            hinted.Highlight();
+            Assert.IsTrue(hinted.IsHighlighted);
+            seq.ForceStallCheck();
+            Assert.AreEqual(1, stalls, "a stall is raised once per step");
+            // completing the step resets the timer for the next one
+            var sw = factory.Spawned["power_switch"]; sw.NotifySelect(); sw.NotifyUnselect(); yield return null;
+            Assert.AreEqual(2, seq.Current.order);
+            seq.ForceStallCheck();
+            Assert.AreEqual(2, stalls);
+            Assert.AreEqual("drain_valve", hinted.Part.id);
+        }
+
+        [UnityTest]
         public IEnumerator Pause_blocks_completion_and_resume_allows_it()
         {
             PartFactory factory = null; StepSequencer seq = null;

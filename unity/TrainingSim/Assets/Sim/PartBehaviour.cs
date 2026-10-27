@@ -39,10 +39,37 @@ namespace Vid2Sim
             if (on) { HoverSeconds = 0f; HoverStarted?.Invoke(this); } else HoverEnded?.Invoke(this);
         }
 
+        Renderer _renderer;
+        Color _baseColor;
+        float _highlightUntil;
+
         void Update()
         {
             if (IsHovered) HoverSeconds += Time.deltaTime;
+            if (_highlightUntil > 0f)
+            {
+                if (_renderer == null) _renderer = GetComponent<Renderer>();
+                if (_renderer != null)
+                {
+                    if (Time.unscaledTime < _highlightUntil)
+                    {
+                        float t = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 8f);
+                        _renderer.material.color = Color.Lerp(_baseColor, new Color(1f, 0.85f, 0.2f), t);
+                    }
+                    else { _renderer.material.color = _baseColor; _highlightUntil = 0f; }
+                }
+            }
         }
+
+        /// <summary>Pulse the part yellow for a few seconds so a stalled trainee sees what the coach means.</summary>
+        public void Highlight(float seconds = 4f)
+        {
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_renderer != null && _highlightUntil <= 0f) _baseColor = _renderer.material.color;
+            _highlightUntil = Time.unscaledTime + seconds;
+        }
+
+        public bool IsHighlighted => _highlightUntil > 0f;
 
         public void ResetPose()
         {

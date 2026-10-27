@@ -28,7 +28,7 @@ from backend.pipeline.validate import validate_spec  # noqa: E402
 def run(video: Path, *, work: Path | None = None, title: str | None = None, ground_truth: Path | None = None,
         reference_width_m: float = bundle_mod.DEFAULT_REFERENCE_WIDTH_M, skip_segment: bool = False,
         skip_generate: bool = False, unity_project: Path | None = None, streaming_root: Path | None = None,
-        resume: bool = False, progress=print) -> dict:
+        resume: bool = False, step_cards: bool = False, progress=print) -> dict:
     require_ffmpeg()
     video = video.resolve()
     if not video.exists():
@@ -62,12 +62,14 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
         unity = unity_project or (REPO_ROOT / "unity" / "TrainingSim")
         generated = [] if skip_generate else generate_mod.generate_actions(spec, unity, metrics, gate=not skip_generate and os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
         textures = {} if skip_generate else generate_mod.generate_textures(spec, work, metrics)
+        cards = generate_mod.generate_step_cards(spec, work, metrics) if (step_cards and not skip_generate) else {}
         out_dir = package_mod.package(spec, work, streaming_root)
     metrics.log("total", "pipeline", total.wall, 0.0, note="upload to StreamingAssets")
 
     card = metrics_mod.summary(spec, metrics, work, ground_truth or (work / "ground_truth.json"))
     card["generated_actions"] = generated
     card["textures"] = len(textures)
+    card["step_cards"] = len(cards)
     card["streaming_assets"] = str(out_dir)
     write_json(work / "metrics.json", card)
     progress(f"done in {total.wall:.1f}s, est. ${card['api_cost_usd']:.3f}; spec -> {work / 'spec.json'}; payload -> {out_dir}")
@@ -89,12 +91,14 @@ def main(argv=None) -> int:
     ap.add_argument("--skip-generate", action="store_true", help="no Muse Code / Muse Image calls")
     ap.add_argument("--mock", action="store_true", help="same as VID2SIM_MOCK=1")
     ap.add_argument("--resume", action="store_true", help="reuse transcript, draft, review, uploads and saved SAM output in the work folder")
+    ap.add_argument("--step-cards", action="store_true", help="Muse Image step card per step for the dashboard (cents each; also VID2SIM_STEP_CARDS=1)")
     ap.add_argument("--streaming-root", type=Path, help="override the Unity StreamingAssets/procedures folder")
     a = ap.parse_args(argv)
     if a.mock:
         os.environ["VID2SIM_MOCK"] = "1"
     card = run(a.video, work=a.work, title=a.title, ground_truth=a.ground_truth, reference_width_m=a.reference_width_m,
-               skip_segment=a.skip_segment, skip_generate=a.skip_generate, streaming_root=a.streaming_root, resume=a.resume)
+               skip_segment=a.skip_segment, skip_generate=a.skip_generate, streaming_root=a.streaming_root, resume=a.resume,
+               step_cards=a.step_cards or os.environ.get("VID2SIM_STEP_CARDS", "0") == "1")
     return 0 if card else 1
 
 

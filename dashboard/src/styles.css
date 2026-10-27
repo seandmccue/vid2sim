@@ -36,7 +36,8 @@ button.icon { padding:3px 7px; } button.link { border:none; background:none; col
 .step { border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:8px; background:#12151b; }
 .step.flagged { border-color:var(--warn); } .step.bad { border-color:var(--err); }
 .step .num { width:22px; height:22px; border-radius:50%; background:#20242e; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
-.step .instr { width:100%; margin-top:8px; font-size:15px; }
+.step .instr { width:100%; margin-top:8px; font-size:15px; flex:1; }
+.step .card { width:56px; height:56px; object-fit:cover; border-radius:6px; margin-top:8px; background:#0a0c10; }
 .step .frames { font-size:11px; color:var(--muted); font-variant-numeric: tabular-nums; }
 .step .why { font-size:12px; color:var(--warn); margin-top:6px; }
 .chk { font-size:12px; color:var(--muted); display:flex; gap:4px; align-items:center; } .chk input { width:auto; }

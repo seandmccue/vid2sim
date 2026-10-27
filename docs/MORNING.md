@@ -10,6 +10,7 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 | Backend + dashboard | Upload → run → steps → masks on demand → edit → draw a box → save → Rebuild → Quest, verified in the browser on both clips. `POST /api/procedures/<id>/build?apk=true` built `Builds/vid2sim.apk` (71 MB, three procedures) from the dashboard's own endpoint. |
 | Unity engine | Compiles against Meta XR SDK 207.0.1. 13 headless PlayMode tests pass, including the full compressor procedure to a pass with scoring. `Builds/vid2sim.apk` builds headless in ~2 min warm. **Rebuild it before sideloading**: the web build exposed two player-only failures (stripped Standard shader, missing TMP essentials) that were fixed on Oct 27; any APK from before that fix will spawn nothing. |
 | Generated code | 6 Spark-written `IStepAction` scripts compile against the SDK; 1 (`UnplugAction`) failed the gate and is pended, engine falls back to `pull`. |
+| Step cards | `--step-cards` adds a Muse Image card per step to the dashboard (8 generated for Nazava, ~$0.04 each). Optional; cut first if credits run short. |
 | Web output | Same engine built for WebGL (`Builds/web`, served at `/sim/`). Dashboard **Play in browser** opens any procedure mouse-first; saved edits hot-reload in the page. Played the compressor procedure start to finish in a browser (score 100). The first web runs found three engine bugs that also affected the Quest build: stripped shader, missing TMP essentials, and motion before a step armed counting toward it. All fixed; APK rebuilt. |
 | Docs | `docs/SUBMISSION.md`, `docs/VIDEO.md`, `docs/FILMING.md` drafted. |
 
@@ -19,7 +20,9 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
    ```bash
    adb install -r unity/TrainingSim/Builds/vid2sim.apk
    ```
-   The build loads `compressor-filter-swap` first (hand-written spec). A = restart, B = pause, Y = skip, X = recenter.
+   The build loads `compressor-filter-swap` first (hand-written spec); the other four procedures are inside it too
+   (`assets/procedures/*`), and `aapt dump badging` shows `com.oculus.permission.HAND_TRACKING`, arm64-v8a, min SDK 32.
+   A = restart, B = pause, Y = skip, X = recenter.
    If hands don't grab: the Building Blocks were added headless by script (`unity/README.md`); open the scene in the
    editor once and check the rig has Hand Tracking + Hand Grab + Poke interactors enabled.
 2. **Film procedure #1** per `docs/FILMING.md`. Write `ground_truth.json` before running anything. Then
@@ -43,4 +46,4 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 
 ## Spend so far
 
-$9.21 of API across every run so far, including the aborted ones (diving helmet $3.67, M151 $1.57, Nazava $1.21, GPU swap $2.39, chain check $0.32, smoke test $0.05). Rows in `metrics/runs.csv`.
+$9.60 of API across every run so far, including the aborted ones (diving helmet $3.67, M151 $1.57, Nazava $1.21, GPU swap $2.39, chain check $0.32, smoke test $0.05). Rows in `metrics/runs.csv`.

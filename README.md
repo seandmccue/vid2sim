@@ -21,6 +21,7 @@ Unity payload under `unity/TrainingSim/Assets/StreamingAssets/procedures/<id>/`.
 chain with no key and no cost (real SAM protocol text, canned model answers).
 
 Dashboard: `.venv/bin/uvicorn backend.app:app --port 8000` then `cd dashboard && npm install && npm run dev`.
+Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in the dashboard, cents each.
 
 ## How it works
 
@@ -38,7 +39,8 @@ Dashboard: `.venv/bin/uvicorn backend.app:app --port 8000` then `cd dashboard &&
 5. **Review.** The trainer sees the steps and the masks in the dashboard, renames a part or reorders a step,
    and hits Rebuild. The spec hot-loads into a running dev build on the headset over adb.
 6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored;
-   the coach panel speaks the instruction and one coaching line.
+   the coach panel speaks the instruction and one coaching line, calls out a wrong part, and after 20 s without
+   progress repeats the instruction and pulses the expected part.
 
 ## Repo layout
 
