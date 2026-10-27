@@ -55,27 +55,58 @@ def transcribe(video: Path, info: VideoInfo, out_dir: Path, metrics: Metrics, re
         metrics.log("transcribe", ASR_MODEL, 0.0, 0.0, note="mock")
         return data
 
-    request_part = {"mode": "ENDPOINTING", "model": ASR_MODEL, "audioEncoding": "WAV",
-                    "languageBias": ["English"]}
+    # The batch endpoint accepts at most 10 minutes / 32 MB per request; longer audio goes in 9-minute
+    # chunks whose turns are merged with their offsets.
     with Timer() as t:
-        with wav.open("rb") as fh:
-            resp = requests.post(
-                f"{BASE_URL}/asr/transcribe",
-                headers={"Authorization": f"Bearer {api_key()}", "Accept": "application/json"},
-                files={
-                    "request": (None, json.dumps(request_part), "application/json"),
-                    "audio": ("audio.wav", fh, "audio/wav"),
-                },
-                timeout=600,
-            )
-    resp.raise_for_status()
-    payload = resp.json()
+        payload = _transcribe_chunked(wav, info.duration_s)
     data = _turns_to_transcript(payload, info.fps)
     write_json(out_json, data)
     minutes = data["audio_duration_ms"] / 60000
     metrics.log("transcribe", ASR_MODEL, t.wall, minutes * PRICE_ASR_PER_MIN_EST,
                 note=f"{minutes:.2f} min, cost is an estimate")
     return data
+
+
+CHUNK_SECONDS = 540
+
+
+def _post_wav(wav: Path) -> dict:
+    request_part = {"mode": "ENDPOINTING", "model": ASR_MODEL, "audioEncoding": "WAV", "languageBias": ["English"]}
+    with wav.open("rb") as fh:
+        resp = requests.post(
+            f"{BASE_URL}/asr/transcribe",
+            headers={"Authorization": f"Bearer {api_key()}", "Accept": "application/json"},
+            files={"request": (None, json.dumps(request_part), "application/json"),
+                   "audio": ("audio.wav", fh, "audio/wav")},
+            timeout=600,
+        )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def _transcribe_chunked(wav: Path, duration_s: float) -> dict:
+    if duration_s <= CHUNK_SECONDS:
+        return _post_wav(wav)
+    import subprocess
+    merged = {"sessionId": "chunked", "transcript": "", "audioDurationMs": int(duration_s * 1000), "turns": []}
+    start, idx = 0.0, 0
+    while start < duration_s:
+        part = wav.with_name(f"{wav.stem}_chunk{idx}.wav")
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{start:.3f}", "-t", str(CHUNK_SECONDS), "-i", str(wav),
+                        "-acodec", "copy", str(part)], check=True, capture_output=True)
+        payload = _post_wav(part)
+        offset_ms = int(start * 1000)
+        for turn in payload.get("turns", []) or []:
+            turn = dict(turn)
+            turn["startMs"] = int(turn.get("startMs", 0)) + offset_ms
+            turn["endMs"] = int(turn.get("endMs", 0)) + offset_ms
+            turn["turnId"] = f"{idx}-{turn.get('turnId', len(merged['turns']))}"
+            merged["turns"].append(turn)
+        merged["transcript"] = (merged["transcript"] + " " + (payload.get("transcript") or "").strip()).strip()
+        part.unlink(missing_ok=True)
+        start += CHUNK_SECONDS
+        idx += 1
+    return merged
 
 
 def transcript_as_text(transcript: dict) -> str:
