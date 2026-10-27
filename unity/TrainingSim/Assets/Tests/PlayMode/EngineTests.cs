@@ -226,3 +226,89 @@ namespace Vid2Sim.Tests
         }
     }
 }
+
+namespace Vid2Sim.Tests
+{
+    /// <summary>Hot reload and result persistence: the parts of the loop the dashboard and the scorer depend on.</summary>
+    public class PersistenceTests
+    {
+        string _hotDir;
+
+        [SetUp]
+        public void SetUp()
+        {
+            InteractionBackends.Override = new SimpleInteractionBackend();
+            _hotDir = SpecLoader.PersistentDir("compressor-filter-swap");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            InteractionBackends.Override = null;
+            if (System.IO.Directory.Exists(_hotDir)) System.IO.Directory.Delete(_hotDir, true);
+        }
+
+        [UnityTest]
+        public IEnumerator Loader_prefers_the_hot_pushed_spec_over_streaming_assets()
+        {
+            // the dashboard's Rebuild pushes spec.json here over adb; the engine must load it first
+            var shipped = System.IO.File.ReadAllText(System.IO.Path.Combine(SpecLoader.StreamingDir("compressor-filter-swap"), "spec.json"));
+            var hot = shipped.Replace("\"title\": \"Replace the intake filter\"", "\"title\": \"HOT RELOADED\"");
+            Assert.AreNotEqual(shipped, hot, "fixture title must be present");
+            System.IO.Directory.CreateDirectory(_hotDir);
+            System.IO.File.WriteAllText(System.IO.Path.Combine(_hotDir, "spec.json"), hot);
+
+            var go = new GameObject("loader");
+            var loader = go.AddComponent<SpecLoader>();
+            loader.procedureId = "compressor-filter-swap";
+            yield return loader.Load();
+            Assert.IsNull(loader.Error, loader.Error);
+            Assert.AreEqual("HOT RELOADED", loader.Procedure.procedure.title);
+            Assert.That(loader.LoadedFrom, Does.Contain(Application.persistentDataPath));
+            Assert.Greater(loader.HotSpecMtime(), System.DateTime.MinValue);
+            Object.Destroy(go);
+        }
+
+        [UnityTest]
+        public IEnumerator Loader_rejects_an_invalid_hot_spec_without_crashing()
+        {
+            System.IO.Directory.CreateDirectory(_hotDir);
+            System.IO.File.WriteAllText(System.IO.Path.Combine(_hotDir, "spec.json"), "{\"schema_version\":\"1.0\",\"procedure\":{\"id\":\"x\"},\"parts\":[],\"steps\":[]}");
+            var go = new GameObject("loader");
+            var loader = go.AddComponent<SpecLoader>();
+            loader.procedureId = "compressor-filter-swap";
+            yield return loader.Load();
+            Assert.IsNotNull(loader.Error);
+            Assert.That(loader.Error, Does.Contain("validation"));
+            Assert.IsNull(loader.Procedure);
+            Object.Destroy(go);
+        }
+
+        [UnityTest]
+        public IEnumerator Scorer_writes_a_result_file_when_the_attempt_ends()
+        {
+            var cam = new GameObject("MainCamera", typeof(Camera)); cam.tag = "MainCamera";
+            var root = new GameObject("Vid2Sim");
+            var loader = root.AddComponent<SpecLoader>(); loader.procedureId = "compressor-filter-swap";
+            var factory = root.AddComponent<PartFactory>();
+            var seq = root.AddComponent<StepSequencer>();
+            var scorer = root.AddComponent<Scorer>();
+            yield return loader.Load();
+            yield return factory.Spawn(loader.Procedure, loader, cam.transform);
+            scorer.Attach(seq);
+            Scorer.Result saved = null;
+            scorer.Saved += r => saved = r;
+            seq.Begin(loader.Procedure, factory);
+            seq.Skip();   // step 1 is a safety step: attempt ends, result written
+            yield return null;
+            Assert.IsNotNull(saved);
+            Assert.IsFalse(saved.passed);
+            var dir = System.IO.Path.Combine(Application.persistentDataPath, "results");
+            Assert.IsTrue(System.IO.Directory.Exists(dir));
+            var files = System.IO.Directory.GetFiles(dir, "compressor-filter-swap_*.json");
+            Assert.Greater(files.Length, 0);
+            foreach (var f in files) System.IO.File.Delete(f);
+            Object.Destroy(root); Object.Destroy(cam);
+        }
+    }
+}
