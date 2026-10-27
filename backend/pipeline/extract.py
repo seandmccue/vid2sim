@@ -109,9 +109,23 @@ DEFAULT_MAX_OUTPUT_TOKENS = int(os.environ.get("SPARK_MAX_OUTPUT_TOKENS", "16000
 REASONING_EFFORT = os.environ.get("SPARK_REASONING_EFFORT", "")  # e.g. low | medium | high; empty = API default
 
 
+# Open-weight bonus: route the verify pass to Muse Spark Open on Baseten or Modal by setting
+# VERIFY_BASE_URL, VERIFY_API_KEY and VERIFY_MODEL (e.g. meta-models/muse-spark-open-102 on Baseten).
+# Extraction stays on Spark 1.3 because it needs native video input.
+VERIFY_BASE_URL = os.environ.get("VERIFY_BASE_URL", "")
+VERIFY_MODEL = os.environ.get("VERIFY_MODEL", "")
+
+
+def _verify_client():
+    if VERIFY_BASE_URL and VERIFY_MODEL:
+        from openai import OpenAI
+        return OpenAI(base_url=VERIFY_BASE_URL, api_key=os.environ.get("VERIFY_API_KEY", "") or os.environ.get("MODEL_API_KEY", ""), timeout=600), VERIFY_MODEL
+    return client(), SPARK_MODEL
+
+
 def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, metrics: Metrics,
                           stage: str, max_output_tokens: int | None = None, _retry: bool = True) -> dict:
-    c = client()
+    c, model = _verify_client() if stage == "verify" else (client(), SPARK_MODEL)
     budget = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
     text = ""
     usage_in = usage_out = 0
@@ -121,7 +135,7 @@ def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, me
         kwargs["reasoning"] = {"effort": REASONING_EFFORT}
     with Timer() as t:
         stream = c.responses.create(
-            model=SPARK_MODEL,
+            model=model,
             input=[{"type": "message", "role": "user", "content": prompt_blocks}],
             text={"format": {"type": "json_schema", "name": name, "schema": schema, "strict": False}},
             max_output_tokens=budget,
@@ -136,7 +150,7 @@ def _responses_structured(prompt_blocks: list[dict], schema: dict, name: str, me
                 u = getattr(payload, "usage", None)
                 if u:
                     usage_in, usage_out = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
-    metrics.log(stage, SPARK_MODEL, t.wall, spark_cost(usage_in, usage_out),
+    metrics.log(stage, model, t.wall, spark_cost(usage_in, usage_out),
                 tokens_in=usage_in, tokens_out=usage_out, note=f"{status}, budget {budget}")
     if status != "completed" or not text.strip():
         if _retry:
