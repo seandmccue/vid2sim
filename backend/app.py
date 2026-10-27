@@ -263,7 +263,9 @@ def build(pid: str, push: bool = True, apk: bool = False):
             pushed = True
             log.append(f"pushed to headset {remote} and broadcast reload")
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-            log.append(f"adb push failed: {getattr(e, 'stderr', b'') or e}")
+            err = getattr(e, "stderr", None) or getattr(e, "stdout", None) or b""
+            err = err.decode(errors="ignore") if isinstance(err, bytes) else str(err)
+            log.append("adb push failed: " + (err.strip() or str(e)))
     elif push:
         log.append("adb not found; skipped headset push")
     built = None

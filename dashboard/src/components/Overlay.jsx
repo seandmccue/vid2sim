@@ -14,19 +14,37 @@ export default function Overlay({ id, spec, part, track, onBox }) {
   const mask = track?.masks?.find(m => m.includes(`_f${String(cur.frame).padStart(6, '0')}_`))
   const [drag, setDrag] = useState(null)
   const ref = useRef()
+  const dragRef = useRef(null)
 
   const toFrame = (e) => {
     const r = ref.current.getBoundingClientRect()
-    return [Math.round((e.clientX - r.left) / r.width * W), Math.round((e.clientY - r.top) / r.height * H)]
+    const x = Math.round((e.clientX - r.left) / r.width * W), y = Math.round((e.clientY - r.top) / r.height * H)
+    return [Math.min(Math.max(x, 0), W - 1), Math.min(Math.max(y, 0), H - 1)]   // clamp: a drag past the edge still counts
   }
+
+  // Track the drag on the window: a mouse-up just outside the frame must still commit the box,
+  // otherwise the overlay is left showing a rectangle that was never saved.
+  useEffect(() => {
+    if (!drag) return
+    const move = (e) => { const [x, y] = toFrame(e); setDrag(d => d ? [d[0], d[1], x, y] : d) }
+    const up = () => {
+      const d = dragRef.current
+      setDrag(null)
+      if (d && Math.abs(d[2] - d[0]) > 4 && Math.abs(d[3] - d[1]) > 4)
+        onBox([Math.min(d[0], d[2]), Math.min(d[1], d[3]), Math.max(d[0], d[2]), Math.max(d[1], d[3])], cur.frame)
+    }
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseup', up)
+    return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up) }
+  }, [!!drag, cur.frame])
+  useEffect(() => { dragRef.current = drag }, [drag])
+
   const box = drag ? [Math.min(drag[0], drag[2]), Math.min(drag[1], drag[3]), Math.max(drag[0], drag[2]), Math.max(drag[1], drag[3])] : cur.box
 
   return (
     <div className="overlay">
       <div className="frame" ref={ref} style={{ aspectRatio: `${W}/${H}` }}
-        onMouseDown={e => { const [x, y] = toFrame(e); setDrag([x, y, x, y]) }}
-        onMouseMove={e => { if (drag) { const [x, y] = toFrame(e); setDrag(d => [d[0], d[1], x, y]) } }}
-        onMouseUp={() => { if (drag && Math.abs(drag[2] - drag[0]) > 4 && Math.abs(drag[3] - drag[1]) > 4) onBox([Math.min(drag[0], drag[2]), Math.min(drag[1], drag[3]), Math.max(drag[0], drag[2]) - 1, Math.max(drag[1], drag[3]) - 1].map(v => Math.max(0, v)), cur.frame); setDrag(null) }}>
+        onMouseDown={e => { e.preventDefault(); const [x, y] = toFrame(e); setDrag([x, y, x, y]) }}>
         <img src={api.frameUrl(id, cur.frame)} alt={`frame ${cur.frame}`} draggable={false} />
         {mask && <div className="mask" style={{ WebkitMaskImage: `url(${api.fileUrl(id, mask)})`, maskImage: `url(${api.fileUrl(id, mask)})` }} />}
         {box && <div className="box" style={{ left: `${box[0] / W * 100}%`, top: `${box[1] / H * 100}%`, width: `${(box[2] - box[0] + 1) / W * 100}%`, height: `${(box[3] - box[1] + 1) / H * 100}%` }} />}
