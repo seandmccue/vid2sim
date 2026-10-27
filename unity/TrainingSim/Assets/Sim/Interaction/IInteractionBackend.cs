@@ -11,8 +11,12 @@ namespace Vid2Sim.Interaction
 
     public static class InteractionBackends
     {
+        /// <summary>Tests and the XR Simulator set this to force a backend regardless of installed packages.</summary>
+        public static IInteractionBackend Override;
+
         public static IInteractionBackend Create()
         {
+            if (Override != null) return Override;
 #if META_INTERACTION_SDK
             return new MetaInteractionBackend();
 #else
