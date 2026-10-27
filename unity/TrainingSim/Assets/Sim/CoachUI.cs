@@ -13,7 +13,7 @@ namespace Vid2Sim
         public Vector3 offsetFromBench = new(0f, 0.45f, 0.15f);
         public Vector2 panelSize = new(0.6f, 0.26f);
 
-        TextMeshProUGUI _title, _step, _progress, _coach, _status;
+        TextMeshProUGUI _title, _step, _progress, _coach, _status, _how;
         Image _bg;
         Speech _speech;
         float _coachUntil;
@@ -40,7 +40,9 @@ namespace Vid2Sim
             _title = Text("Title", canvasGo.transform, 26, FontStyles.Bold, new Vector2(0.03f, 0.80f), new Vector2(0.80f, 0.97f));
             _progress = Text("Progress", canvasGo.transform, 22, FontStyles.Normal, new Vector2(0.80f, 0.80f), new Vector2(0.97f, 0.97f), TextAlignmentOptions.TopRight);
             _step = Text("Step", canvasGo.transform, 34, FontStyles.Bold, new Vector2(0.03f, 0.42f), new Vector2(0.97f, 0.78f));
-            _coach = Text("Coach", canvasGo.transform, 24, FontStyles.Italic, new Vector2(0.03f, 0.18f), new Vector2(0.97f, 0.40f));
+            _how = Text("How", canvasGo.transform, 24, FontStyles.Normal, new Vector2(0.03f, 0.30f), new Vector2(0.97f, 0.42f));
+            _how.color = new Color(0.55f, 0.85f, 1f);
+            _coach = Text("Coach", canvasGo.transform, 24, FontStyles.Italic, new Vector2(0.03f, 0.18f), new Vector2(0.97f, 0.30f));
             _coach.color = new Color(1f, 0.85f, 0.4f);
             _status = Text("Status", canvasGo.transform, 20, FontStyles.Normal, new Vector2(0.03f, 0.02f), new Vector2(0.97f, 0.17f));
             _status.color = new Color(0.7f, 0.75f, 0.8f);
@@ -80,6 +82,7 @@ namespace Vid2Sim
             seq.Finished += passed =>
             {
                 var r = scorer.Current;
+                if (_how) _how.text = "";
                 _step.text = passed ? "Procedure complete." : "Attempt failed.";
                 _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches." : "";
                 _status.text = "Say or press Restart to try again.";
@@ -88,6 +91,7 @@ namespace Vid2Sim
         }
 
         public void SetTitle(string title) { if (_title) _title.text = title; }
+        public void SetHow(string how) { if (_how) _how.text = how; }
         public void SetStatus(string s) { if (_status) _status.text = s; }
 
         static TextMeshProUGUI Text(string name, Transform parent, float size, FontStyles style, Vector2 min, Vector2 max,

@@ -15,9 +15,9 @@ namespace Vid2Sim
         public Transform origin;
         public bool hotReload = true;
         public float hotReloadPollSeconds = 2f;
-        public KeyCode restartKey = KeyCode.R, pauseKey = KeyCode.P, skipKey = KeyCode.N, reloadKey = KeyCode.L;
+        public KeyCode restartKey = KeyCode.R, pauseKey = KeyCode.P, skipKey = KeyCode.N, reloadKey = KeyCode.L, helpKey = KeyCode.H;
 
-        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech;
+        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech; StepGuide _guide;
         System.DateTime _lastSpecMtime;
         float _bootStart;
 
@@ -25,6 +25,7 @@ namespace Vid2Sim
         {
             _loader = GetComponent<SpecLoader>(); _factory = GetComponent<PartFactory>(); _seq = GetComponent<StepSequencer>();
             _scorer = GetComponent<Scorer>(); _ui = GetComponent<CoachUI>(); _speech = GetComponent<Speech>();
+            _guide = GetComponent<StepGuide>() ?? gameObject.AddComponent<StepGuide>();
             if (origin == null) origin = Camera.main ? (Camera.main.transform.parent ?? Camera.main.transform) : transform;
         }
 
@@ -34,6 +35,7 @@ namespace Vid2Sim
             _ui.Build(origin, _speech);
             _scorer.Attach(_seq);
             _ui.Attach(_seq, _scorer);
+            _guide.Attach(_seq, _factory, _ui);
             yield return LoadAndRun();
             if (hotReload) StartCoroutine(HotReloadLoop());
         }
@@ -112,6 +114,7 @@ namespace Vid2Sim
             if (Input.GetKeyDown(pauseKey)) TogglePause();
             if (Input.GetKeyDown(skipKey)) _seq.Skip();
             if (Input.GetKeyDown(reloadKey)) Reload();
+            if (Input.GetKeyDown(helpKey)) _guide.Demonstrate(_seq.Current);
 #if META_CORE_SDK && !UNITY_WEBGL
             // Quest: A = restart, B = pause, Y = skip (debug), X = recenter. Hands-only users never need these.
             if (OVRInput.GetDown(OVRInput.Button.One)) Restart();
