@@ -18,6 +18,8 @@ namespace Vid2Sim
         public string specUrl = "";
         [Tooltip("Optional: base URL for textures/<part>.png when specUrl is used. ?textures= on WebGL.")]
         public string texturesUrl = "";
+        [Tooltip("Optional: base URL for cutouts/<part>.png (RGBA photo cards) when specUrl is used. ?cutouts= on WebGL.")]
+        public string cutoutsUrl = "";
 
         public bool UsesRemoteSpec => !string.IsNullOrEmpty(specUrl);
         string _lastRemoteText;
@@ -52,6 +54,7 @@ namespace Vid2Sim
             var q = ParseQuery(Application.absoluteURL);
             if (q.TryGetValue("spec", out var sp) && !string.IsNullOrEmpty(sp)) specUrl = sp;
             if (q.TryGetValue("textures", out var tx) && !string.IsNullOrEmpty(tx)) texturesUrl = tx;
+            if (q.TryGetValue("cutouts", out var cu) && !string.IsNullOrEmpty(cu)) cutoutsUrl = cu;
             if (q.TryGetValue("procedure", out var pid) && !string.IsNullOrEmpty(pid)) procedureId = pid;
 #endif
         }
@@ -120,13 +123,18 @@ namespace Vid2Sim
             done(!string.IsNullOrEmpty(remote) && remote != _lastRemoteText);
         }
 
-        public IEnumerator LoadTexture(string partId, Action<Texture2D> done)
+        public IEnumerator LoadTexture(string partId, Action<Texture2D> done) => LoadImage("textures", texturesUrl, partId, done);
+
+        /// <summary>RGBA cutout of the part (bundle/cutouts); null when the pipeline had no image for it.</summary>
+        public IEnumerator LoadCutout(string partId, Action<Texture2D> done) => LoadImage("cutouts", cutoutsUrl, partId, done);
+
+        IEnumerator LoadImage(string folder, string remoteBase, string partId, Action<Texture2D> done)
         {
             if (UsesRemoteSpec)
             {
-                if (string.IsNullOrEmpty(texturesUrl)) { done(null); yield break; }
+                if (string.IsNullOrEmpty(remoteBase)) { done(null); yield break; }
                 byte[] rb = null;
-                yield return ReadBytes(texturesUrl.TrimEnd('/') + "/" + partId + ".png", b => rb = b);
+                yield return ReadBytes(remoteBase.TrimEnd('/') + "/" + partId + ".png", b => rb = b);
                 if (rb != null && rb.Length > 0)
                 {
                     var rt = new Texture2D(2, 2, TextureFormat.RGBA32, false);
@@ -137,7 +145,7 @@ namespace Vid2Sim
             }
             foreach (var dir in new[] { PersistentDir(procedureId), StreamingDir(procedureId) })
             {
-                var path = Path.Combine(dir, "textures", partId + ".png");
+                var path = Path.Combine(dir, folder, partId + ".png");
                 byte[] bytes = null;
                 yield return ReadBytes(path, b => bytes = b);
                 if (bytes != null && bytes.Length > 0)

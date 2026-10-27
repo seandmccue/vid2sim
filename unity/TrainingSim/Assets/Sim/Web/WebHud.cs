@@ -18,7 +18,8 @@ namespace Vid2Sim
         int _index = -1, _count;
         readonly HashSet<int> _done = new();
         bool _finished, _passed;
-        GUIStyle _h1, _h2, _body, _small, _pill, _toastStyle;
+        GUIStyle _h1, _h2, _body, _small, _pill, _toastStyle, _btn, _btnHot;
+        Rect _barRect;
 
         public void Attach(StepSequencer seq, StepGuide guide, Scorer scorer, PartFactory factory, string title, ProcedureSpec spec)
         {
@@ -51,6 +52,42 @@ namespace Vid2Sim
             _small = new GUIStyle(GUI.skin.label) { fontSize = 18, normal = { textColor = new Color(0.6f, 0.65f, 0.75f) } };
             _pill = new GUIStyle(GUI.skin.box) { fontSize = 22, fontStyle = FontStyle.Bold, normal = { textColor = Color.white }, alignment = TextAnchor.MiddleCenter, wordWrap = true };
             _toastStyle = new GUIStyle(GUI.skin.box) { fontSize = 24, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter, wordWrap = true };
+            _btn = new GUIStyle(GUI.skin.button) { fontSize = 20, fontStyle = FontStyle.Bold, normal = { textColor = Color.white }, hover = { textColor = Color.white } };
+            _btnHot = new GUIStyle(_btn) { normal = { textColor = new Color(0.35f, 0.95f, 1f) }, hover = { textColor = new Color(0.35f, 0.95f, 1f) } };
+        }
+
+        /// <summary>
+        /// Bottom action bar: which part is selected and one button per motion, acting on it. The button the
+        /// current step needs is drawn in cyan, matching the arrow on the part. Keys are listed on the buttons.
+        /// </summary>
+        void ActionBar(float W, float H)
+        {
+            var sel = SimpleMouseDriver.Active;
+            bool running = !_finished && _index >= 0 && string.IsNullOrEmpty(_caption);
+            float bw = 150f, bh = 44f, gap = 8f; int count = 6;
+            float barW = count * bw + (count - 1) * gap + 40f, barH = 96f;
+            _barRect = new Rect(W / 2f - barW / 2f, H - 60f - barH, barW, barH);
+            SimpleMouseDriver.PointerOverHud = running && _barRect.Contains(new Vector2(Input.mousePosition.x, H - Input.mousePosition.y));
+            if (!running) return;
+            GUI.Box(_barRect, GUIContent.none); GUI.Box(_barRect, GUIContent.none);
+            string who = sel != null ? $"Selected: {sel.part.Part.name}" : "Click a part to select it, then use these (or drag it).";
+            GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), who, sel != null ? _body : _small);
+            string need = _spec.steps[_index].action;
+            float x = _barRect.x + 20, y = _barRect.y + 40;
+            GUI.enabled = sel != null && !sel.isPress;
+            Button(ref x, y, bw, bh, "↺ Turn left  Q", need == Actions.TurnCcw, () => sel.Turn(-sel.turnStepDegrees));
+            Button(ref x, y, bw, bh, "↻ Turn right  E", need == Actions.TurnCw, () => sel.Turn(sel.turnStepDegrees));
+            Button(ref x, y, bw, bh, "↑ Lift  W", need == Actions.Lift, () => sel.Lift(1));
+            Button(ref x, y, bw, bh, "↓ Lower  S", false, () => sel.Lift(-1));
+            Button(ref x, y, bw, bh, "⇣ Pull out  X", need == Actions.Pull, () => sel.Pull(1));
+            Button(ref x, y, bw, bh, "⇡ Push back  Z", false, () => sel.Pull(-1));
+            GUI.enabled = true;
+        }
+
+        void Button(ref float x, float y, float w, float h, string label, bool hot, System.Action act)
+        {
+            if (GUI.Button(new Rect(x, y, w, h), label, hot ? _btnHot : _btn)) act();
+            x += w + 8f;
         }
 
         void OnGUI()
@@ -94,11 +131,13 @@ namespace Vid2Sim
                 GUI.Label(new Rect(28, y + i * 28, 360, 26), $"{mark} {steps[i].order}. {Shorten(steps[i].instruction, 36)}", st);
             }
 
+            ActionBar(W, H);
+
             // toast
             if (Time.unscaledTime < _toastUntil)
             {
                 old = GUI.color; GUI.color = _toastColor;
-                GUI.Box(new Rect(W / 2f - 320, H - 120, 640, 56), _toast, _toastStyle);
+                GUI.Box(new Rect(W / 2f - 320, H - 220, 640, 56), _toast, _toastStyle);
                 GUI.color = old;
             }
         }

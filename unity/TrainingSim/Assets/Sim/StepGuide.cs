@@ -16,6 +16,7 @@ namespace Vid2Sim
         public bool demoOnStepStart = true;
 
         PartFactory _factory;
+        MotionHint _hint;
         GameObject _ghost;
         Coroutine _running;
         public bool IsDemoRunning => _running != null;
@@ -26,13 +27,15 @@ namespace Vid2Sim
         public void Attach(StepSequencer seq, PartFactory factory, CoachUI ui)
         {
             _factory = factory;
+            _hint = GetComponent<MotionHint>() ?? gameObject.AddComponent<MotionHint>();
             seq.StepStarted += (s, i) =>
             {
                 ui?.SetHow(HowTo(s, factory.Backend));
                 LightLabel(s.part_id);
+                if (factory.Spawned.TryGetValue(s.part_id, out var part)) _hint.Show(part, s); else _hint.Hide();
                 if (demoOnStepStart) Demonstrate(s);
             };
-            seq.Finished += _ => LightLabel(null);
+            seq.Finished += _ => { LightLabel(null); _hint.Hide(); };
             seq.Stalled += (s, p) => Demonstrate(s);
             seq.Finished += _ => StopDemo();
         }
@@ -44,12 +47,12 @@ namespace Vid2Sim
             switch (s.action)
             {
                 case Actions.Press:   return mouse ? "Click it." : "Poke it with a finger.";
-                case Actions.Grab:    return mouse ? "Click and hold it." : "Grab it.";
-                case Actions.Pull:    return mouse ? "Drag it out, away from where it sits." : "Grab it and pull it out.";
-                case Actions.Lift:    return mouse ? "Drag it upward." : "Grab it and lift it.";
+                case Actions.Grab:    return mouse ? "Click it." : "Grab it.";
+                case Actions.Pull:    return mouse ? "Click it, then press Pull out (X) or drag it toward you." : "Grab it and pull it out.";
+                case Actions.Lift:    return mouse ? "Click it, then press Lift (W) or drag it upward." : "Grab it and lift it.";
                 case Actions.Place:   return mouse ? "Drag it onto the green zone and let go." : "Grab it and set it in the green zone.";
-                case Actions.TurnCw:  return mouse ? "Hover it and press E (clockwise)." : "Grab it and turn it clockwise.";
-                case Actions.TurnCcw: return mouse ? "Hover it and press Q (counter-clockwise)." : "Grab it and turn it counter-clockwise.";
+                case Actions.TurnCw:  return mouse ? "Click it, then press Turn right (E), clockwise." : "Grab it and turn it clockwise.";
+                case Actions.TurnCcw: return mouse ? "Click it, then press Turn left (Q), counter-clockwise." : "Grab it and turn it counter-clockwise.";
                 case Actions.Inspect: return mouse ? "Hold the cursor on it for two seconds." : "Look at it closely for two seconds.";
             }
             return "";
@@ -138,8 +141,8 @@ namespace Vid2Sim
                         case Actions.Pull:    pos = t0 + outward * 0.15f * wave; break;
                         case Actions.Lift:    pos = t0 + up * 0.12f * wave; break;
                         case Actions.Place:   pos = Vector3.Lerp(t0, target, Mathf.SmoothStep(0f, 1f, k)); break;
-                        case Actions.TurnCw:  rot = r0 * Quaternion.AngleAxis(-90f * Mathf.SmoothStep(0f, 1f, k), up); break;
-                        case Actions.TurnCcw: rot = r0 * Quaternion.AngleAxis(90f * Mathf.SmoothStep(0f, 1f, k), up); break;
+                        case Actions.TurnCw:  rot = r0 * Quaternion.AngleAxis(-90f * Mathf.SmoothStep(0f, 1f, k), part.TurnAxisLocal); break;
+                        case Actions.TurnCcw: rot = r0 * Quaternion.AngleAxis(90f * Mathf.SmoothStep(0f, 1f, k), part.TurnAxisLocal); break;
                         case Actions.Inspect: scale = part.transform.localScale * (1f + 0.3f * wave); break;
                     }
                     if (_ghost == null) yield break;
@@ -166,6 +169,8 @@ namespace Vid2Sim
             var zone = Resources.Load<Material>("Vid2SimZone");
             var m = zone ? new Material(zone) : new Material(Shader.Find("Standard"));
             m.color = new Color(1f, 0.85f, 0.2f, 0.45f);
+            var pr = part.GetComponent<Renderer>();
+            if (part.IsCard && pr && pr.material.mainTexture) m.mainTexture = pr.material.mainTexture;   // a yellow ghost of the real part
             mr.material = m;
             mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             return g;   // no collider: the ghost is never interactable

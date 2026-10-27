@@ -6,7 +6,8 @@ Data-driven Quest sim engine. Six scripts, no scene edits per procedure: a new p
 | Script | Does |
 | --- | --- |
 | `SpecLoader` | Loads + validates spec.json (persistentDataPath first for hot reload, then StreamingAssets) |
-| `PartFactory` | One primitive per part by `interaction`, scaled by `size_hint_m`, textured, Interaction SDK attached; seated bench layout |
+| `PartFactory` | One object per part: a photo card of the real part when the pipeline made a cutout (`bundle/cutouts`, SAM mask or Muse Image shot with the background removed), else a primitive by `interaction`; scaled by `size_hint_m`, Interaction SDK attached; seated bench layout in rows of six |
+| `MotionHint` | Cyan arrow on the current step's part: up for lift, toward the trainee for pull, an arc for a turn, a line to the zone for place |
 | `StepSequencer` | Current step, expected part + action, advances on the matching `StepEvent`, raises `WrongPart`; safety skips fail the attempt |
 | `Scorer` | Order, seconds per step, wrong-part touches, safety skips; writes `results/*.json` |
 | `CoachUI` | World-space panel: step text, progress, pass/fail, one coaching line; Android TTS |
@@ -77,9 +78,9 @@ Camera Rig`.
 `Assets/Scenes/Web.unity` (menu **Vid2Sim → Create Web Scene**) is a plain camera with `WebCameraRig` plus `Bootstrap`:
 no Meta rig. `BuildScript.BuildWebGL` builds it to `Builds/web/` (compression off, so any static server works) and
 `backend/app.py` serves it at `/sim/`. On WebGL `InteractionBackends.Create` always returns the mouse backend, the
-loader reads `?spec=&textures=` from the page URL, and `Speech` uses `window.speechSynthesis` through
+loader reads `?spec=&textures=&cutouts=` from the page URL, and `Speech` uses `window.speechSynthesis` through
 `Plugins/WebGL/Vid2SimWeb.jslib`. Generated scripts are guarded `#if META_INTERACTION_SDK && !UNITY_WEBGL`. Mouse mapping: click = press, drag = grab / pull / lift /
-place (drops snap onto the zone when the cursor is over it), hover + Q / E = quarter turn, hover = inspect; `?debug=1`
+place (drops snap onto the zone when the cursor is over it); click a part to select it and the bottom bar's buttons (or Q / E turn, W / S lift / lower, X pull out) move it; hover = inspect; `?debug=1`
 shows a hover/click readout. Engine rules found by the web runs: a step's pull/lift/turn thresholds are measured from the
 part's pose when the step armed, not from spawn, so earlier fiddling never completes a later step.
 

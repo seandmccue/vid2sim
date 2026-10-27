@@ -16,7 +16,7 @@ cp .env.example .env          # paste MODEL_API_KEY from https://dev.meta.ai/pla
 .venv/bin/python backend/run.py data/procedures/p1/p1.mp4
 ```
 
-Out: `spec.json`, `transcript.json`, `review.json`, `bundle/` (crops, masks, textures), `metrics.json`, and the
+Out: `spec.json`, `transcript.json`, `review.json`, `bundle/` (crops, masks, textures, cutouts), `metrics.json`, and the
 Unity payload under `unity/TrainingSim/Assets/StreamingAssets/procedures/<id>/`. Add `--mock` to run the whole
 chain with no key and no cost (real SAM protocol text, canned model answers).
 
@@ -55,6 +55,7 @@ backend/
     segment.py            SAM 3.1 per part, trim, box fallback, meta-sam-parser
     bundle.py             keyframes, crops, size hints, mask PNGs, spec.json
     generate.py           Muse Code (compile-gated) + Muse Image textures
+    cutouts.py            RGBA photo cards per part: Muse shot minus background, else SAM mask on the crop
     package.py            StreamingAssets payload
     validate.py / metrics.py / common.py
   mock/                   canned responses for VID2SIM_MOCK=1
@@ -156,7 +157,7 @@ Transcribe and Image rows are labelled estimates until Billing confirms the unit
 | Spark merges or misreads steps | Structured output against a fixed schema; second pass verifies each step against the transcript; dashboard review catches the rest |
 | SAM's text prompt misses an industrial part | Box fallback from Spark on the keyframe, or the trainer draws one in the dashboard. Zero matches is a branch, never a crash |
 | Generated Unity code doesn't compile | Engine is data-driven; Muse Code only writes the long tail, and every script passes a headless compile before it is referenced |
-| Parts have no 3D geometry | Representative primitives sized from SAM's box, textured from the keyframe crop. Photogrammetry is the roadmap, not the demo |
+| Parts have no 3D geometry | Each part is a photo card cut from the video: the SAM 3.1 keyframe mask (or the Muse Image product shot with its background removed) on a double-sided card sized from SAM's box, turning about its own face. Primitives only when a part has no image at all. Photogrammetry is the roadmap, not the demo |
 | Spark 1.3 audio is degraded | Narration goes through Voice Transcribe; Spark gets frames plus text |
 | Hand tracking flaky on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
 
@@ -177,7 +178,7 @@ The same engine ships twice from the same `spec.json`:
 | Output | Build | Input | Launch |
 | --- | --- | --- | --- |
 | Quest, hands-first | `BuildScript.BuildAndroid` → `Builds/vid2sim.apk` | Meta Interaction SDK: poke, hand grab, rotate | sideload; dashboard **Rebuild → Quest** hot-pushes a new spec |
-| Browser, mouse-first | `BuildScript.BuildWebGL` → `Builds/web/`, served at `/sim/` | click = press, drag = grab / pull / lift / place (snaps onto the zone), hover + Q/E = quarter turn, hover = inspect | dashboard **Play in browser** → `/api/procedures/<id>/play`; a saved edit hot-reloads in the open page |
+| Browser, mouse-first | `BuildScript.BuildWebGL` → `Builds/web/`, served at `/sim/` | click = press or select, drag = move (snaps onto the zone); the selected part has buttons for turn / lift / pull (keys Q/E, W/S, X), a cyan arrow on the part shows the motion the step needs, hover = inspect | dashboard **Play in browser** → `/api/procedures/<id>/play`; a saved edit hot-reloads in the open page |
 
 Both outputs guide the trainee: at each step the expected part pulses and a translucent ghost of it performs the
 motion twice while the panel says how to do it with the input in use ("Click it." / "Poke it with a finger."). H (web)

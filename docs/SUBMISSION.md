@@ -15,7 +15,7 @@ A single-procedure VR training module takes Frame Sixty **[X] weeks** and **$[Y]
 1. **Capture.** A trainer films the procedure once, narrating. 30 s to 3 min, phone, one take.
 2. **Understand.** Muse Voice Transcribe turns the narration into a frame-stamped transcript. Muse Spark 1.3 reads the frames and the transcript together and returns the procedure as structured JSON against a frozen schema: ordered steps, the part each step touches, the action from a closed vocabulary, safety flags, checks, failure text, a coaching line, and the frame range. A second Spark pass verifies every step against the narration and flags the ones it can't support.
 3. **Segment.** SAM 3.1 finds and tracks every part across its step's frames from a text prompt. When the text prompt misses, Spark proposes a box on the keyframe and SAM re-runs from it. Every part records how it was found.
-4. **Build.** A data-driven Unity engine reads the spec: one object per part, sized from SAM's box, textured by Muse Image from the keyframe crop, with the Meta Interaction SDK component the action needs. Muse Code generates a script only for verbs the engine doesn't know, and every generated script passes a headless Unity compile before it's referenced.
+4. **Build.** A data-driven Unity engine reads the spec: one object per part, a photo card of the real part cut out by SAM 3.1 or Muse Image, sized from SAM's box, with the Meta Interaction SDK component the action needs. Muse Code generates a script only for verbs the engine doesn't know, and every generated script passes a headless Unity compile before it's referenced.
 5. **Review.** The trainer sees the steps and the masks in a dashboard, renames a part, reorders a step, draws a box where SAM missed, and hits Rebuild. The spec hot-loads into the running headset build.
 6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored. Skipping a safety step fails the attempt, which is what industrial clients ask for. Touch the wrong part and the
    coach says so; stall for twenty seconds and it repeats the instruction and lights up the part it means.
@@ -61,7 +61,7 @@ Development runs on public-domain footage (a 1960s Department of Defense engine-
 | Spark merges or misreads steps | Fixed schema with structured output; verify pass against the transcript; dashboard review |
 | SAM's text prompt misses an industrial part | Spark box fallback with forward propagation; trainer draws a box; `source` field makes the miss rate a metric |
 | Generated code doesn't compile | Engine is data-driven; Muse Code writes only the long tail; headless compile gate |
-| Parts have no 3D geometry | Representative primitives sized from SAM's box, textured from the crop. Photogrammetry is the roadmap |
+| Parts have no 3D geometry | Photo cards cut from the video by SAM 3.1 (or the Muse Image shot, background removed), sized from SAM's box. Photogrammetry is the roadmap |
 | Hand tracking on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
 
 ## What's new vs prior work

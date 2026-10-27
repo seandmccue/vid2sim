@@ -17,7 +17,11 @@ namespace Vid2Sim
         public float benchHeight = 0.75f;
         public float reachWidth = 0.6f;
         public float minColliderSize = 0.04f;
+        public int rowCapacity = 6;
+        [Tooltip("Photo cards never get wider than this, whatever the size hint says, so a big panel still fits the bench")]
+        public float maxCardSize = 0.22f;
         public Material baseMaterial;
+        static Mesh _cardMesh;
 
         public IInteractionBackend Backend { get; private set; }
         public readonly Dictionary<string, PartBehaviour> Spawned = new();
@@ -43,31 +47,54 @@ namespace Vid2Sim
 
             var order = OrderOfAppearance(spec);
             int n = order.Count;
+            // up to rowCapacity parts per row; further rows sit behind, where the 30-degree camera still sees them
+            int rows = Mathf.CeilToInt(n / (float)rowCapacity), perRow = Mathf.CeilToInt(n / (float)Mathf.Max(1, rows));
             for (int i = 0; i < n; i++)
             {
                 var part = spec.FindPart(order[i]);
-                float x = n == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, i / (float)(n - 1));
-                var go = CreatePrimitiveFor(part);
+                int row = i / perRow, col = i % perRow, inRow = Mathf.Min(perRow, n - row * perRow);
+                float x = inRow == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, col / (float)(inRow - 1));
+                float z = rows == 1 ? 0f : Mathf.Lerp(0f, 0.16f, row / (float)(rows - 1));
+                float size = Mathf.Max(part.size_hint_m, minColliderSize);
+
+                Texture2D cutout = null;
+                yield return loader.LoadCutout(part.id, t => cutout = t);
+                GameObject go;
+                if (cutout != null)
+                {
+                    go = CreateCard(cutout, Mathf.Min(size, maxCardSize));
+                }
+                else
+                {
+                    go = CreatePrimitiveFor(part);
+                    go.transform.localScale = ScaleFor(part, size);
+                }
                 go.name = $"Part:{part.id}";
                 go.transform.SetParent(_bench, false);
-                float size = Mathf.Max(part.size_hint_m, minColliderSize);
-                go.transform.localScale = ScaleFor(part, size);
-                go.transform.localPosition = new Vector3(x, go.transform.localScale.y / 2f, 0f);
+                go.transform.localPosition = new Vector3(x, go.transform.localScale.y / 2f, z);
                 go.transform.localRotation = Quaternion.identity;
                 EnsureCollider(go, size);
 
                 var pb = go.AddComponent<PartBehaviour>();
+                if (cutout != null) { pb.IsCard = true; pb.TurnAxisLocal = Vector3.back; }   // a card turns about its normal, like the lid in the video
                 pb.Init(part);
                 PartLabel.Create(pb, go.transform.localScale.y + 0.045f);
                 bool needsRotate = UsesAction(spec, part.id, Actions.TurnCw) || UsesAction(spec, part.id, Actions.TurnCcw);
                 Backend.Attach(pb, go, part.interaction, needsRotate);
-                if (UsesAction(spec, part.id, Actions.Place)) pb.SnapZone = CreateSnapZone(go, part);
 
                 var rend = go.GetComponent<Renderer>();
-                rend.material = NewMaterial(ColorFor(part));
-                Texture2D tex = null;
-                yield return loader.LoadTexture(part.id, t => tex = t);
-                if (tex != null) { rend.material.mainTexture = tex; rend.material.color = Color.white; }
+                if (cutout != null)
+                {
+                    rend.material = NewCutoutMaterial(cutout);
+                }
+                else
+                {
+                    rend.material = NewMaterial(ColorFor(part));
+                    Texture2D tex = null;
+                    yield return loader.LoadTexture(part.id, t => tex = t);
+                    if (tex != null) { rend.material.mainTexture = tex; rend.material.color = Color.white; }
+                }
+                if (UsesAction(spec, part.id, Actions.Place)) pb.SnapZone = CreateSnapZone(go, part);
 
                 Spawned[part.id] = pb;
             }
@@ -97,6 +124,52 @@ namespace Vid2Sim
         {
             foreach (var s in spec.steps) if (s.part_id == partId && s.action == action) return true;
             return false;
+        }
+
+        /// <summary>
+        /// A photo card: the part cut from the video (or its Muse Image product shot) on a flat, double-sided
+        /// quad standing on the bench and facing the trainee, longest side = size. A thin box collider makes
+        /// it grabbable; EnsureCollider grows the depth to the hand-tracking floor.
+        /// </summary>
+        static GameObject CreateCard(Texture2D cutout, float size)
+        {
+            var go = new GameObject("Card");
+            go.AddComponent<MeshFilter>().sharedMesh = CardMesh();
+            go.AddComponent<MeshRenderer>();
+            float aspect = cutout.width / (float)Mathf.Max(1, cutout.height);
+            go.transform.localScale = aspect >= 1f ? new Vector3(size, size / aspect, 1f) : new Vector3(size * aspect, size, 1f);
+            var bc = go.AddComponent<BoxCollider>();
+            bc.size = new Vector3(1f, 1f, 0.02f);
+            return go;
+        }
+
+        /// <summary>Unit quad in XY, front face toward -Z, with a back face so it is visible from behind.</summary>
+        static Mesh CardMesh()
+        {
+            if (_cardMesh != null) return _cardMesh;
+            var m = new Mesh { name = "Vid2SimCard" };
+            var v = new[] { new Vector3(-0.5f, -0.5f, 0), new Vector3(0.5f, -0.5f, 0), new Vector3(0.5f, 0.5f, 0), new Vector3(-0.5f, 0.5f, 0) };
+            var uv = new[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) };
+            m.vertices = new[] { v[0], v[1], v[2], v[3], v[0], v[1], v[2], v[3] };
+            m.uv = new[] { uv[0], uv[1], uv[2], uv[3], uv[0], uv[1], uv[2], uv[3] };
+            m.normals = new[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back, Vector3.forward, Vector3.forward, Vector3.forward, Vector3.forward };
+            m.triangles = new[] { 0, 3, 2, 0, 2, 1, 4, 6, 7, 4, 5, 6 };
+            m.RecalculateBounds();
+            _cardMesh = m;
+            return m;
+        }
+
+        Material NewCutoutMaterial(Texture2D cutout)
+        {
+            var src = Resources.Load<Material>("Vid2SimCutout");
+            var m = src ? new Material(src) : new Material(Shader.Find("Standard"));
+            if (!src)
+            {
+                m.SetFloat("_Mode", 1f); m.SetFloat("_Cutoff", 0.4f); m.EnableKeyword("_ALPHATEST_ON"); m.renderQueue = 2450;
+            }
+            m.mainTexture = cutout;
+            m.color = Color.white;
+            return m;
         }
 
         static GameObject CreatePrimitiveFor(Part part) => part.interaction switch
@@ -140,13 +213,30 @@ namespace Vid2Sim
 
         Transform CreateSnapZone(GameObject part, Part p)
         {
-            var zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            GameObject zone;
+            var pb = part.GetComponent<PartBehaviour>();
+            var pr = part.GetComponent<Renderer>();
+            if (pb != null && pb.IsCard)
+            {
+                // a green silhouette of the card itself where it has to go: "put the lid here"
+                zone = new GameObject();
+                zone.AddComponent<MeshFilter>().sharedMesh = CardMesh();
+                zone.AddComponent<MeshRenderer>();
+                zone.transform.localScale = part.transform.localScale;
+            }
+            else
+            {
+                zone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                var bc = part.GetComponent<BoxCollider>();
+                zone.transform.localScale = Vector3.Scale(part.transform.localScale, bc ? bc.size : Vector3.one) * 1.15f;
+                Destroy(zone.GetComponent<Collider>());
+            }
             zone.name = $"SnapZone:{p.id}";
             zone.transform.SetParent(_bench, false);
-            zone.transform.localScale = part.transform.localScale * 1.15f;
             zone.transform.localPosition = part.transform.localPosition + new Vector3(0f, 0f, -0.14f);
-            Destroy(zone.GetComponent<Collider>());
-            zone.GetComponent<Renderer>().material = NewZoneMaterial(new Color(0.2f, 0.8f, 0.4f, 0.35f));
+            var zm = NewZoneMaterial(new Color(0.2f, 0.8f, 0.4f, 0.45f));
+            if (pb != null && pb.IsCard && pr != null && pr.material.mainTexture) zm.mainTexture = pr.material.mainTexture;
+            zone.GetComponent<Renderer>().material = zm;
             return zone.transform;
         }
 

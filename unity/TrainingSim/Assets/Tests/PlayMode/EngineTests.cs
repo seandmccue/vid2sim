@@ -287,7 +287,9 @@ namespace Vid2Sim.Tests
             Assert.IsFalse(guide.IsDemoRunning, "the demo ends on its own");
             Assert.IsNull(GameObject.Find("Ghost:power_switch"));
             Assert.AreEqual("Click it.", StepGuide.HowTo(seq.Current, new SimpleInteractionBackend()));
-            Assert.AreEqual("Hover it and press Q (counter-clockwise).", StepGuide.HowTo(ReadSpec(seq).steps[1], new SimpleInteractionBackend()));
+            Assert.AreEqual("Click it, then press Turn left (Q), counter-clockwise.", StepGuide.HowTo(ReadSpec(seq).steps[1], new SimpleInteractionBackend()));
+            Assert.IsTrue(guide.GetComponent<MotionHint>().Visible, "an arrow shows the motion on the current part");
+            Assert.AreEqual(Actions.Press, guide.GetComponent<MotionHint>().CurrentAction);
             Assert.AreEqual("Drag it onto the green zone and let go.", StepGuide.HowTo(ReadSpec(seq).steps[4], new SimpleInteractionBackend()));
         }
 
@@ -308,6 +310,78 @@ namespace Vid2Sim.Tests
             Assert.AreEqual("", captions[captions.Count - 1]);
             Assert.IsNull(GameObject.Find("Ghost:filter_cover"), "no ghost left behind");
             Assert.AreEqual(-1, seq.Index, "the sequencer has not started during the demo");
+        }
+
+        [UnityTest]
+        public IEnumerator Photo_cards_spawn_from_cutouts_and_turn_about_their_normal()
+        {
+            PartFactory factory = null; SpecLoader loader = null;
+            yield return Load("nazava-water-filter-install", (l, f, s, sc) => { loader = l; factory = f; });
+            int cards = 0;
+            foreach (var p in factory.Spawned.Values) if (p.IsCard) cards++;
+            Assert.AreEqual(loader.Procedure.parts.Length, cards, "every Nazava part has a cutout, so every part is a photo card");
+            var lid = factory.Spawned["filter_lid"];
+            var c = lid.GetComponent<Collider>().bounds.size;
+            Assert.GreaterOrEqual(Mathf.Min(c.x, c.y, c.z), 0.039f, "card collider at least 4 cm deep for hands");
+            Assert.Less(Mathf.Max(c.x, c.y), 0.23f, "cards are capped so they fit the bench");
+            Assert.IsNotNull(lid.GetComponent<Renderer>().material.mainTexture, "the card shows the cutout");
+            Assert.AreEqual(12, lid.GetComponent<MeshFilter>().sharedMesh.triangles.Length, "double-sided quad");
+            // the card faces the seat and turns about its own normal: clockwise for the viewer is positive yaw
+            var toSeat = (_cam.transform.position - lid.transform.position).normalized;
+            Assert.Greater(Vector3.Dot(lid.TurnAxisWorld, toSeat), 0.7f, "turn axis points at the trainee");
+            lid.TurnBy(50f);
+            Assert.AreEqual(50f, lid.SignedYawFromSpawn(), 0.5f);
+            lid.TurnBy(-110f);
+            Assert.AreEqual(-60f, lid.SignedYawFromSpawn(), 0.5f);
+            // a primitive still turns about up
+            PartFactory f2 = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { f2 = f; });
+            var valve = f2.Spawned["drain_valve"];
+            Assert.IsFalse(valve.IsCard);
+            valve.transform.rotation = valve.SpawnRotation * Quaternion.AngleAxis(60f, Vector3.up);
+            Assert.AreEqual(-60f, valve.SignedYawFromSpawn(), 0.5f, "+60 about up is counter-clockwise from above");
+        }
+
+        [UnityTest]
+        public IEnumerator Mouse_driver_buttons_complete_turn_pull_and_place_steps()
+        {
+            PartFactory factory = null; StepSequencer seq = null; Scorer scorer = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { factory = f; seq = s; scorer = sc; });
+            SimpleMouseDriver D(string id) { var d = factory.Spawned[id].GetComponent<SimpleMouseDriver>(); d.nudgeSeconds = 0.05f; return d; }
+
+            // lift / lower move the part by the step while it is held (before any step arms, so nothing completes)
+            var nf = D("new_filter"); float y0 = nf.transform.position.y;
+            nf.Lift(1);
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(y0 + nf.liftStep, nf.transform.position.y, 0.002f);
+            Assert.IsFalse(factory.Spawned["new_filter"].IsSelected, "released after the nudge");
+            nf.Lift(-1);
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(y0, nf.transform.position.y, 0.002f);
+
+            bool? passed = null; seq.Finished += p => passed = p;
+            seq.Begin(ReadSpec(seq), factory);
+            var sw = factory.Spawned["power_switch"]; sw.NotifySelect(); sw.NotifyUnselect();
+            yield return null;
+            Assert.AreEqual(2, seq.Current.order);
+            var dv = D("drain_valve"); dv.Turn(-dv.turnStepDegrees);                       // the "Turn left" button / Q
+            yield return null; yield return null;
+            Assert.AreEqual(3, seq.Current.order, "one quarter turn counter-clockwise completes turn_ccw");
+            var fc = D("filter_cover"); fc.Turn(-fc.turnStepDegrees);
+            yield return null; yield return null;
+            Assert.AreEqual(4, seq.Current.order);
+            D("old_filter").Pull(1);                           // the "Pull out" button / X
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(5, seq.Current.order, "pulling out by the step completes pull");
+            var place = factory.Spawned["new_filter"]; place.NotifySelect();
+            place.transform.position = place.SnapZone.position;
+            place.NotifyUnselect();
+            yield return null;
+            Assert.AreEqual(6, seq.Current.order);
+            fc.Turn(fc.turnStepDegrees);                       // the "Turn right" button / E
+            yield return null; yield return null;
+            Assert.AreEqual(true, passed);
+            Assert.AreEqual(0, scorer.Current.wrong_part_touches);
         }
 
         [UnityTest]
