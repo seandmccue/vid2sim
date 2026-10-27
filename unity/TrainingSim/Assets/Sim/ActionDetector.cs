@@ -74,17 +74,19 @@ namespace Vid2Sim
             return false;
         }
 
-        void OnWrongSelect(PartBehaviour p) { if (!_done) _wrong?.Invoke(p); }
+        // While paused the sequencer disables this component; events must then be ignored *without* marking
+        // the step done, or nothing can complete it after resume.
+        void OnWrongSelect(PartBehaviour p) { if (enabled && !_done) _wrong?.Invoke(p); }
 
         void OnSelect(PartBehaviour p)
         {
-            if (_done || _custom) return;
+            if (!enabled || _done || _custom) return;
             if (_step.action == Actions.Press || _step.action == Actions.Grab) Complete();
         }
 
         void OnUnselect(PartBehaviour p)
         {
-            if (_done || _custom || _step.action != Actions.Place || _part.SnapZone == null) return;
+            if (!enabled || _done || _custom || _step.action != Actions.Place || _part.SnapZone == null) return;
             if (Vector3.Distance(_part.transform.position, _part.SnapZone.position) <= snapRadius)
             {
                 _part.transform.SetPositionAndRotation(_part.SnapZone.position, _part.SnapZone.rotation);
@@ -117,7 +119,7 @@ namespace Vid2Sim
 
         void Complete()
         {
-            if (_done) return;
+            if (!enabled || _done) return;
             _done = true;
             _emit?.Invoke(new StepEvent(_step.part_id, _step.action));
         }
