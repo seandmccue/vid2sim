@@ -39,6 +39,12 @@ namespace Vid2Sim
 #elif UNITY_WEBGL && !UNITY_EDITOR
         [System.Runtime.InteropServices.DllImport("__Internal")] static extern void Vid2SimSpeak(string text, int interrupt);
 
+        void Start()
+        {
+            // ?mute=1 on the page URL keeps the browser output silent (automated tests, shared desks)
+            if (Application.absoluteURL.Contains("mute=1")) enabledSpeech = false;
+        }
+
         public void Say(string text, bool interrupt = true)
         {
             if (!enabledSpeech || string.IsNullOrEmpty(text)) return;

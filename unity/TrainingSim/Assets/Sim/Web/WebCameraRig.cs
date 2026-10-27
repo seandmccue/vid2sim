@@ -20,7 +20,7 @@ namespace Vid2Sim
         void Start()
         {
             Apply();
-            if (Application.absoluteURL.Contains("debug=1")) debugReadout = true;
+            debugReadout = Application.absoluteURL.Contains("debug=1");   // URL-driven, never the serialized default
         }
 
         void Update()
