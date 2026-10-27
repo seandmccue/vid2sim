@@ -52,7 +52,7 @@ namespace Vid2Sim.Tests
         [UnityTest]
         public IEnumerator Loader_validates_committed_specs()
         {
-            foreach (var id in new[] { "compressor-filter-swap", "nazava-water-filter-install", "swap-graphics-card-msi-trident-3" })
+            foreach (var id in new[] { "compressor-filter-swap", "nazava-water-filter-install", "swap-graphics-card-msi-trident-3", "release-left-side-engine-connections-m151" })
             {
                 var loader = _root.AddComponent<SpecLoader>();
                 loader.procedureId = id;

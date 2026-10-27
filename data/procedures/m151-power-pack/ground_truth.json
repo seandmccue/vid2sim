@@ -1,0 +1,17 @@
+{
+  "procedure_id": "m151-power-pack",
+  "written_by": "Claude, from the film's narration (Voice Transcribe) and a frame contact sheet, before running the pipeline. Not a trainer's list; test data only.",
+  "steps": [
+    { "order": 1, "part": "battery ground cable", "action": "pull", "text": "Disconnect the battery ground cable." },
+    { "order": 2, "part": "carburetor hoses", "action": "pull", "text": "At the carburetor, disconnect the air intake hose, the float chamber vent hose, the fuel tank vent line and the oil pressure safety switch vent line." },
+    { "order": 3, "part": "air cleaner", "action": "lift", "text": "Remove the air cleaner." },
+    { "order": 4, "part": "flexible fuel hose", "action": "pull", "text": "Disconnect the flexible fuel hose." },
+    { "order": 5, "part": "choke control cable", "action": "pull", "text": "Remove the choke control cable at the generator and the accelerator rod." },
+    { "order": 6, "part": "muffler inlet pipe", "action": "turn_ccw", "text": "Remove the muffler inlet pipe at the exhaust manifold." },
+    { "order": 7, "part": "clutch return spring", "action": "pull", "text": "Remove the clutch return spring and the clutch release rod." },
+    { "order": 8, "part": "front engine support bolt", "action": "turn_ccw", "text": "Remove the single bolt securing the front engine support." },
+    { "order": 9, "part": "clutch cross shaft housing", "action": "pull", "text": "Remove the clutch pedal linkage and the clutch cross shaft and housing." },
+    { "order": 10, "part": "headlamp connectors", "action": "pull", "text": "Remove the electrical connections to the headlamps and blackout marker assemblies." },
+    { "order": 11, "part": "brush guard", "action": "pull", "text": "Remove the brush guard bolts and pull the brush guard off." }
+  ]
+}

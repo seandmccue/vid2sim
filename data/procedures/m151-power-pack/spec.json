@@ -1,0 +1,480 @@
+{
+  "schema_version": "1.0",
+  "procedure": {
+    "id": "release-left-side-engine-connections-m151",
+    "title": "Release the left-side engine connections on an M151",
+    "source_video": "file-1650722406597479",
+    "fps": 29.97,
+    "width": 720,
+    "height": 480,
+    "duration_s": 112.01
+  },
+  "parts": [
+    {
+      "id": "battery_ground_cable",
+      "name": "Battery Ground Cable",
+      "prompt_phrase": "thick black battery ground cable",
+      "interaction": "grab",
+      "keyframe": 151,
+      "box": [
+        318,
+        122,
+        462,
+        465
+      ],
+      "size_hint_m": 0.287,
+      "confidence": 0.748,
+      "source": "box"
+    },
+    {
+      "id": "air_intake_hose",
+      "name": "Air Intake Hose",
+      "prompt_phrase": "curved rubber air intake hose",
+      "interaction": "grab",
+      "keyframe": 514,
+      "box": [
+        406,
+        115,
+        507,
+        144
+      ],
+      "size_hint_m": 0.085,
+      "confidence": 0.773,
+      "source": "concept"
+    },
+    {
+      "id": "float_chamber_vent_hose",
+      "name": "Float Chamber Vent Hose",
+      "prompt_phrase": "thin rubber float chamber hose",
+      "interaction": "grab",
+      "keyframe": 666,
+      "box": [
+        406,
+        222,
+        574,
+        316
+      ],
+      "size_hint_m": 0.141,
+      "confidence": 0.741,
+      "source": "box"
+    },
+    {
+      "id": "fuel_tank_vent_line",
+      "name": "Fuel Tank Vent Line",
+      "prompt_phrase": "braided fuel tank vent line",
+      "interaction": "grab",
+      "keyframe": 761,
+      "box": [
+        374,
+        229,
+        616,
+        320
+      ],
+      "size_hint_m": 0.203,
+      "confidence": 0.816,
+      "source": "box"
+    },
+    {
+      "id": "oil_pressure_switch_vent_line",
+      "name": "Oil Pressure Switch Vent Line",
+      "prompt_phrase": "narrow oil pressure switch vent line",
+      "interaction": "grab",
+      "keyframe": 861,
+      "box": [
+        373,
+        228,
+        583,
+        350
+      ],
+      "size_hint_m": 0.176,
+      "confidence": 0.867,
+      "source": "box"
+    },
+    {
+      "id": "air_cleaner",
+      "name": "Air Cleaner",
+      "prompt_phrase": "round metal air cleaner housing",
+      "interaction": "grab",
+      "keyframe": 1025,
+      "box": [
+        133,
+        84,
+        429,
+        317
+      ],
+      "size_hint_m": 0.247,
+      "confidence": 0.977,
+      "source": "box"
+    },
+    {
+      "id": "flexible_fuel_hose",
+      "name": "Flexible Fuel Hose",
+      "prompt_phrase": "flexible rubber fuel hose",
+      "interaction": "grab",
+      "keyframe": 1201,
+      "box": [
+        496,
+        130,
+        603,
+        232
+      ],
+      "size_hint_m": 0.09,
+      "confidence": 0.839,
+      "source": "box"
+    },
+    {
+      "id": "generator_cable",
+      "name": "Generator Cable",
+      "prompt_phrase": "insulated generator cable",
+      "interaction": "grab",
+      "keyframe": 1421,
+      "box": [
+        88,
+        321,
+        239,
+        378
+      ],
+      "size_hint_m": 0.127,
+      "confidence": 0.875,
+      "source": "box"
+    },
+    {
+      "id": "choke_control_cable",
+      "name": "Choke Control Cable",
+      "prompt_phrase": "sheathed choke control cable",
+      "interaction": "grab",
+      "keyframe": 1550,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "accelerator_rod",
+      "name": "Accelerator Rod",
+      "prompt_phrase": "straight metal accelerator rod",
+      "interaction": "grab",
+      "keyframe": 1676,
+      "box": [
+        508,
+        69,
+        575,
+        204
+      ],
+      "size_hint_m": 0.113,
+      "confidence": 0.832,
+      "source": "box"
+    },
+    {
+      "id": "muffler_inlet_pipe",
+      "name": "Muffler Inlet Pipe",
+      "prompt_phrase": "corroded steel muffler inlet pipe",
+      "interaction": "grab",
+      "keyframe": 1770,
+      "box": [
+        319,
+        218,
+        432,
+        444
+      ],
+      "size_hint_m": 0.189,
+      "confidence": 0.734,
+      "source": "concept"
+    },
+    {
+      "id": "clutch_return_spring",
+      "name": "Clutch Return Spring",
+      "prompt_phrase": "coiled clutch return spring",
+      "interaction": "grab",
+      "keyframe": 1990,
+      "box": [
+        221,
+        115,
+        474,
+        242
+      ],
+      "size_hint_m": 0.212,
+      "confidence": 0.906,
+      "source": "box"
+    },
+    {
+      "id": "clutch_release_rod",
+      "name": "Clutch Release Rod",
+      "prompt_phrase": "slender clutch release rod",
+      "interaction": "grab",
+      "keyframe": 2035,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "front_engine_support_bolt",
+      "name": "Engine Support Bolt",
+      "prompt_phrase": "hexagonal engine support bolt",
+      "interaction": "turn",
+      "keyframe": 2201,
+      "box": [
+        348,
+        388,
+        378,
+        415
+      ],
+      "size_hint_m": 0.03,
+      "confidence": 0.82,
+      "source": "box"
+    },
+    {
+      "id": "clutch_pedal_linkage",
+      "name": "Clutch Pedal Linkage",
+      "prompt_phrase": "pivoted clutch pedal linkage",
+      "interaction": "grab",
+      "keyframe": 2391,
+      "box": [
+        218,
+        5,
+        476,
+        209
+      ],
+      "size_hint_m": 0.216,
+      "confidence": 0.863,
+      "source": "box"
+    },
+    {
+      "id": "clutch_cross_shaft_housing",
+      "name": "Clutch Cross Shaft Housing",
+      "prompt_phrase": "cast clutch cross shaft housing",
+      "interaction": "grab",
+      "keyframe": 2490,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    }
+  ],
+  "steps": [
+    {
+      "action": "pull",
+      "check": "Ground cable is free from battery terminal with no electrical contact",
+      "coach": "Kill all power first, pull the ground.",
+      "custom_action": "disconnect",
+      "end_frame": 265,
+      "failure": "Live power remains and can short or shock during removal",
+      "instruction": "Disconnect the battery ground cable.",
+      "order": 1,
+      "part_id": "battery_ground_cable",
+      "safety": true,
+      "start_frame": 20
+    },
+    {
+      "action": "pull",
+      "check": "Air intake hose is detached from carburetor inlet",
+      "coach": "Pull the big intake hose free.",
+      "custom_action": "disconnect",
+      "end_frame": 620,
+      "failure": "Hose holds the carburetor area and blocks access",
+      "instruction": "Disconnect the air intake hose at the carburetor.",
+      "order": 2,
+      "part_id": "air_intake_hose",
+      "safety": false,
+      "start_frame": 529
+    },
+    {
+      "action": "pull",
+      "check": "Float chamber vent hose is detached and open",
+      "coach": "Free that little float vent hose.",
+      "custom_action": "disconnect",
+      "end_frame": 710,
+      "failure": "Vent line stays connected and will snag on lift",
+      "instruction": "Disconnect the float chamber vent hose.",
+      "order": 3,
+      "part_id": "float_chamber_vent_hose",
+      "safety": false,
+      "start_frame": 621
+    },
+    {
+      "action": "pull",
+      "check": "Fuel tank vent line is detached",
+      "coach": "Pull the tank vent line off.",
+      "custom_action": "disconnect",
+      "end_frame": 810,
+      "failure": "Fuel vapor line tears when power pack moves",
+      "instruction": "Disconnect the fuel tank vent line.",
+      "order": 4,
+      "part_id": "fuel_tank_vent_line",
+      "safety": true,
+      "start_frame": 711
+    },
+    {
+      "action": "pull",
+      "check": "Oil pressure safety switch vent line is detached",
+      "coach": "Clear that switch vent line.",
+      "custom_action": "disconnect",
+      "end_frame": 908,
+      "failure": "Switch line remains tethered to engine",
+      "instruction": "Disconnect the oil pressure safety switch vent line.",
+      "order": 5,
+      "part_id": "oil_pressure_switch_vent_line",
+      "safety": false,
+      "start_frame": 811
+    },
+    {
+      "action": "lift",
+      "check": "Air cleaner is off the engine and carburetor is exposed",
+      "coach": "Lift the cleaner straight off.",
+      "custom_action": "remove",
+      "end_frame": 1080,
+      "failure": "Cleaner blocks fuel and control access",
+      "instruction": "Remove the air cleaner.",
+      "order": 6,
+      "part_id": "air_cleaner",
+      "safety": false,
+      "start_frame": 956
+    },
+    {
+      "action": "pull",
+      "check": "Flexible fuel hose is detached with no fuel dripping",
+      "coach": "Ease the fuel hose off, watch for fuel.",
+      "custom_action": "disconnect",
+      "end_frame": 1243,
+      "failure": "Fuel spills and creates fire hazard on lift",
+      "instruction": "Disconnect the flexible fuel hose.",
+      "order": 7,
+      "part_id": "flexible_fuel_hose",
+      "safety": true,
+      "start_frame": 1164
+    },
+    {
+      "action": "pull",
+      "check": "Generator cable is free from generator terminal",
+      "coach": "Free the cable at the generator.",
+      "custom_action": "disconnect",
+      "end_frame": 1485,
+      "failure": "Electrical cable tears during engine removal",
+      "instruction": "Disconnect the cable at the generator.",
+      "order": 8,
+      "part_id": "generator_cable",
+      "safety": false,
+      "start_frame": 1351
+    },
+    {
+      "action": "pull",
+      "check": "Choke control cable is detached from carburetor linkage",
+      "coach": "Unhook the choke cable.",
+      "custom_action": "disconnect",
+      "end_frame": 1620,
+      "failure": "Choke linkage binds and bends on removal",
+      "instruction": "Disconnect the choke control cable.",
+      "order": 9,
+      "part_id": "choke_control_cable",
+      "safety": false,
+      "start_frame": 1486
+    },
+    {
+      "action": "pull",
+      "check": "Accelerator rod is detached from throttle linkage",
+      "coach": "Pop the accelerator rod off.",
+      "custom_action": "detach",
+      "end_frame": 1696,
+      "failure": "Throttle rod bends when engine shifts",
+      "instruction": "Detach the accelerator rod.",
+      "order": 10,
+      "part_id": "accelerator_rod",
+      "safety": false,
+      "start_frame": 1653
+    },
+    {
+      "action": "pull",
+      "check": "Muffler inlet pipe is separated from exhaust manifold",
+      "coach": "Break the muffler pipe loose.",
+      "custom_action": "disconnect",
+      "end_frame": 1876,
+      "failure": "Exhaust still anchors the engine to the chassis",
+      "instruction": "Disconnect the muffler inlet pipe at the exhaust manifold.",
+      "order": 11,
+      "part_id": "muffler_inlet_pipe",
+      "safety": false,
+      "start_frame": 1780
+    },
+    {
+      "action": "pull",
+      "check": "Clutch return spring is removed and tension released",
+      "coach": "Pull the return spring off.",
+      "custom_action": "remove",
+      "end_frame": 1996,
+      "failure": "Spring snaps back or holds clutch linkage",
+      "instruction": "Remove the clutch return spring.",
+      "order": 12,
+      "part_id": "clutch_return_spring",
+      "safety": false,
+      "start_frame": 1941
+    },
+    {
+      "action": "pull",
+      "check": "Clutch release rod is detached",
+      "coach": "Slide the release rod out.",
+      "custom_action": "remove",
+      "end_frame": 2061,
+      "failure": "Release mechanism stays linked to engine",
+      "instruction": "Remove the clutch release rod.",
+      "order": 13,
+      "part_id": "clutch_release_rod",
+      "safety": false,
+      "start_frame": 2013
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Single engine support bolt is out and support is free",
+      "coach": "Unscrew that one support bolt.",
+      "custom_action": "unscrew",
+      "end_frame": 2255,
+      "failure": "Engine remains bolted to the mount",
+      "instruction": "Remove the single bolt securing the front engine support.",
+      "order": 14,
+      "part_id": "front_engine_support_bolt",
+      "safety": false,
+      "start_frame": 2140
+    },
+    {
+      "action": "pull",
+      "check": "Clutch pedal linkage is detached",
+      "coach": "Free the pedal linkage.",
+      "custom_action": "remove",
+      "end_frame": 2438,
+      "failure": "Pedal linkage binds power pack during lift",
+      "instruction": "Remove the clutch pedal linkage.",
+      "order": 15,
+      "part_id": "clutch_pedal_linkage",
+      "safety": false,
+      "start_frame": 2341
+    },
+    {
+      "action": "lift",
+      "check": "Clutch cross shaft and housing are removed and all left connections are free",
+      "coach": "Lift the cross shaft and housing clear.",
+      "custom_action": "remove",
+      "end_frame": 2536,
+      "failure": "Shaft assembly catches and damages clutch",
+      "instruction": "Remove the clutch cross shaft and housing.",
+      "order": 16,
+      "part_id": "clutch_cross_shaft_housing",
+      "safety": false,
+      "start_frame": 2439
+    }
+  ]
+}
