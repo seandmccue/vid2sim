@@ -1,0 +1,16 @@
+{
+  "procedure_id": "dive-helmet-fitting",
+  "written_by": "Claude, from the film's narration (Voice Transcribe) before running the pipeline. Not a trainer's list; test data only.",
+  "steps": [
+    { "order": 1, "part": "air hose", "action": "place", "text": "Lead the air hose over the top of the left port and the lifeline over the right." },
+    { "order": 2, "part": "helmet", "action": "lift", "text": "Lift the helmet by the side ports and set it over the diver's head onto the breastplate." },
+    { "order": 3, "part": "helmet", "action": "turn_cw", "text": "Turn the helmet into place until the faceplate faces forward and the scribed marks line up." },
+    { "order": 4, "part": "safety latch", "action": "place", "text": "Drop the dumbbell into place, close the safety latch and secure it with a cotter pin." },
+    { "order": 5, "part": "air control valve", "action": "place", "text": "Pass the air hose under the left arm and slip the air control valve eye pad over the long stud." },
+    { "order": 6, "part": "wing nut", "action": "turn_cw", "text": "Reinstall the wing nut on the long stud and tighten it firmly with the wrench." },
+    { "order": 7, "part": "halyard", "action": "place", "text": "Lash down the air hose with two round turns of the halyard and tie off with a square knot." },
+    { "order": 8, "part": "lifeline", "action": "place", "text": "Pass the lifeline under the right arm and lash it with two round turns and a square knot." },
+    { "order": 9, "part": "exhaust valve hand wheel", "action": "turn_ccw", "text": "Close the exhaust valve all the way, then open it two and one half turns." },
+    { "order": 10, "part": "faceplate wing nut", "action": "turn_cw", "text": "Close the faceplate, wind the wing nut finger tight and secure it with the wing nut wrench." }
+  ]
+}

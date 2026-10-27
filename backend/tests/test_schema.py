@@ -41,3 +41,12 @@ def test_extra_field_rejected_schema_is_frozen():
     s = _p1()
     s["parts"][0]["colour"] = "red"
     assert validate_spec(s)
+
+
+def test_synonym_custom_actions_fold_onto_the_vocabulary():
+    from backend.pipeline.extract import fold_custom_action
+    assert fold_custom_action({"action": "grab", "custom_action": "tighten"}) == {"action": "turn_cw"}
+    assert fold_custom_action({"action": "grab", "custom_action": "disconnect"}) == {"action": "pull"}
+    assert fold_custom_action({"action": "grab", "custom_action": "lash"}) == {"action": "place"}
+    assert fold_custom_action({"action": "lift", "custom_action": "pour"}) == {"action": "lift", "custom_action": "pour"}
+    assert fold_custom_action({"action": "place", "custom_action": None}) == {"action": "place"}

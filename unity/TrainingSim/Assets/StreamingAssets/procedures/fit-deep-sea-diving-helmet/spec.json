@@ -1,0 +1,544 @@
+{
+  "schema_version": "1.0",
+  "procedure": {
+    "id": "fit-deep-sea-diving-helmet",
+    "title": "Fit the helmet of a deep-sea diving outfit",
+    "source_video": "file-1529726225778566",
+    "fps": 29.97,
+    "width": 720,
+    "height": 480,
+    "duration_s": 196.03
+  },
+  "parts": [
+    {
+      "id": "diving_helmet",
+      "name": "Diving Helmet",
+      "prompt_phrase": "heavy brass diving helmet",
+      "interaction": "grab",
+      "keyframe": 600,
+      "box": [
+        17,
+        3,
+        270,
+        183
+      ],
+      "size_hint_m": 0.212,
+      "confidence": 0.762,
+      "source": "concept"
+    },
+    {
+      "id": "helmet_collar",
+      "name": "Helmet Locking Collar",
+      "prompt_phrase": "ridged brass helmet collar",
+      "interaction": "grab",
+      "keyframe": 1101,
+      "box": [
+        264,
+        127,
+        473,
+        168
+      ],
+      "size_hint_m": 0.175,
+      "confidence": 0.851,
+      "source": "box"
+    },
+    {
+      "id": "air_hose",
+      "name": "Air Hose",
+      "prompt_phrase": "thick black air hose",
+      "interaction": "grab",
+      "keyframe": 285,
+      "box": [
+        37,
+        172,
+        285,
+        478
+      ],
+      "size_hint_m": 0.256,
+      "confidence": 0.726,
+      "source": "concept"
+    },
+    {
+      "id": "lifeline",
+      "name": "Lifeline",
+      "prompt_phrase": "braided lifeline rope",
+      "interaction": "grab",
+      "keyframe": 2567,
+      "box": [
+        369,
+        307,
+        467,
+        479
+      ],
+      "size_hint_m": 0.144,
+      "confidence": 0.742,
+      "source": "concept"
+    },
+    {
+      "id": "dumbbell_lock",
+      "name": "Dumbbell Lock",
+      "prompt_phrase": "small metal dumbbell lock",
+      "interaction": "grab",
+      "keyframe": 1350,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "safety_latch",
+      "name": "Safety Latch",
+      "prompt_phrase": "hinged metal safety latch",
+      "interaction": "turn",
+      "keyframe": 1515,
+      "box": [
+        400,
+        241,
+        537,
+        285
+      ],
+      "size_hint_m": 0.115,
+      "confidence": 0.878,
+      "source": "box"
+    },
+    {
+      "id": "cotter_pin",
+      "name": "Cotter Pin",
+      "prompt_phrase": "small metal cotter pin",
+      "interaction": "grab",
+      "keyframe": 1601,
+      "box": [
+        392,
+        264,
+        441,
+        291
+      ],
+      "size_hint_m": 0.042,
+      "confidence": 0.91,
+      "source": "box"
+    },
+    {
+      "id": "air_control_valve",
+      "name": "Air Control Valve",
+      "prompt_phrase": "brass air control valve",
+      "interaction": "grab",
+      "keyframe": 1951,
+      "box": [
+        348,
+        295,
+        489,
+        408
+      ],
+      "size_hint_m": 0.118,
+      "confidence": 0.922,
+      "source": "box"
+    },
+    {
+      "id": "breastplate_stud",
+      "name": "Breastplate Stud",
+      "prompt_phrase": "threaded metal breastplate stud",
+      "interaction": "grab",
+      "keyframe": 2094,
+      "box": [
+        405,
+        229,
+        488,
+        377
+      ],
+      "size_hint_m": 0.124,
+      "confidence": 0.765,
+      "source": "box"
+    },
+    {
+      "id": "breastplate_wing_nut",
+      "name": "Breastplate Wing Nut",
+      "prompt_phrase": "ridged metal wing nut",
+      "interaction": "turn",
+      "keyframe": 2100,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "halyard",
+      "name": "Halyard",
+      "prompt_phrase": "thin rope halyard",
+      "interaction": "grab",
+      "keyframe": 2707,
+      "box": [
+        406,
+        337,
+        528,
+        479
+      ],
+      "size_hint_m": 0.119,
+      "confidence": 0.815,
+      "source": "box"
+    },
+    {
+      "id": "intercom_unit",
+      "name": "Intercom Unit",
+      "prompt_phrase": "gray metal intercom box",
+      "interaction": "press",
+      "keyframe": 4521,
+      "box": [
+        376,
+        151,
+        683,
+        436
+      ],
+      "size_hint_m": 0.257,
+      "confidence": 0.977,
+      "source": "box"
+    },
+    {
+      "id": "exhaust_valve",
+      "name": "Exhaust Valve",
+      "prompt_phrase": "round exhaust handwheel",
+      "interaction": "turn",
+      "keyframe": 4800,
+      "box": [
+        300,
+        200,
+        420,
+        280
+      ],
+      "size_hint_m": 0.101,
+      "confidence": 0.0,
+      "source": "manual"
+    },
+    {
+      "id": "faceplate",
+      "name": "Faceplate",
+      "prompt_phrase": "hinged circular faceplate",
+      "interaction": "turn",
+      "keyframe": 5474,
+      "box": [
+        232,
+        48,
+        447,
+        159
+      ],
+      "size_hint_m": 0.18,
+      "confidence": 0.84,
+      "source": "concept"
+    },
+    {
+      "id": "faceplate_wing_nut",
+      "name": "Faceplate Wing Nut",
+      "prompt_phrase": "knurled faceplate wing nut",
+      "interaction": "turn",
+      "keyframe": 5651,
+      "box": [
+        522,
+        297,
+        656,
+        392
+      ],
+      "size_hint_m": 0.112,
+      "confidence": 0.781,
+      "source": "box"
+    }
+  ],
+  "steps": [
+    {
+      "action": "place",
+      "check": "Air hose lies over port clear of work area.",
+      "coach": "Swing that hose clear over the top.",
+      "end_frame": 462,
+      "failure": "Hose fouls helmet seating.",
+      "instruction": "Lead the air hose over the port out of the way.",
+      "order": 1,
+      "part_id": "air_hose",
+      "safety": false,
+      "start_frame": 299
+    },
+    {
+      "action": "place",
+      "check": "Lifeline clear of helmet area.",
+      "coach": "Lifeline over the other side.",
+      "end_frame": 565,
+      "failure": "Lifeline snags during helmet fitting.",
+      "instruction": "Lead the lifeline over the opposite port out of the way.",
+      "order": 2,
+      "part_id": "lifeline",
+      "safety": false,
+      "start_frame": 512
+    },
+    {
+      "action": "lift",
+      "check": "Helmet lifted securely by both side ports.",
+      "coach": "Get a good grip on those ports.",
+      "end_frame": 700,
+      "failure": "Helmet slips or strikes diver.",
+      "instruction": "Grasp the helmet by the side ports and lift it.",
+      "order": 3,
+      "part_id": "diving_helmet",
+      "safety": false,
+      "start_frame": 582
+    },
+    {
+      "action": "place",
+      "check": "Helmet sits on breastplate without impact.",
+      "coach": "Easy \u2014 nice and gentle.",
+      "end_frame": 860,
+      "failure": "Heavy helmet bangs diver's head.",
+      "instruction": "Place the helmet gently down over the diver's head.",
+      "order": 4,
+      "part_id": "diving_helmet",
+      "safety": true,
+      "start_frame": 701
+    },
+    {
+      "action": "place",
+      "check": "Faceplate offset ready for locking turn.",
+      "coach": "Start it just off center.",
+      "end_frame": 958,
+      "failure": "Threads cross on final turn.",
+      "instruction": "Position the helmet with faceplate angled slightly off center.",
+      "order": 5,
+      "part_id": "helmet_collar",
+      "safety": false,
+      "start_frame": 861
+    },
+    {
+      "action": "place",
+      "check": "Faceplate forward, helmet and breastplate marks aligned.",
+      "coach": "Turn her till those marks line up.",
+      "end_frame": 1219,
+      "failure": "Helmet seal leaks from misalignment.",
+      "instruction": "Turn the helmet into place until faceplate faces forward and scribe marks align.",
+      "order": 6,
+      "part_id": "helmet_collar",
+      "safety": true,
+      "start_frame": 977
+    },
+    {
+      "action": "place",
+      "check": "Dumbbell fully seated in slot.",
+      "coach": "Drop that dumbbell in.",
+      "end_frame": 1380,
+      "failure": "Helmet can rotate loose.",
+      "instruction": "Drop the dumbbell into place.",
+      "order": 7,
+      "part_id": "dumbbell_lock",
+      "safety": true,
+      "start_frame": 1255
+    },
+    {
+      "action": "turn_cw",
+      "check": "Latch closed over dumbbell.",
+      "coach": "Snap that latch shut.",
+      "end_frame": 1520,
+      "failure": "Dumbbell works out and helmet unlocks.",
+      "instruction": "Close the safety latch over the dumbbell.",
+      "order": 8,
+      "part_id": "safety_latch",
+      "safety": true,
+      "start_frame": 1381
+    },
+    {
+      "action": "place",
+      "check": "Cotter pin through latch.",
+      "coach": "Pin it so it can't open.",
+      "end_frame": 1687,
+      "failure": "Latch opens during dive.",
+      "instruction": "Insert the cotter pin to secure the safety latch.",
+      "order": 9,
+      "part_id": "cotter_pin",
+      "safety": true,
+      "start_frame": 1521
+    },
+    {
+      "action": "place",
+      "check": "Hose routed under arm without kink.",
+      "coach": "Run the hose under his arm.",
+      "end_frame": 1850,
+      "failure": "Hose kinks and restricts air.",
+      "instruction": "Pass the air hose under the diver's arm.",
+      "order": 10,
+      "part_id": "air_hose",
+      "safety": false,
+      "start_frame": 1723
+    },
+    {
+      "action": "place",
+      "check": "Valve eye seated on long stud.",
+      "coach": "Slip that eye over the stud.",
+      "end_frame": 1980,
+      "failure": "Valve not captured and hangs loose.",
+      "instruction": "Slip the eye of the air control valve over the breastplate stud.",
+      "order": 11,
+      "part_id": "air_control_valve",
+      "safety": false,
+      "start_frame": 1851
+    },
+    {
+      "action": "place",
+      "check": "Wing nut threaded on stud.",
+      "coach": "Spin that nut back on.",
+      "end_frame": 2080,
+      "failure": "Valve detaches from breastplate.",
+      "instruction": "Reinstall the wing nut onto the breastplate stud.",
+      "order": 12,
+      "part_id": "breastplate_stud",
+      "safety": false,
+      "start_frame": 1981
+    },
+    {
+      "action": "turn_cw",
+      "check": "Wing nut tight, valve secure.",
+      "coach": "Wrench it down tight.",
+      "end_frame": 2166,
+      "failure": "Valve pulls free under hose load.",
+      "instruction": "Tighten the wing nut firmly with the wrench.",
+      "order": 13,
+      "part_id": "breastplate_wing_nut",
+      "safety": true,
+      "start_frame": 2081
+    },
+    {
+      "action": "place",
+      "check": "Two snug round turns around hose.",
+      "coach": "Two good turns around that hose.",
+      "end_frame": 2700,
+      "failure": "Hose strains valve connection.",
+      "instruction": "Take two round turns with halyard around the air hose to lash it down.",
+      "order": 14,
+      "part_id": "halyard",
+      "safety": true,
+      "start_frame": 2572
+    },
+    {
+      "action": "place",
+      "check": "Square knot secure, valve in reach for hand adjustment.",
+      "coach": "Finish it with a square knot.",
+      "end_frame": 2787,
+      "failure": "Lashing loosens and hose pulls.",
+      "instruction": "Tie off the halyard ends with a square knot.",
+      "order": 15,
+      "part_id": "halyard",
+      "safety": true,
+      "start_frame": 2701
+    },
+    {
+      "action": "place",
+      "check": "Lifeline under arm without twist.",
+      "coach": "Bring the lifeline under his arm.",
+      "end_frame": 3600,
+      "failure": "Lifeline pulls helmet sideways.",
+      "instruction": "Pass the lifeline under the diver's arm.",
+      "order": 16,
+      "part_id": "lifeline",
+      "safety": false,
+      "start_frame": 3444
+    },
+    {
+      "action": "place",
+      "check": "Two tight round turns on lifeline.",
+      "coach": "Two turns, nice and tight.",
+      "end_frame": 3820,
+      "failure": "Lifeline shifts and loads cable.",
+      "instruction": "Take two round turns with halyard to lash the lifeline.",
+      "order": 17,
+      "part_id": "halyard",
+      "safety": true,
+      "start_frame": 3756
+    },
+    {
+      "action": "place",
+      "check": "Square knot locked.",
+      "coach": "Square it off.",
+      "end_frame": 3888,
+      "failure": "Lashing comes undone.",
+      "instruction": "Tie off the lifeline lashing with a square knot.",
+      "order": 18,
+      "part_id": "halyard",
+      "safety": true,
+      "start_frame": 3821
+    },
+    {
+      "action": "press",
+      "check": "Two-way voice loud and clear both ways.",
+      "coach": "Give him a comms check.",
+      "end_frame": 4660,
+      "failure": "Diver descends with no communications.",
+      "instruction": "Test the diver intercom with topside call and response.",
+      "order": 19,
+      "part_id": "intercom_unit",
+      "safety": true,
+      "start_frame": 4216
+    },
+    {
+      "action": "turn_cw",
+      "check": "Handwheel bottomed shut.",
+      "coach": "Run that exhaust shut.",
+      "end_frame": 4799,
+      "failure": "Buoyancy setting starts wrong.",
+      "instruction": "Close the exhaust valve all the way.",
+      "order": 20,
+      "part_id": "exhaust_valve",
+      "safety": true,
+      "start_frame": 4703
+    },
+    {
+      "action": "turn_ccw",
+      "check": "Two and a half turns open from shut.",
+      "coach": "Now back her off two and a half.",
+      "end_frame": 4936,
+      "failure": "Suit over- or under-ventilates.",
+      "instruction": "Open the exhaust valve two and one-half turns.",
+      "order": 21,
+      "part_id": "exhaust_valve",
+      "safety": true,
+      "start_frame": 4823
+    },
+    {
+      "action": "turn_cw",
+      "check": "Faceplate shut flush.",
+      "coach": "Button her up \u2014 shut that plate.",
+      "end_frame": 5547,
+      "failure": "Helmet floods on descent.",
+      "instruction": "Close the faceplate on diver's signal to button up.",
+      "order": 22,
+      "part_id": "faceplate",
+      "safety": true,
+      "start_frame": 5489
+    },
+    {
+      "action": "turn_cw",
+      "check": "Nut finger tight on faceplate.",
+      "coach": "Run it down with your fingers.",
+      "end_frame": 5650,
+      "failure": "Plate not seated evenly.",
+      "instruction": "Wind the faceplate wing nut down finger tight.",
+      "order": 23,
+      "part_id": "faceplate_wing_nut",
+      "safety": true,
+      "start_frame": 5566
+    },
+    {
+      "action": "turn_cw",
+      "check": "Nut wrench-tight, faceplate sealed.",
+      "coach": "Now give it the wrench.",
+      "end_frame": 5729,
+      "failure": "Faceplate leaks under pressure.",
+      "instruction": "Secure the faceplate wing nut tightly with the wing nut wrench.",
+      "order": 24,
+      "part_id": "faceplate_wing_nut",
+      "safety": true,
+      "start_frame": 5651
+    }
+  ]
+}

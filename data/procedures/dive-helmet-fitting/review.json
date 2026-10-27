@@ -1,0 +1,150 @@
+{
+  "steps": [
+    {
+      "evidence": "[frame 299-462] \"the tender leads the air hose over the top of the left port.\"",
+      "order": 1,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 512-565] \"and the lifeline over the right.\"",
+      "order": 2,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 582-958] \"He lifts the helmet by grasping the side ports.\"",
+      "order": 3,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 582-958] \"The helmet is hard and heavy so the tender places it over the diver's head gently.\"",
+      "order": 4,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 582-958] \"He positions it so that the faceplate faces a little to the diver's left.\"",
+      "order": 5,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 977-1219] \"When turned into place the faceplate of the helmet should face directly forward. and the mark scribed on the helmet and the breastplate should should be aligned or nearly so.\"",
+      "order": 6,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1255-1687] \"the dumbbell is dropped into place\"",
+      "order": 7,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1255-1687] \"the safety latch closed\"",
+      "order": 8,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1255-1687] \"and secured with a cotter pin\"",
+      "order": 9,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1723-2166] \"The air hose is passed under the diver's left arm\"",
+      "order": 10,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1723-2166] \"a tender slips the iPad [eye] of the air control valve over the long stud of the breastplate\"",
+      "order": 11,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1723-2166] \"he reinstalls the wing nut\"",
+      "order": 12,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1723-2166] \"now using the wrench to tighten it firmly\"",
+      "order": 13,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2572-2787] \"now the tender lashes down the air hose taking two round turns with the halyard\"",
+      "order": 14,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2572-2787] \"and tying off the ends with a square knot\"",
+      "order": 15,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 3444-3730] \"The diver's lifeline which also carries his communication cable is passed under his right arm\"",
+      "order": 16,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 3444-3730] \"a tender lashes it tightly with a halyard on that side\" and [frame 3756-3888] \"He again takes two round turns with the halyard\"",
+      "order": 17,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 3756-3888] \"and ties it off with a square knot\"",
+      "order": 18,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 4216-4317] \"and now a last minute check on the diver's intercom\" + [4365-4660] \"Topside red diver / How do you hear me? / Red diver topside hear you loud and clear how me? / I hear you the same.\"",
+      "order": 19,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 4703-4799] \"The diver closes his exhaust exhaust valve all the way.\"",
+      "order": 20,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 4823-4936] \"then opens it by giving the hand wheel two and one half turns.\"",
+      "order": 21,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 5168-5346] \"The final step in dressing the diver comes when the diver feels that all is ready and gives this signal.\" + [5403-5427] \"button her up.\" + [5489-5547] \"The tender closes the face plate.\"",
+      "order": 22,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 5566-5729] \"winds the wing nut down finger tight\"",
+      "order": 23,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 5566-5729] \"and uses the wing nut wrench to secure it tightly.\"",
+      "order": 24,
+      "suggested_fix": "",
+      "supported": true
+    }
+  ],
+  "evidence_mode": "narration",
+  "flagged_count": 0
+}

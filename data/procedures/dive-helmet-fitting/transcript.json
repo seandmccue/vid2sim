@@ -1,0 +1,200 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "The helmet is the final item to be fitted in dressing the diver. diver. The air hose and lifeline are already attached. To keep these out of the way, the the tender leads the air hose over the top of the left port. and the lifeline over the right. He lifts the helmet by grasping the side ports. The helmet is hard and heavy so the tender places it over the diver's head gently. He positions it so that the faceplate faces a little to the diver's left. When turned into place the faceplate of the helmet should face directly forward. and the mark scribed on the helmet and the breastplate should should be aligned or nearly so. The faceplate is open now so the diver can breathe and talk until he is ready to go over the side. the dumbbell is dropped into place the safety latch closed and secured with a cotter pin The air hose is passed under the diver's left arm and a tender slips the iPad of the air control valve over the long stud of the breastplate he reinstalls the wing nut now using the wrench to tighten it firmly now the tender lashes down the air hose taking two round turns with the halyard and tying off the ends with a square knot In doing this the tender tender takes care to ensure that the air control valve hangs conveniently to the diver's left hand for easy adjustment. The diver's lifeline which also carries his communication cable is passed under his right arm and a tender lashes it tightly with a halyard on that side. side. He again takes two round turns with the halyard and ties it off with a square knot and now a last minute check on the diver's intercom Topside red diver How do you hear me? Red diver topside hear you loud and clear how me? I hear you the same. The diver closes his exhaust exhaust valve all the way. then opens it by giving the hand wheel two and one half turns. He'll adjust the air control valve as soon as he's submerged on the diving ladder. The final step in dressing the diver comes when the diver feels that all is ready and gives this signal. button her up. The tender closes the face plate. winds the wing nut down finger tight and uses the wing nut wrench to secure it tightly. The dressing of the diver",
+  "audio_duration_ms": 196080,
+  "fps": 29.97002997002997,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 2060,
+      "end_ms": 8860,
+      "start_frame": 61,
+      "end_frame": 265,
+      "text": "The helmet is the final item to be fitted in dressing the diver. diver. The air hose and lifeline are already attached."
+    },
+    {
+      "turn_id": 1,
+      "start_ms": 9980,
+      "end_ms": 15420,
+      "start_frame": 299,
+      "end_frame": 462,
+      "text": "To keep these out of the way, the the tender leads the air hose over the top of the left port."
+    },
+    {
+      "turn_id": 2,
+      "start_ms": 17100,
+      "end_ms": 18860,
+      "start_frame": 512,
+      "end_frame": 565,
+      "text": "and the lifeline over the right."
+    },
+    {
+      "turn_id": 3,
+      "start_ms": 19420,
+      "end_ms": 31980,
+      "start_frame": 582,
+      "end_frame": 958,
+      "text": "He lifts the helmet by grasping the side ports. The helmet is hard and heavy so the tender places it over the diver's head gently. He positions it so that the faceplate faces a little to the diver's left."
+    },
+    {
+      "turn_id": 4,
+      "start_ms": 32620,
+      "end_ms": 40700,
+      "start_frame": 977,
+      "end_frame": 1219,
+      "text": "When turned into place the faceplate of the helmet should face directly forward. and the mark scribed on the helmet and the breastplate should should be aligned or nearly so."
+    },
+    {
+      "turn_id": 5,
+      "start_ms": 41900,
+      "end_ms": 56300,
+      "start_frame": 1255,
+      "end_frame": 1687,
+      "text": "The faceplate is open now so the diver can breathe and talk until he is ready to go over the side. the dumbbell is dropped into place the safety latch closed and secured with a cotter pin"
+    },
+    {
+      "turn_id": 6,
+      "start_ms": 57500,
+      "end_ms": 72300,
+      "start_frame": 1723,
+      "end_frame": 2166,
+      "text": "The air hose is passed under the diver's left arm and a tender slips the iPad of the air control valve over the long stud of the breastplate he reinstalls the wing nut now using the wrench to tighten it firmly"
+    },
+    {
+      "turn_id": 7,
+      "start_ms": 85820,
+      "end_ms": 93020,
+      "start_frame": 2572,
+      "end_frame": 2787,
+      "text": "now the tender lashes down the air hose taking two round turns with the halyard and tying off the ends with a square knot"
+    },
+    {
+      "turn_id": 8,
+      "start_ms": 93820,
+      "end_ms": 102140,
+      "start_frame": 2811,
+      "end_frame": 3061,
+      "text": "In doing this the tender tender takes care to ensure that the air control valve hangs conveniently to the diver's left hand for easy adjustment."
+    },
+    {
+      "turn_id": 9,
+      "start_ms": 114940,
+      "end_ms": 124460,
+      "start_frame": 3444,
+      "end_frame": 3730,
+      "text": "The diver's lifeline which also carries his communication cable is passed under his right arm and a tender lashes it tightly with a halyard on that side. side."
+    },
+    {
+      "turn_id": 10,
+      "start_ms": 125340,
+      "end_ms": 129740,
+      "start_frame": 3756,
+      "end_frame": 3888,
+      "text": "He again takes two round turns with the halyard and ties it off with a square knot"
+    },
+    {
+      "turn_id": 11,
+      "start_ms": 140700,
+      "end_ms": 144060,
+      "start_frame": 4216,
+      "end_frame": 4317,
+      "text": "and now a last minute check on the diver's intercom"
+    },
+    {
+      "turn_id": 12,
+      "start_ms": 145660,
+      "end_ms": 147100,
+      "start_frame": 4365,
+      "end_frame": 4408,
+      "text": "Topside red diver"
+    },
+    {
+      "turn_id": 13,
+      "start_ms": 147340,
+      "end_ms": 148140,
+      "start_frame": 4415,
+      "end_frame": 4439,
+      "text": "How do you hear me?"
+    },
+    {
+      "turn_id": 14,
+      "start_ms": 149260,
+      "end_ms": 151820,
+      "start_frame": 4473,
+      "end_frame": 4550,
+      "text": "Red diver topside hear you loud and clear how me?"
+    },
+    {
+      "turn_id": 15,
+      "start_ms": 153580,
+      "end_ms": 155500,
+      "start_frame": 4602,
+      "end_frame": 4660,
+      "text": "I hear you the same."
+    },
+    {
+      "turn_id": 16,
+      "start_ms": 156940,
+      "end_ms": 160140,
+      "start_frame": 4703,
+      "end_frame": 4799,
+      "text": "The diver closes his exhaust exhaust valve all the way."
+    },
+    {
+      "turn_id": 17,
+      "start_ms": 160940,
+      "end_ms": 164700,
+      "start_frame": 4823,
+      "end_frame": 4936,
+      "text": "then opens it by giving the hand wheel two and one half turns."
+    },
+    {
+      "turn_id": 18,
+      "start_ms": 165900,
+      "end_ms": 170060,
+      "start_frame": 4972,
+      "end_frame": 5096,
+      "text": "He'll adjust the air control valve as soon as he's submerged on the diving ladder."
+    },
+    {
+      "turn_id": 19,
+      "start_ms": 172460,
+      "end_ms": 178380,
+      "start_frame": 5168,
+      "end_frame": 5346,
+      "text": "The final step in dressing the diver comes when the diver feels that all is ready and gives this signal."
+    },
+    {
+      "turn_id": 20,
+      "start_ms": 180300,
+      "end_ms": 181100,
+      "start_frame": 5403,
+      "end_frame": 5427,
+      "text": "button her up."
+    },
+    {
+      "turn_id": 21,
+      "start_ms": 183180,
+      "end_ms": 185100,
+      "start_frame": 5489,
+      "end_frame": 5547,
+      "text": "The tender closes the face plate."
+    },
+    {
+      "turn_id": 22,
+      "start_ms": 185740,
+      "end_ms": 191180,
+      "start_frame": 5566,
+      "end_frame": 5729,
+      "text": "winds the wing nut down finger tight and uses the wing nut wrench to secure it tightly."
+    },
+    {
+      "turn_id": 23,
+      "start_ms": 194700,
+      "end_ms": 195580,
+      "start_frame": 5835,
+      "end_frame": 5861,
+      "text": "The dressing of the diver"
+    }
+  ]
+}

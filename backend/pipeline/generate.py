@@ -157,7 +157,11 @@ def headless_compile(unity_project: Path, unity_exe: str | None = None) -> tuple
     except subprocess.TimeoutExpired:
         return False, "compile gate timed out"
     text = log.read_text(errors="ignore") if log.exists() else proc.stdout
-    ok = proc.returncode == 0 and "error CS" not in text and "Scripts have compiler errors" not in text
+    # Unity 6 sometimes aborts on exit (libc++abi terminate, exit 134) after a successful batch run, so the
+    # verdict comes from the log: compiler errors fail it; an explicit success line passes it.
+    has_errors = "error CS" in text or "Scripts have compiler errors" in text
+    said_ok = "Exiting batchmode successfully" in text or "[CompileGate] finished with 0 error" in text
+    ok = not has_errors and (proc.returncode == 0 or said_ok)
     return ok, text[-4000:]
 
 
@@ -179,12 +183,18 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
         if (staging / f"{cls}.cs").exists():
             out.append({"verb": verb, "class": cls, "path": str(staging / f"{cls}.cs"), "compiled": True, "note": "cached"})
             continue
-        jobs.append((verb, cls, step, parts[step["part_id"]]))
+        if (staging / f"{cls}.cs.pending").exists():
+            jobs.append((verb, cls, step, parts[step["part_id"]], (staging / f"{cls}.cs.pending").read_text()))  # re-gate, don't regenerate
+            continue
+        jobs.append((verb, cls, step, parts[step["part_id"]], None))
     if not jobs:
         return out
 
     def produce(job):
-        verb, cls, step, part = job
+        verb, cls, step, part, existing = job
+        if existing:
+            metrics.log("generate_code", "cache", 0.0, 0.0, note=f"{verb}: re-gating pended script")
+            return verb, cls, existing
         prompt = _codegen_prompt(step, part)
         if is_mock():
             from ..mock import mock_csharp
@@ -214,15 +224,38 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
     if not pending:
         return out
 
-    # Gate the batch once: every pending file is renamed in, compiled together, and all rolled back on failure.
+    # Gate the batch: every pending file is renamed in and compiled together. If the compiler names
+    # specific files, only those are pended and the rest are re-gated once; if that still fails, all roll back.
     for _, cls, candidate in pending:
         candidate.rename(staging / f"{cls}.cs")
-    compiled, note = (True, "gate skipped") if not gate else (True, "mock gate") if is_mock() else headless_compile(unity_project)
+    if not gate:
+        compiled, note = True, "gate skipped"
+    elif is_mock():
+        compiled, note = True, "mock gate"
+    else:
+        compiled, note = headless_compile(unity_project)
+    failed: set[str] = set()
+    if not compiled:
+        failed = set(re.findall(r"Assets/Generated/([A-Za-z0-9_]+)\.cs\(", note))
+        if failed and len(failed) < len(pending):
+            for verb, cls, candidate in pending:
+                if cls in failed:
+                    (staging / f"{cls}.cs").rename(candidate)
+            compiled2, note2 = headless_compile(unity_project)
+            if compiled2:
+                compiled, note = True, f"{len(failed)} script(s) pended, rest compiled"
+            else:
+                failed = {cls for _, cls, _ in pending}
+                note = note2
+        else:
+            failed = {cls for _, cls, _ in pending}
     for verb, cls, candidate in pending:
         target = staging / f"{cls}.cs"
-        if not compiled:
+        ok = cls not in failed
+        if not ok and target.exists():
             target.rename(candidate)
-        out.append({"verb": verb, "class": cls, "path": str(target if compiled else candidate), "compiled": compiled, "note": note[-500:]})
+        out.append({"verb": verb, "class": cls, "path": str(target if ok else candidate), "compiled": ok,
+                    "note": ("failed the compile gate; engine falls back to the vocabulary verb" if not ok else note)[-500:]})
     return out
 
 

@@ -1,7 +1,7 @@
 {
   "run_id": "20261026-223153-c5dc22",
   "procedure": "swap-graphics-card-msi-trident-3",
-  "upload_to_spec_s": 1448.1,
+  "upload_to_spec_s": 1414.3,
   "api_cost_usd": 2.39,
   "steps": 15,
   "parts": 12,
@@ -913,5 +913,5 @@
     "20261026-223019-126271",
     "20261026-223153-c5dc22"
   ],
-  "note": "aggregated across 4 run(s) with --resume; resumed stages cost $0 and 0 s"
+  "note": "aggregated across 4 run(s); resumed stages cost $0 and 0 s"
 }

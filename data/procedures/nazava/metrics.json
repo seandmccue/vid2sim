@@ -1,7 +1,7 @@
 {
   "run_id": "20261026-195230-e65591",
   "procedure": "nazava-water-filter-install",
-  "upload_to_spec_s": 873.6,
+  "upload_to_spec_s": 970.0,
   "api_cost_usd": 1.2132,
   "steps": 8,
   "parts": 7,
@@ -423,5 +423,5 @@
     "20261026-193913-ab0165",
     "20261026-195230-e65591"
   ],
-  "note": "aggregated across 3 run(s) with --resume; resumed stages cost $0 and 0 s"
+  "note": "aggregated across 3 run(s); resumed stages cost $0 and 0 s"
 }
