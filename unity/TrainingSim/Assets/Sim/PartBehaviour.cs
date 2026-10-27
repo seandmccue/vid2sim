@@ -13,6 +13,14 @@ namespace Vid2Sim
         public Vector3 SpawnPosition { get; private set; }
         public Quaternion SpawnRotation { get; private set; }
         public Transform SnapZone { get; set; }   // only for parts used by a 'place' step
+        /// <summary>
+        /// Axis a turn is measured about, in the part's spawn frame, pointing at whoever watches it turn:
+        /// up for a knob or cap lying on the bench, the card normal (toward the trainee) for a photo card.
+        /// </summary>
+        public Vector3 TurnAxisLocal = Vector3.up;
+        public Vector3 TurnAxisWorld => SpawnRotation * TurnAxisLocal;
+        /// <summary>True when the part is a flat photo card cut from the video rather than a primitive.</summary>
+        public bool IsCard { get; set; }
 
         public bool IsSelected { get; private set; }
         public bool IsHovered { get; private set; }
@@ -83,11 +91,14 @@ namespace Vid2Sim
 
         public float SignedYawFromSpawn()
         {
-            // rotation about the part's own up axis, degrees, + = clockwise as seen from above
+            // rotation about the part's turn axis, degrees, + = clockwise as seen by the viewer the axis points at
             var delta = Quaternion.Inverse(SpawnRotation) * transform.rotation;
             delta.ToAngleAxis(out float angle, out Vector3 axis);
             if (angle > 180f) angle -= 360f;
-            return angle * Mathf.Sign(Vector3.Dot(axis, Vector3.up)) * -1f;
+            return angle * Mathf.Sign(Vector3.Dot(axis, TurnAxisLocal)) * -1f;
         }
+
+        /// <summary>Turn about the part's own axis; + = clockwise for the viewer (what "turn_cw" means).</summary>
+        public void TurnBy(float degreesClockwise) => transform.Rotate(TurnAxisWorld, -degreesClockwise, Space.World);
     }
 }

@@ -74,3 +74,50 @@ def test_long_audio_is_chunked_with_offsets(monkeypatch, tmp_path):
     assert [t["startMs"] for t in merged["turns"]] == [1000, 541000, 1081000]
     assert merged["transcript"] == "chunk 1 chunk 2 chunk 3"
     assert not list(tmp_path.glob("long_chunk*.wav"))        # temp chunks cleaned up
+
+
+def test_cutouts_from_product_shot_mask_and_crop(tmp_path):
+    """Background removal keeps white inside the object; mask and crop fallbacks produce RGBA cards."""
+    from PIL import Image, ImageDraw
+    from backend.pipeline.cutouts import cutout_from_texture, cutout_from_mask, cutout_from_crop, generate_cutouts
+
+    # product shot: white background, blue disc with a white hole in the middle
+    tex = Image.new("RGB", (200, 200), (250, 250, 250))
+    d = ImageDraw.Draw(tex)
+    d.ellipse((40, 40, 160, 160), fill=(40, 80, 200))
+    d.ellipse((85, 85, 115, 115), fill=(255, 255, 255))
+    tex.save(tmp_path / "tex.png")
+    out = cutout_from_texture(tmp_path / "tex.png", tmp_path / "cut.png")
+    assert out is not None
+    rgba = Image.open(out)
+    assert rgba.mode == "RGBA"
+    assert rgba.width < 200 and rgba.height < 200           # cropped to the disc
+    a = rgba.getchannel("A")
+    assert a.getpixel((0, 0)) == 0                            # corner is background
+    assert a.getpixel((rgba.width // 2, rgba.height // 2)) == 255   # the white hole is part of the object
+    assert cutout_from_texture(tmp_path / "tex.png", tmp_path / "x.png") is not None
+    blank = Image.new("RGB", (50, 50), (255, 255, 255)); blank.save(tmp_path / "blank.png")
+    assert cutout_from_texture(tmp_path / "blank.png", tmp_path / "y.png") is None
+
+    # crop (padded box) + full-frame mask
+    frame_w, frame_h, box = 320, 180, [100, 50, 139, 89]
+    crop = Image.new("RGB", (48, 48), (200, 30, 30)); crop.save(tmp_path / "crop.png")
+    mask = Image.new("L", (frame_w, frame_h), 0)
+    ImageDraw.Draw(mask).rectangle((105, 55, 134, 84), fill=255)
+    mask.save(tmp_path / "mask.png")
+    out = cutout_from_mask(tmp_path / "crop.png", tmp_path / "mask.png", box, tmp_path / "m.png")
+    assert out is not None and Image.open(out).mode == "RGBA"
+
+    out = cutout_from_crop(tmp_path / "crop.png", tmp_path / "c.png")
+    assert Image.open(out).getchannel("A").getpixel((0, 0)) < 40   # feathered corner
+
+    # generate_cutouts prefers texture > mask > crop and never raises on a missing source
+    work = tmp_path / "work"
+    (work / "bundle" / "textures").mkdir(parents=True)
+    (work / "bundle" / "crops").mkdir(parents=True)
+    tex.save(work / "bundle" / "textures" / "a.png")
+    crop.save(work / "bundle" / "crops" / "b.png")
+    spec = {"parts": [{"id": "a", "keyframe": 3, "box": box}, {"id": "b", "keyframe": 3, "box": box}, {"id": "c", "keyframe": 3, "box": box}]}
+    got = generate_cutouts(spec, work)
+    assert set(got) == {"a", "b"}
+    assert (work / "bundle" / "cutouts" / "a.png").exists()

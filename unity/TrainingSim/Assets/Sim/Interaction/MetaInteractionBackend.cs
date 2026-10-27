@@ -43,7 +43,7 @@ namespace Vid2Sim.Interaction
                 // knob / cap lying flat on the bench: rotate about its own up axis, pivot at its centre
                 var rot = go.AddComponent<OneGrabRotateTransformer>();
                 rot.InjectOptionalPivotTransform(go.transform);
-                rot.InjectOptionalRotationAxis(OneGrabRotateTransformer.Axis.Up);
+                rot.InjectOptionalRotationAxis(part.TurnAxisLocal == Vector3.up ? OneGrabRotateTransformer.Axis.Up : OneGrabRotateTransformer.Axis.Forward);
                 grabbable.InjectOptionalOneGrabTransformer(rot);
             }
             var hg = go.AddComponent<HandGrabInteractable>();

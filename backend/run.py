@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from backend.pipeline import bundle as bundle_mod  # noqa: E402
+from backend.pipeline import cutouts as cutouts_mod  # noqa: E402
 from backend.pipeline import extract as extract_mod  # noqa: E402
 from backend.pipeline import generate as generate_mod  # noqa: E402
 from backend.pipeline import metrics as metrics_mod  # noqa: E402
@@ -63,12 +64,14 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
         generated = [] if skip_generate else generate_mod.generate_actions(spec, unity, metrics, gate=not skip_generate and os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
         textures = {} if skip_generate else generate_mod.generate_textures(spec, work, metrics)
         cards = generate_mod.generate_step_cards(spec, work, metrics) if (step_cards and not skip_generate) else {}
+        cutouts = cutouts_mod.generate_cutouts(spec, work)   # photo cards for the engine; no API cost
         out_dir = package_mod.package(spec, work, streaming_root)
     metrics.log("total", "pipeline", total.wall, 0.0, note="upload to StreamingAssets")
 
     card = metrics_mod.summary(spec, metrics, work, ground_truth or (work / "ground_truth.json"))
     card["generated_actions"] = generated
     card["textures"] = len(textures)
+    card["cutouts"] = len(cutouts)
     card["step_cards"] = len(cards)
     card["streaming_assets"] = str(out_dir)
     write_json(work / "metrics.json", card)

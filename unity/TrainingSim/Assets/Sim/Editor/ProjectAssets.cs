@@ -14,6 +14,7 @@ namespace Vid2Sim.Editor
     {
         public const string PartMaterialPath = "Assets/Sim/Resources/Vid2SimPart.mat";
         public const string ZoneMaterialPath = "Assets/Sim/Resources/Vid2SimZone.mat";
+        public const string CutoutMaterialPath = "Assets/Sim/Resources/Vid2SimCutout.mat";
         const string TmpSettingsPath = "Assets/TextMesh Pro/Resources/TMP Settings.asset";
 
         [MenuItem("Vid2Sim/Ensure Project Assets")]
@@ -48,6 +49,20 @@ namespace Vid2Sim.Editor
                 z.renderQueue = 3000;
                 AssetDatabase.CreateAsset(z, ZoneMaterialPath);
                 Debug.Log("[ProjectAssets] created " + ZoneMaterialPath);
+            }
+            if (AssetDatabase.LoadAssetAtPath<Material>(CutoutMaterialPath) == null)
+            {
+                // photo cards: alpha-tested so the card's transparent pixels are cut away and lit both sides
+                var c = new Material(Shader.Find("Standard")) { color = Color.white };
+                c.SetFloat("_Mode", 1f);
+                c.SetFloat("_Cutoff", 0.4f);
+                c.SetFloat("_Glossiness", 0.2f);
+                c.EnableKeyword("_ALPHATEST_ON");
+                c.DisableKeyword("_ALPHABLEND_ON");
+                c.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                c.renderQueue = 2450;
+                AssetDatabase.CreateAsset(c, CutoutMaterialPath);
+                Debug.Log("[ProjectAssets] created " + CutoutMaterialPath);
             }
             AssetDatabase.SaveAssets();
         }

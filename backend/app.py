@@ -290,7 +290,8 @@ def play(pid: str, mute: bool = False):
     if not (WEB_BUILD / "index.html").exists():
         raise HTTPException(503, "web build not present: run Vid2Sim.Editor.BuildScript.BuildWebGL")
     from urllib.parse import urlencode
-    params = {"spec": f"/api/procedures/{pid}/spec", "textures": f"/api/procedures/{pid}/files/bundle/textures"}
+    params = {"spec": f"/api/procedures/{pid}/spec", "textures": f"/api/procedures/{pid}/files/bundle/textures",
+              "cutouts": f"/api/procedures/{pid}/files/bundle/cutouts"}
     if mute:
         params["mute"] = "1"
     return RedirectResponse(url=f"/sim/index.html?{urlencode(params)}")
