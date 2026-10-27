@@ -1,0 +1,96 @@
+{
+  "steps": [
+    {
+      "evidence": "Caption: \"Start by prying up on this bottom panel\" - hands pry long black vented strip from bottom edge and lift it free, showing tabs.",
+      "order": 1,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"remove these 2 screws\" - close-up of rear bottom edge shows two screws; blue screwdriver removes both.",
+      "order": 2,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"slide the whole cover to the right\" - hands slide black outer cover sideways and lift off, exposing internals.",
+      "order": 3,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"there's the GPU and CPU!\" - top-down view shows silver blower and black MSI fan; hands rotate chassis to look before touching.",
+      "order": 4,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Captions: \"there are 3 screws in these locations\" + \"the 3rd being under the motherboard\" + \"right here!\" with red arrow on screwdriver pointing to motherboard screw near WiFi/M.2 area.",
+      "order": 5,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Captions: \"the next step is to remove these screws\" + \"note! these ones are different from the others!\" - shows removing two screws from silver tabs on rear bottom.",
+      "order": 6,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"remove this clip supporting the GPU next\" - close-up of clip beside GPU fan; screwdriver unscrews it. Caption: \"also different screws!\"",
+      "order": 7,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"you can now pull the clip out of the way\" - hand pulls small black plastic clip free from chassis.",
+      "order": 8,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"make sure to remove the supporting bracket screws over here as well\" - rear IO side with DVI/HDMI shown; screwdriver removes bracket screws at connector end.",
+      "order": 9,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"make sure to remove this cable here\" - screwdriver lifts thin black wire from WiFi card on motherboard.",
+      "order": 10,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Captions: \"you can now gently pull both sides apart\" + \"the back cover is off!\" - hands separate chassis halves and lift silver perforated metal back cover away.",
+      "order": 11,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"Next, remove the GPU power cable\" - hand pulls black cable from side of GPU.",
+      "order": 12,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"you can now apply even pressure to remove the GPU from its slot\" - hands lift dusty MSI AERO card straight up, gold fingers visible.",
+      "order": 13,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "Caption: \"make sure to remove this cable from here! we will need it later on\" - hand detaches small black power adapter cable from back of removed old GPU.",
+      "order": 14,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "No frame shows seating a replacement card. After GPU removal video pivots to M.2 SSD, T-FORCE VULCAN Z 2.5\" unboxing, storage tray removal and SSD mounting. Opening hands-holding-card shots are over table, not insertion. Narration only: \"[frame 4542-4566] Nice.\"",
+      "order": 15,
+      "suggested_fix": "Remove step - video never shows placing a replacement GPU into the slot.",
+      "supported": false
+    }
+  ],
+  "evidence_mode": "narration+video",
+  "flagged_count": 1
+}

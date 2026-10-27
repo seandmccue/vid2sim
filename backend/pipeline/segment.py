@@ -272,20 +272,25 @@ def segment_part(video: Path, info: VideoInfo, part: dict, steps: list[dict], wo
     if hits and mean_c >= CONFIDENCE_FLOOR:
         return _with_keyframe_mask(result, raw, trim_start, info, masks_dir)
 
+    box_meta = raw_dir / f"{part['id']}_box.json"
+    if resume and box_meta.exists() and json.loads(box_meta.read_text()).get("box") is None:
+        metrics.log("box_fallback", SPARK_MODEL, 0.0, 0.0, note=f"resumed: {part['id']} not found before")
+        result.source = "concept" if hits else "none"
+        return result
     if resume and box_raw.exists():
         raw2 = box_raw.read_text()
-        box_meta = raw_dir / f"{part['id']}_box.json"
         box = tuple(json.loads(box_meta.read_text())["box"]) if box_meta.exists() else None
         metrics.log("segment_box", SAM_MODEL, 0.0, 0.0, note=f"resumed from {box_raw.name}")
     else:
         box = _spark_box_fallback(video, keyframe, info, part, work, metrics)
         if box is None:
+            box_meta.write_text(json.dumps({"box": None, "keyframe": keyframe}))
             result.source = "concept" if hits else "none"
             return result
         prompt = _box_prompt(keyframe - trim_start, box, (info.width, info.height))
         raw2 = _sam_call(ensure_upload(), prompt, "forward", metrics, "segment_box", max(1, end - keyframe + 1))
         box_raw.write_text(raw2)
-        (raw_dir / f"{part['id']}_box.json").write_text(json.dumps({"box": list(box), "keyframe": keyframe}))
+        box_meta.write_text(json.dumps({"box": list(box), "keyframe": keyframe}))
     if box is None:
         result.source = "concept" if hits else "none"
         return result

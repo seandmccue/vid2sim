@@ -30,6 +30,7 @@ def crop_part(video: Path, info: VideoInfo, keyframe: int, box: tuple[int, int, 
     x1, y1, x2, y2 = box
     pad_x, pad_y = int((x2 - x1 + 1) * 0.10), int((y2 - y1 + 1) * 0.10)
     crop = img.crop((max(0, x1 - pad_x), max(0, y1 - pad_y), min(img.width, x2 + 1 + pad_x), min(img.height, y2 + 1 + pad_y)))
+    crop.thumbnail((1024, 1024))   # a texture source never needs more than 1024 px; keeps the repo and APK small
     crop.save(out_png)
     frame_png.unlink(missing_ok=True)
     return out_png

@@ -47,7 +47,7 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
         transcript = transcribe_mod.transcribe(video, info, work, metrics, resume=resume)
         progress("3/6 extract + verify (Spark 1.3, two passes)")
         draft = extract_mod.extract(file_id, info, transcript, work, metrics, title_hint=title, resume=resume)
-        review = extract_mod.verify(draft, transcript, work, metrics, resume=resume)
+        review = extract_mod.verify(draft, transcript, work, metrics, resume=resume, file_id=file_id)
         if review.get("flagged_count"):
             progress(f"    verify flagged {review['flagged_count']} step(s); see review.json")
         progress(f"4/6 segment (SAM 3.1, {len(draft['parts'])} parts)")
