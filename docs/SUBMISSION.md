@@ -51,7 +51,7 @@ The pipeline extracts, verifies its own extraction against the transcript, detec
 | [procedure #1, own footage] | [ ] min | $[ ] | [ ]/[ ] | [ ] / [ ] / [ ] |
 | [procedure #2, own footage] | [ ] min | $[ ] | [ ]/[ ] | [ ] / [ ] / [ ] |
 
-Development runs on CC BY test clips (water filter install, PC graphics-card swap) are in the repo README with attribution; they are not part of the demo.
+Development runs on public-domain footage (a 1960s Department of Defense engine-maintenance film) and two CC BY test clips (water filter install, PC graphics-card swap) are in the repo README with attribution; none of them is part of the demo.
 
 ## Risks we designed around
 

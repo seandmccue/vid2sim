@@ -82,14 +82,27 @@ Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs ha
 
 | Procedure | Upload → playable | API cost | Steps correct vs ground truth | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
+| M151 engine, left-side connections, 112 s, 720×480, narrated 1960s DoD film, public domain | 11.6 min incl. a 2 min compile gate | $1.57 | 8/11, 6 finer-grained extras | 2 / 11 / 3 |
 | Nazava water-filter install, 79 s, 848×480, narrated, CC BY test clip | 9.6 min single pass (14.6 min incl. a code-gen rerun) | $1.21 | 6/7, 1 extra | 3 / 2 / 2 |
 | MSI Trident GPU swap, 260 s, 1080p, no narration, CC BY test clip | 24.1 min incl. two crash-and-resume passes | $2.39 | 5/7, 9 finer-grained extras; verify correctly flagged 1 invented step | 3 / 7 / 2 |
 | synthetic colour-bar clip, 6 s (chain check only) | 2.8 min | $0.32 | n/a | 0 / 0 / 5 |
 | compressor-filter-swap (Sean's own footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
 
-Both test clips are attributed in `data/procedures/*/ATTRIBUTION.md` and are never part of the demo. Numbers are
+All test clips are attributed in `data/procedures/*/ATTRIBUTION.md` and are never part of the demo. The M151 film is a US
+Department of Defense work (public domain, CC0 on the archive); the other two are CC BY from Wikimedia Commons. Numbers are
 aggregated over every run of that clip (resumed stages cost $0 and 0 s); the per-stage rows are in `metrics/runs.csv`.
 Rendered card: `docs/metrics-card.png`.
+
+Notes on the M151 run (`data/procedures/m151-power-pack/metrics.json`), public-domain footage:
+
+- Voice Transcribe turned a 1960s narrator into 53 timed turns that read like the manual. Spark extracted 16 steps
+  and 16 parts; 10 of 11 trainer steps aligned, 8 with the right action. The misses are honest: "remove the muffler
+  inlet pipe" came back as `disconnect` where the list says `turn_ccw`, and the brush guard at the clip's end was
+  not extracted.
+- Black-and-white footage is where the box fallback earns its place: text prompts found 2 parts, Spark boxes
+  rescued 11 more, 3 stayed manual.
+- First run with the Muse Code compile gate on: three generated verbs (`disconnect`, `remove`, `detach`) were
+  compiled by a headless Unity before landing. The gate adds about two minutes to the wall time.
 
 Notes on the Nazava run (`data/procedures/nazava/metrics.json`):
 

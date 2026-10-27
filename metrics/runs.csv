@@ -180,3 +180,84 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261026-223153-c5dc22,trident-gpu-swap,segment_concept,sam-3.1,0.00,0.0000,331,0,0,resumed from new_gpu_concept.txt
 20261026-223153-c5dc22,trident-gpu-swap,box_fallback,muse-spark-1.3,3.75,0.0047,0,1252,744,new_gpu
 20261026-223153-c5dc22,trident-gpu-swap,total,pipeline,93.01,0.0000,0,0,0,upload to StreamingAssets
+20261027-114450-3681ca,m151-power-pack,upload,files,91.02,0.0000,0,0,0,p.mp4
+20261027-114450-3681ca,m151-power-pack,transcribe,muse-voice-transcribe-1.0,15.71,0.0112,0,0,0,"1.87 min, cost is an estimate"
+20261027-114450-3681ca,m151-power-pack,extract,muse-spark-1.3,54.95,0.0684,0,30714,7061,"completed, budget 16000"
+20261027-114450-3681ca,m151-power-pack,verify,muse-spark-1.3,11.58,0.0195,0,3184,3644,"completed, budget 16000"
+20261027-114450-3681ca,m151-power-pack,upload,files,5.88,0.0000,0,0,0,battery_ground_cable.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,9.66,0.0552,276,0,0,thick black battery ground cable
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,16.40,0.0160,0,496,3611,battery_ground_cable
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,11.83,0.0262,131,0,0,<145f>1<|box;x1=324;y1=118;x2=485;y2=479;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,4.33,0.0000,0,0,0,air_intake_hose.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,6.18,0.0244,122,0,0,curved rubber air intake hose
+20261027-114450-3681ca,m151-power-pack,upload,files,5.40,0.0000,0,0,0,float_chamber_vent_hose.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.17,0.0240,120,0,0,thin rubber float chamber hose
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,6.85,0.0069,0,497,1466,float_chamber_vent_hose
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,6.29,0.0122,61,0,0,<59f>1<|box;x1=404;y1=224;x2=575;y2=315;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,2.88,0.0000,0,0,0,fuel_tank_vent_line.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,4.59,0.0260,130,0,0,braided fuel tank vent line
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,17.20,0.0166,0,498,3750,fuel_tank_vent_line
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,6.07,0.0132,66,0,0,<64f>1<|box;x1=374;y1=225;x2=610;y2=319;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,2.93,0.0000,0,0,0,oil_pressure_switch_vent_line.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,4.11,0.0256,128,0,0,narrow oil pressure switch vent line
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,9.58,0.0091,0,500,2005,oil_pressure_switch_vent_line
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,6.82,0.0128,64,0,0,<64f>1<|box;x1=378;y1=225;x2=615;y2=355;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.02,0.0000,0,0,0,air_cleaner.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.24,0.0310,155,0,0,round metal air cleaner housing
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,7.58,0.0083,0,495,1814,air_cleaner
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,7.18,0.0172,86,0,0,<69f>1<|box;x1=99;y1=83;x2=513;y2=328;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.47,0.0000,0,0,0,flexible_fuel_hose.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.83,0.0220,110,0,0,flexible rubber fuel hose
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,15.51,0.0144,0,496,3244,flexible_fuel_hose
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,5.51,0.0118,59,0,0,<51f>1<|box;x1=490;y1=140;x2=600;y2=250;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.56,0.0000,0,0,0,generator_cable.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,6.33,0.0330,165,0,0,insulated generator cable
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,9.17,0.0084,0,494,1838,generator_cable
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,7.47,0.0162,81,0,0,<84f>1<|box;x1=90;y1=320;x2=270;y2=380;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.71,0.0000,0,0,0,choke_control_cable.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.70,0.0330,165,0,0,sheathed choke control cable
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,20.61,0.0176,0,498,4000,choke_control_cable
+20261027-114450-3681ca,m151-power-pack,upload,files,3.28,0.0000,0,0,0,accelerator_rod.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.38,0.0148,74,0,0,straight metal accelerator rod
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,10.68,0.0107,0,494,2380,accelerator_rod
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,4.54,0.0100,37,0,0,<37f>1<|box;x1=518;y1=60;x2=580;y2=205;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.46,0.0000,0,0,0,muffler_inlet_pipe.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,6.03,0.0254,127,0,0,corroded steel muffler inlet pipe
+20261027-114450-3681ca,m151-power-pack,upload,files,3.30,0.0000,0,0,0,clutch_return_spring.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,3.65,0.0172,86,0,0,coiled clutch return spring
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,10.33,0.0105,0,497,2321,clutch_return_spring
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,6.91,0.0100,42,0,0,<44f>1<|box;x1=212;y1=108;x2=494;y2=243;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,3.19,0.0000,0,0,0,clutch_release_rod.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,3.08,0.0158,79,0,0,slender clutch release rod
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,17.86,0.0176,0,497,4000,clutch_release_rod
+20261027-114450-3681ca,m151-power-pack,upload,files,3.50,0.0000,0,0,0,front_engine_support_bolt.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,6.99,0.0292,146,0,0,hexagonal engine support bolt
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,6.18,0.0061,0,496,1283,front_engine_support_bolt
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,6.66,0.0142,71,0,0,<75f>1<|box;x1=350;y1=385;x2=380;y2=412;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,4.55,0.0000,0,0,0,clutch_pedal_linkage.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,4.67,0.0256,128,0,0,pivoted clutch pedal linkage
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,9.41,0.0091,0,500,1995,clutch_pedal_linkage
+20261027-114450-3681ca,m151-power-pack,segment_box,sam-3.1,5.87,0.0128,64,0,0,<64f>1<|box;x1=232;y1=0;x2=474;y2=212;w=720;h=480|>
+20261027-114450-3681ca,m151-power-pack,upload,files,2.63,0.0000,0,0,0,clutch_cross_shaft_housing.mp4
+20261027-114450-3681ca,m151-power-pack,segment_concept,sam-3.1,5.70,0.0256,128,0,0,cast clutch cross shaft housing
+20261027-114450-3681ca,m151-power-pack,box_fallback,muse-spark-1.3,17.59,0.0176,0,498,4000,clutch_cross_shaft_housing
+20261027-114450-3681ca,m151-power-pack,generate_code,muse-spark-1.3,20.81,0.0215,0,455,4933,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-114450-3681ca,m151-power-pack,generate_code,muse-spark-1.3,21.64,0.0248,0,452,5692,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-114450-3681ca,m151-power-pack,generate_code,muse-spark-1.3,22.81,0.0279,0,457,6424,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,10.69,0.0400,0,0,0,air_intake_hose (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,12.86,0.0400,0,0,0,fuel_tank_vent_line (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,16.77,0.0400,0,0,0,battery_ground_cable (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,22.72,0.0400,0,0,0,float_chamber_vent_hose (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,9.86,0.0400,0,0,0,generator_cable (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,26.57,0.0400,0,0,0,oil_pressure_switch_vent_line (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,24.63,0.0400,0,0,0,air_cleaner (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,20.95,0.0400,0,0,0,flexible_fuel_hose (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,10.80,0.0400,0,0,0,choke_control_cable (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,11.94,0.0400,0,0,0,accelerator_rod (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,8.16,0.0400,0,0,0,clutch_release_rod (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,21.46,0.0400,0,0,0,muffler_inlet_pipe (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,10.34,0.0400,0,0,0,front_engine_support_bolt (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,24.09,0.0400,0,0,0,clutch_return_spring (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,13.75,0.0400,0,0,0,clutch_pedal_linkage (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,texture,muse-image-1.0,13.38,0.0400,0,0,0,clutch_cross_shaft_housing (cost is an estimate)
+20261027-114450-3681ca,m151-power-pack,total,pipeline,694.88,0.0000,0,0,0,upload to StreamingAssets

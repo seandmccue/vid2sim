@@ -6,7 +6,7 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 
 | Lane | State |
 | --- | --- |
-| Pipeline | Two real clips end to end on the live API: Nazava filter (79 s, narrated) and a 1080p GPU swap (260 s, captions only). Numbers in the README table and `docs/metrics-card.png`. `--resume` reuses finished stages. |
+| Pipeline | Three real clips end to end on the live API: a public-domain 1960s DoD engine-maintenance film (112 s, narrated; compile gate on), the Nazava filter (79 s, narrated) and a 1080p GPU swap (260 s, captions only). Numbers in the README table and `docs/metrics-card.png`. `--resume` reuses finished stages. |
 | Backend + dashboard | Upload → run → steps → masks on demand → edit → draw a box → save → Rebuild → Quest, verified in the browser on both clips. `POST /api/procedures/<id>/build?apk=true` built `Builds/vid2sim.apk` (71 MB, three procedures) from the dashboard's own endpoint. |
 | Unity engine | Compiles against Meta XR SDK 207.0.1. 13 headless PlayMode tests pass, including the full compressor procedure to a pass with scoring. `Builds/vid2sim.apk` builds headless in ~2 min warm. **Rebuild it before sideloading**: the web build exposed two player-only failures (stripped Standard shader, missing TMP essentials) that were fixed on Oct 27; any APK from before that fix will spawn nothing. |
 | Generated code | 6 Spark-written `IStepAction` scripts compile against the SDK; 1 (`UnplugAction`) failed the gate and is pended, engine falls back to `pull`. |
@@ -33,8 +33,9 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 
 ## Things to know before you trust a number
 
-- Both test clips are CC BY from Wikimedia Commons, attributed in `data/procedures/*/ATTRIBUTION.md`. They are for
-  the pipeline only. The demo video must use your footage.
+- Test clips: the M151 film is public domain (US government work); the Nazava and GPU-swap clips are CC BY from
+  Wikimedia Commons. All attributed in `data/procedures/*/ATTRIBUTION.md`, all for the pipeline only. The demo video
+  must use your footage.
 - Ground truth on both test clips was written by me from the clips' own captions, not by a trainer.
 - The GPU-swap run was not "zero code changes": it exposed three pipeline bugs (1080p mask decoding, a stalled
   box fallback, a missing function), all fixed in the pipeline, none by editing the spec. The README says so.
@@ -42,4 +43,4 @@ Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/t
 
 ## Spend so far
 
-$3.98 of API across every run tonight, including the aborted ones (Nazava $1.21, GPU swap $2.39, chain check $0.32, smoke test $0.05). Rows in `metrics/runs.csv`.
+$5.54 of API across every run so far, including the aborted ones (M151 $1.57, Nazava $1.21, GPU swap $2.39, chain check $0.32, smoke test $0.05). Rows in `metrics/runs.csv`.

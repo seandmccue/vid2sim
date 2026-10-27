@@ -1,0 +1,102 @@
+{
+  "steps": [
+    {
+      "evidence": "[frame 20-265] One preliminary step is required before removal of the power pack is begun. The battery ground cable is disconnected.",
+      "order": 1,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 411-500] On the left side of the engine at the carburetor. + [frame 529-908] The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected. - air intake hose is first item listed",
+      "order": 2,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 529-908] The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected. - float chamber vent hose is second item listed",
+      "order": 3,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 529-908] The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected. - fuel tank vent line is third item listed",
+      "order": 4,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 529-908] The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected. - oil oil pressure safety switch vent line is fourth item listed",
+      "order": 5,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 956-1080] and the air cleaner is removed.",
+      "order": 6,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1164-1243] then the flexible fuel hose is disconnected.",
+      "order": 7,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1351-1620] The cable at the generator the choke control cable - cable at the generator listed first, with removal verb in continuing sequence ending [frame 2140-2255] are removed.",
+      "order": 8,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1351-1620] The cable at the generator the choke control cable - choke control cable listed second, with removal verb in continuing sequence ending [frame 2140-2255] are removed.",
+      "order": 9,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1653-1696] the accelerator rod - part of continuing removal sequence ending [frame 2140-2255] are removed.",
+      "order": 10,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1780-1876] the muffler inlet pipe at the exhaust manifold - part of continuing removal sequence ending [frame 2140-2255] are removed.",
+      "order": 11,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1941-1996] the clutch return spring - part of continuing removal sequence ending [frame 2140-2255] are removed.",
+      "order": 12,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2013-2061] the clutch release rod - part of continuing removal sequence ending [frame 2140-2255] are removed.",
+      "order": 13,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2140-2255] and the single bolt which secures the front engine support are removed.",
+      "order": 14,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2341-2536] as well as the clutch pedal linkage and the clutch cross shaft and housing - clutch pedal linkage listed first; confirmed by [frame 2636-2739] all connections connections on the left side of the engine have now been released.",
+      "order": 15,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2341-2536] as well as the clutch pedal linkage and the clutch cross shaft and housing - clutch cross shaft and housing listed second; confirmed by [frame 2636-2739] all connections connections on the left side of the engine have now been released.",
+      "order": 16,
+      "suggested_fix": "",
+      "supported": true
+    }
+  ],
+  "evidence_mode": "narration",
+  "flagged_count": 0
+}

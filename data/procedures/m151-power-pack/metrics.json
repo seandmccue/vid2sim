@@ -1,0 +1,759 @@
+{
+  "run_id": "20261027-114450-3681ca",
+  "procedure": "release-left-side-engine-connections-m151",
+  "upload_to_spec_s": 694.9,
+  "api_cost_usd": 1.5666,
+  "steps": 16,
+  "parts": 16,
+  "parts_found_concept": 2,
+  "parts_found_box": 11,
+  "parts_manual": 3,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 91.02,
+      "cost_usd": 0.0,
+      "note": "p.mp4"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 15.71,
+      "cost_usd": 0.0112,
+      "note": "1.87 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 54.95,
+      "cost_usd": 0.0684,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 11.58,
+      "cost_usd": 0.0195,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.88,
+      "cost_usd": 0.0,
+      "note": "battery_ground_cable.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 9.66,
+      "cost_usd": 0.0552,
+      "note": "thick black battery ground cable"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 16.4,
+      "cost_usd": 0.016,
+      "note": "battery_ground_cable"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 11.83,
+      "cost_usd": 0.0262,
+      "note": "<145f>1<|box;x1=324;y1=118;x2=485;y2=479;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 4.33,
+      "cost_usd": 0.0,
+      "note": "air_intake_hose.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.18,
+      "cost_usd": 0.0244,
+      "note": "curved rubber air intake hose"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 5.4,
+      "cost_usd": 0.0,
+      "note": "float_chamber_vent_hose.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.17,
+      "cost_usd": 0.024,
+      "note": "thin rubber float chamber hose"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 6.85,
+      "cost_usd": 0.0069,
+      "note": "float_chamber_vent_hose"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.29,
+      "cost_usd": 0.0122,
+      "note": "<59f>1<|box;x1=404;y1=224;x2=575;y2=315;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.88,
+      "cost_usd": 0.0,
+      "note": "fuel_tank_vent_line.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.59,
+      "cost_usd": 0.026,
+      "note": "braided fuel tank vent line"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 17.2,
+      "cost_usd": 0.0166,
+      "note": "fuel_tank_vent_line"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.07,
+      "cost_usd": 0.0132,
+      "note": "<64f>1<|box;x1=374;y1=225;x2=610;y2=319;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.93,
+      "cost_usd": 0.0,
+      "note": "oil_pressure_switch_vent_line.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.11,
+      "cost_usd": 0.0256,
+      "note": "narrow oil pressure switch vent line"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.58,
+      "cost_usd": 0.0091,
+      "note": "oil_pressure_switch_vent_line"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.82,
+      "cost_usd": 0.0128,
+      "note": "<64f>1<|box;x1=378;y1=225;x2=615;y2=355;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.02,
+      "cost_usd": 0.0,
+      "note": "air_cleaner.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.24,
+      "cost_usd": 0.031,
+      "note": "round metal air cleaner housing"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 7.58,
+      "cost_usd": 0.0083,
+      "note": "air_cleaner"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 7.18,
+      "cost_usd": 0.0172,
+      "note": "<69f>1<|box;x1=99;y1=83;x2=513;y2=328;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.47,
+      "cost_usd": 0.0,
+      "note": "flexible_fuel_hose.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.83,
+      "cost_usd": 0.022,
+      "note": "flexible rubber fuel hose"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 15.51,
+      "cost_usd": 0.0144,
+      "note": "flexible_fuel_hose"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 5.51,
+      "cost_usd": 0.0118,
+      "note": "<51f>1<|box;x1=490;y1=140;x2=600;y2=250;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.56,
+      "cost_usd": 0.0,
+      "note": "generator_cable.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.33,
+      "cost_usd": 0.033,
+      "note": "insulated generator cable"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.17,
+      "cost_usd": 0.0084,
+      "note": "generator_cable"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 7.47,
+      "cost_usd": 0.0162,
+      "note": "<84f>1<|box;x1=90;y1=320;x2=270;y2=380;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.71,
+      "cost_usd": 0.0,
+      "note": "choke_control_cable.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.7,
+      "cost_usd": 0.033,
+      "note": "sheathed choke control cable"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 20.61,
+      "cost_usd": 0.0176,
+      "note": "choke_control_cable"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.28,
+      "cost_usd": 0.0,
+      "note": "accelerator_rod.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.38,
+      "cost_usd": 0.0148,
+      "note": "straight metal accelerator rod"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 10.68,
+      "cost_usd": 0.0107,
+      "note": "accelerator_rod"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 4.54,
+      "cost_usd": 0.01,
+      "note": "<37f>1<|box;x1=518;y1=60;x2=580;y2=205;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.46,
+      "cost_usd": 0.0,
+      "note": "muffler_inlet_pipe.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.03,
+      "cost_usd": 0.0254,
+      "note": "corroded steel muffler inlet pipe"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.3,
+      "cost_usd": 0.0,
+      "note": "clutch_return_spring.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 3.65,
+      "cost_usd": 0.0172,
+      "note": "coiled clutch return spring"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 10.33,
+      "cost_usd": 0.0105,
+      "note": "clutch_return_spring"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.91,
+      "cost_usd": 0.01,
+      "note": "<44f>1<|box;x1=212;y1=108;x2=494;y2=243;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.19,
+      "cost_usd": 0.0,
+      "note": "clutch_release_rod.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 3.08,
+      "cost_usd": 0.0158,
+      "note": "slender clutch release rod"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 17.86,
+      "cost_usd": 0.0176,
+      "note": "clutch_release_rod"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 3.5,
+      "cost_usd": 0.0,
+      "note": "front_engine_support_bolt.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 6.99,
+      "cost_usd": 0.0292,
+      "note": "hexagonal engine support bolt"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 6.18,
+      "cost_usd": 0.0061,
+      "note": "front_engine_support_bolt"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 6.66,
+      "cost_usd": 0.0142,
+      "note": "<75f>1<|box;x1=350;y1=385;x2=380;y2=412;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 4.55,
+      "cost_usd": 0.0,
+      "note": "clutch_pedal_linkage.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 4.67,
+      "cost_usd": 0.0256,
+      "note": "pivoted clutch pedal linkage"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.41,
+      "cost_usd": 0.0091,
+      "note": "clutch_pedal_linkage"
+    },
+    {
+      "stage": "segment_box",
+      "model": "sam-3.1",
+      "wall_s": 5.87,
+      "cost_usd": 0.0128,
+      "note": "<64f>1<|box;x1=232;y1=0;x2=474;y2=212;w=720;h=480|>"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 2.63,
+      "cost_usd": 0.0,
+      "note": "clutch_cross_shaft_housing.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 5.7,
+      "cost_usd": 0.0256,
+      "note": "cast clutch cross shaft housing"
+    },
+    {
+      "stage": "box_fallback",
+      "model": "muse-spark-1.3",
+      "wall_s": 17.59,
+      "cost_usd": 0.0176,
+      "note": "clutch_cross_shaft_housing"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 20.81,
+      "cost_usd": 0.0215,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 21.64,
+      "cost_usd": 0.0248,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 22.81,
+      "cost_usd": 0.0279,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 10.69,
+      "cost_usd": 0.04,
+      "note": "air_intake_hose (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 12.86,
+      "cost_usd": 0.04,
+      "note": "fuel_tank_vent_line (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 16.77,
+      "cost_usd": 0.04,
+      "note": "battery_ground_cable (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 22.72,
+      "cost_usd": 0.04,
+      "note": "float_chamber_vent_hose (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 9.86,
+      "cost_usd": 0.04,
+      "note": "generator_cable (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 26.57,
+      "cost_usd": 0.04,
+      "note": "oil_pressure_switch_vent_line (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 24.63,
+      "cost_usd": 0.04,
+      "note": "air_cleaner (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 20.95,
+      "cost_usd": 0.04,
+      "note": "flexible_fuel_hose (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 10.8,
+      "cost_usd": 0.04,
+      "note": "choke_control_cable (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 11.94,
+      "cost_usd": 0.04,
+      "note": "accelerator_rod (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 8.16,
+      "cost_usd": 0.04,
+      "note": "clutch_release_rod (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 21.46,
+      "cost_usd": 0.04,
+      "note": "muffler_inlet_pipe (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 10.34,
+      "cost_usd": 0.04,
+      "note": "front_engine_support_bolt (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 24.09,
+      "cost_usd": 0.04,
+      "note": "clutch_return_spring (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.75,
+      "cost_usd": 0.04,
+      "note": "clutch_pedal_linkage (cost is an estimate)"
+    },
+    {
+      "stage": "texture",
+      "model": "muse-image-1.0",
+      "wall_s": 13.38,
+      "cost_usd": 0.04,
+      "note": "clutch_cross_shaft_housing (cost is an estimate)"
+    },
+    {
+      "stage": "total",
+      "model": "pipeline",
+      "wall_s": 694.88,
+      "cost_usd": 0.0,
+      "note": "upload to StreamingAssets"
+    }
+  ],
+  "ground_truth": {
+    "steps_truth": 11,
+    "steps_extracted": 16,
+    "steps_correct": 8,
+    "steps_matched": 10,
+    "accuracy": 0.727,
+    "extra_steps": [
+      "Disconnect the air intake hose at the carburetor.",
+      "Disconnect the float chamber vent hose.",
+      "Disconnect the fuel tank vent line.",
+      "Disconnect the cable at the generator.",
+      "Detach the accelerator rod.",
+      "Remove the clutch return spring."
+    ],
+    "rows": [
+      {
+        "order": 1,
+        "truth": "Disconnect the battery ground cable.",
+        "extracted": "Disconnect the battery ground cable.",
+        "extracted_order": 1,
+        "action_truth": "pull",
+        "action_extracted": "disconnect",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 2,
+        "truth": "At the carburetor, disconnect the air intake hose, the float chamber vent hose, the fuel tank vent line and the oil pressure safety switch vent line.",
+        "extracted": "Disconnect the oil pressure safety switch vent line.",
+        "extracted_order": 5,
+        "action_truth": "pull",
+        "action_extracted": "disconnect",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 3,
+        "truth": "Remove the air cleaner.",
+        "extracted": "Remove the air cleaner.",
+        "extracted_order": 6,
+        "action_truth": "lift",
+        "action_extracted": "remove",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 4,
+        "truth": "Disconnect the flexible fuel hose.",
+        "extracted": "Disconnect the flexible fuel hose.",
+        "extracted_order": 7,
+        "action_truth": "pull",
+        "action_extracted": "disconnect",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 5,
+        "truth": "Remove the choke control cable at the generator and the accelerator rod.",
+        "extracted": "Disconnect the choke control cable.",
+        "extracted_order": 9,
+        "action_truth": "pull",
+        "action_extracted": "disconnect",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 6,
+        "truth": "Remove the muffler inlet pipe at the exhaust manifold.",
+        "extracted": "Disconnect the muffler inlet pipe at the exhaust manifold.",
+        "extracted_order": 11,
+        "action_truth": "turn_ccw",
+        "action_extracted": "disconnect",
+        "similarity": 0.9,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 7,
+        "truth": "Remove the clutch return spring and the clutch release rod.",
+        "extracted": "Remove the clutch release rod.",
+        "extracted_order": 13,
+        "action_truth": "pull",
+        "action_extracted": "remove",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 8,
+        "truth": "Remove the single bolt securing the front engine support.",
+        "extracted": "Remove the single bolt securing the front engine support.",
+        "extracted_order": 14,
+        "action_truth": "turn_ccw",
+        "action_extracted": "unscrew",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 9,
+        "truth": "Remove the clutch pedal linkage and the clutch cross shaft and housing.",
+        "extracted": "Remove the clutch pedal linkage.",
+        "extracted_order": 15,
+        "action_truth": "pull",
+        "action_extracted": "remove",
+        "similarity": 1.0,
+        "matched": true,
+        "action_ok": true,
+        "ok": true
+      },
+      {
+        "order": 10,
+        "truth": "Remove the electrical connections to the headlamps and blackout marker assemblies.",
+        "extracted": null,
+        "action_truth": "pull",
+        "action_extracted": null,
+        "matched": false,
+        "action_ok": false,
+        "ok": false
+      },
+      {
+        "order": 11,
+        "truth": "Remove the brush guard bolts and pull the brush guard off.",
+        "extracted": "Remove the clutch cross shaft and housing.",
+        "extracted_order": 16,
+        "action_truth": "pull",
+        "action_extracted": "remove",
+        "similarity": 0.54,
+        "matched": true,
+        "action_ok": false,
+        "ok": false
+      }
+    ]
+  },
+  "generated_actions": [
+    {
+      "verb": "unscrew",
+      "class": "UnscrewAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/UnscrewAction.cs",
+      "compiled": true,
+      "note": "cached"
+    },
+    {
+      "verb": "disconnect",
+      "class": "DisconnectAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/DisconnectAction.cs",
+      "compiled": true,
+      "note": "nnected successfully.\nThread 0x16c0a7000 may have been prematurely finalized\nThread 0x16c133000 may have been prematurely finalized\nAcceleratorClientConnectionCallback - disconnected - :0\n\u001b[40m\u001b[32minfo\u001b[39m\u001b[22m\u001b[49m: Microsoft.Hosting.Lifetime[0]\n      Application is shutting down...\nCleanup mono\ndebugger-agent: Unable to listen on 35\n[usbmuxd] Stop listen thread\n[usbmuxd] Error: \n[usbmuxd] Listen thread exiting\nExiting batchmode successfully now!\n[Package Manager] Server process was shutdown\n"
+    },
+    {
+      "verb": "remove",
+      "class": "RemoveAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/RemoveAction.cs",
+      "compiled": true,
+      "note": "nnected successfully.\nThread 0x16c0a7000 may have been prematurely finalized\nThread 0x16c133000 may have been prematurely finalized\nAcceleratorClientConnectionCallback - disconnected - :0\n\u001b[40m\u001b[32minfo\u001b[39m\u001b[22m\u001b[49m: Microsoft.Hosting.Lifetime[0]\n      Application is shutting down...\nCleanup mono\ndebugger-agent: Unable to listen on 35\n[usbmuxd] Stop listen thread\n[usbmuxd] Error: \n[usbmuxd] Listen thread exiting\nExiting batchmode successfully now!\n[Package Manager] Server process was shutdown\n"
+    },
+    {
+      "verb": "detach",
+      "class": "DetachAction",
+      "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/DetachAction.cs",
+      "compiled": true,
+      "note": "nnected successfully.\nThread 0x16c0a7000 may have been prematurely finalized\nThread 0x16c133000 may have been prematurely finalized\nAcceleratorClientConnectionCallback - disconnected - :0\n\u001b[40m\u001b[32minfo\u001b[39m\u001b[22m\u001b[49m: Microsoft.Hosting.Lifetime[0]\n      Application is shutting down...\nCleanup mono\ndebugger-agent: Unable to listen on 35\n[usbmuxd] Stop listen thread\n[usbmuxd] Error: \n[usbmuxd] Listen thread exiting\nExiting batchmode successfully now!\n[Package Manager] Server process was shutdown\n"
+    }
+  ],
+  "textures": 16,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/release-left-side-engine-connections-m151"
+}

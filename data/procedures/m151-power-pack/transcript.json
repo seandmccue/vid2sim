@@ -1,0 +1,136 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "One preliminary step is required before removal of the power pack is begun. The battery ground cable is disconnected. On the left side of the engine at the carburetor. The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected. and the air cleaner is removed. then the flexible fuel hose is disconnected. The cable at the generator the choke control cable the accelerator rod the muffler inlet pipe at the exhaust manifold the clutch return spring the clutch release rod and the single bolt which secures the front engine support are removed. as well as the clutch pedal linkage and the clutch cross shaft and housing all connections connections on the left side of the engine have now been released. The electrical connections to the headlamps and the blackout marker assemblies are removed. the bolts which secure the brush guard are removed. and the brush guard is pulled off",
+  "audio_duration_ms": 112080,
+  "fps": 29.97002997002997,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 700,
+      "end_ms": 8860,
+      "start_frame": 20,
+      "end_frame": 265,
+      "text": "One preliminary step is required before removal of the power pack is begun. The battery ground cable is disconnected."
+    },
+    {
+      "turn_id": 1,
+      "start_ms": 13740,
+      "end_ms": 16700,
+      "start_frame": 411,
+      "end_frame": 500,
+      "text": "On the left side of the engine at the carburetor."
+    },
+    {
+      "turn_id": 2,
+      "start_ms": 17660,
+      "end_ms": 30300,
+      "start_frame": 529,
+      "end_frame": 908,
+      "text": "The air intake hose, the the float chamber vent hose, the fuel tank vent line, and the oil oil pressure safety switch vent line are disconnected."
+    },
+    {
+      "turn_id": 3,
+      "start_ms": 31900,
+      "end_ms": 36060,
+      "start_frame": 956,
+      "end_frame": 1080,
+      "text": "and the air cleaner is removed."
+    },
+    {
+      "turn_id": 4,
+      "start_ms": 38860,
+      "end_ms": 41500,
+      "start_frame": 1164,
+      "end_frame": 1243,
+      "text": "then the flexible fuel hose is disconnected."
+    },
+    {
+      "turn_id": 5,
+      "start_ms": 45100,
+      "end_ms": 54060,
+      "start_frame": 1351,
+      "end_frame": 1620,
+      "text": "The cable at the generator the choke control cable"
+    },
+    {
+      "turn_id": 6,
+      "start_ms": 55180,
+      "end_ms": 56620,
+      "start_frame": 1653,
+      "end_frame": 1696,
+      "text": "the accelerator rod"
+    },
+    {
+      "turn_id": 7,
+      "start_ms": 59420,
+      "end_ms": 62620,
+      "start_frame": 1780,
+      "end_frame": 1876,
+      "text": "the muffler inlet pipe at the exhaust manifold"
+    },
+    {
+      "turn_id": 8,
+      "start_ms": 64780,
+      "end_ms": 66620,
+      "start_frame": 1941,
+      "end_frame": 1996,
+      "text": "the clutch return spring"
+    },
+    {
+      "turn_id": 9,
+      "start_ms": 67180,
+      "end_ms": 68780,
+      "start_frame": 2013,
+      "end_frame": 2061,
+      "text": "the clutch release rod"
+    },
+    {
+      "turn_id": 10,
+      "start_ms": 71420,
+      "end_ms": 75260,
+      "start_frame": 2140,
+      "end_frame": 2255,
+      "text": "and the single bolt which secures the front engine support are removed."
+    },
+    {
+      "turn_id": 11,
+      "start_ms": 78140,
+      "end_ms": 84620,
+      "start_frame": 2341,
+      "end_frame": 2536,
+      "text": "as well as the clutch pedal linkage and the clutch cross shaft and housing"
+    },
+    {
+      "turn_id": 12,
+      "start_ms": 87980,
+      "end_ms": 91420,
+      "start_frame": 2636,
+      "end_frame": 2739,
+      "text": "all connections connections on the left side of the engine have now been released."
+    },
+    {
+      "turn_id": 13,
+      "start_ms": 93500,
+      "end_ms": 100060,
+      "start_frame": 2802,
+      "end_frame": 2998,
+      "text": "The electrical connections to the headlamps and the blackout marker assemblies are removed."
+    },
+    {
+      "turn_id": 14,
+      "start_ms": 104220,
+      "end_ms": 108460,
+      "start_frame": 3123,
+      "end_frame": 3250,
+      "text": "the bolts which secure the brush guard are removed."
+    },
+    {
+      "turn_id": 15,
+      "start_ms": 109980,
+      "end_ms": 111580,
+      "start_frame": 3296,
+      "end_frame": 3344,
+      "text": "and the brush guard is pulled off"
+    }
+  ]
+}
