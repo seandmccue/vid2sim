@@ -33,3 +33,4 @@ data/procedures/*/frames/
 data/procedures/*/history/
 data/procedures/*/status.json
 data/procedures/*/smoke_masks/
+unity/TrainingSim/.utmp/

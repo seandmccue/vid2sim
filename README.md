@@ -115,6 +115,34 @@ Transcribe and Image rows are labelled estimates until Billing confirms the unit
 | Spark 1.3 audio is degraded | Narration goes through Voice Transcribe; Spark gets frames plus text |
 | Hand tracking flaky on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
 
+## Engine tests (no headset needed)
+
+Seven PlayMode tests drive the engine the way the Interaction SDK does: the six-step compressor procedure runs
+to a pass with scoring, a wrong-part touch is counted, skipping a safety step fails the attempt, pause blocks
+events, both committed specs load and validate. They pass headless on Unity 6000.3.21f1 with Meta XR SDK 207.0.1.
+
+```bash
+Unity -batchmode -nographics -projectPath unity/TrainingSim -runTests -testPlatform PlayMode -testResults /tmp/playmode.xml
+```
+
+## Quest build
+
+```bash
+Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -buildTarget Android -executeMethod Vid2Sim.Editor.BuildScript.BuildAndroid
+adb install -r unity/TrainingSim/Builds/vid2sim.apk
+```
+
+Builds headless on 6000.3.21f1 with Meta XR SDK 207.0.1 (IL2CPP, ARM64, OpenXR, hand tracking): 11 min cold,
+about 2 min warm, 65 MB. The dashboard's Rebuild → Quest hot-pushes a new spec into the installed build without
+rebuilding.
+
+## Docs
+
+- [docs/SUBMISSION.md](docs/SUBMISSION.md): the write-up, numbers to fill from measured runs
+- [docs/VIDEO.md](docs/VIDEO.md): 3-minute shot list timed against the rubric, X post
+- [docs/FILMING.md](docs/FILMING.md): how to shoot and narrate so footage is pipeline-ready
+- [docs/metrics-card.png](docs/metrics-card.png): rendered by `backend/metrics_card.py` from `metrics.json`
+
 ## Development
 
 Feature branches, one PR per component, merged to `main`. CI runs the backend tests and the dashboard build.
