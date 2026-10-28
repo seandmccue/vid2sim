@@ -35,3 +35,4 @@ data/procedures/*/status.json
 data/procedures/*/smoke_masks/
 unity/TrainingSim/.utmp/
 unity/TrainingSim/Assets/StreamingAssets/RuntimeActionBindings.json*
+data/procedures/*/download/

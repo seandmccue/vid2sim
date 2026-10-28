@@ -1,0 +1,18 @@
+{
+  "procedure_id": "forklift-precheck",
+  "written_by": "Claude, from the film's narration (Voice Transcribe) before running the pipeline. Not a trainer's list; test data only.",
+  "steps": [
+    { "order": 1, "part": "tires", "action": "inspect", "text": "Check the tires: inflation of pneumatic tires correct and tires in good condition." },
+    { "order": 2, "part": "running lights", "action": "inspect", "text": "Check that all running lights are working." },
+    { "order": 3, "part": "battery", "action": "inspect", "text": "Check the battery." },
+    { "order": 4, "part": "forward and reverse lever", "action": "pull", "text": "Check the forward and reverse mechanism." },
+    { "order": 5, "part": "lift and tilt controls", "action": "pull", "text": "Check the lift and tilt controls." },
+    { "order": 6, "part": "forks", "action": "inspect", "text": "Check that the forks or other load-engaging devices work properly." },
+    { "order": 7, "part": "hydraulic hoses", "action": "inspect", "text": "With the forklift shut down, visually check the hydraulic hoses for pinch points and worn spots." },
+    { "order": 8, "part": "lift chains", "action": "inspect", "text": "Check the chains, making sure the cotter pins are in place; never use bare hands." },
+    { "order": 9, "part": "brake pedal", "action": "press", "text": "Check that the brakes work properly." },
+    { "order": 10, "part": "steering wheel", "action": "turn_cw", "text": "Check that the steering mechanism is okay." },
+    { "order": 11, "part": "fuel system", "action": "inspect", "text": "Check that the fuel system is operational." },
+    { "order": 12, "part": "inspection log", "action": "place", "text": "Record the inspection in the forklift's inspection log." }
+  ]
+}

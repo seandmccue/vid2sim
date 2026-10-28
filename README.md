@@ -85,6 +85,7 @@ Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs ha
 
 | Procedure | Upload → playable | API cost | Steps correct vs ground truth | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
+| Forklift pre-shift inspection, 133 s, 720×480, narrated 2005 Oregon OSHA film, public domain (CC0) | 15.6 min over two passes (segment, then generation incl. a compile gate for 14 Muse Code part models) | $2.98 | 10/12, 4 finer-grained extras | 8 / 4 / 2 |
 | M151 engine, left-side connections, 112 s, 720×480, narrated 1960s DoD film, public domain | 11.6 min incl. a 2 min compile gate | $1.57 | 8/11, 6 finer-grained extras | 2 / 11 / 3 |
 | Deep-sea diving outfit, helmet fitting, 196 s, 720×480, narrated 1963 DoD film, public domain | 18.8 min incl. an aborted gate pass | $3.67 | 8/10, 14 finer-grained extras | 4 / 8 / 3 |
 | Nazava water-filter install, 79 s, 848×480, narrated, CC BY test clip | 9.6 min single pass (14.6 min incl. a code-gen rerun) | $1.21 | 6/7, 1 extra | 3 / 2 / 2 |
@@ -92,8 +93,8 @@ Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs ha
 | synthetic colour-bar clip, 6 s (chain check only) | 2.8 min | $0.32 | n/a | 0 / 0 / 5 |
 | compressor-filter-swap (Sean's own footage) | _tbd_ | _tbd_ | _tbd_ | _tbd_ |
 
-All test clips are attributed in `data/procedures/*/ATTRIBUTION.md` and are never part of the demo. The M151 and diving films are US
-Department of Defense works (public domain, CC0 on the archive); the other two are CC BY from Wikimedia Commons. Numbers are
+All test clips are attributed in `data/procedures/*/ATTRIBUTION.md` and are never part of the demo. The forklift film is Oregon OSHA's
+(CC0 on the archive), the M151 and diving films are US Department of Defense works (public domain, CC0 on the archive); the other two are CC BY from Wikimedia Commons. Numbers are
 aggregated over every run of that clip (resumed stages cost $0 and 0 s); the per-stage rows are in `metrics/runs.csv`.
 Rendered card: `docs/metrics-card.png`.
 

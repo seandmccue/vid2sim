@@ -1,0 +1,120 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "the operating manual supplied with your lift truck and become familiar with these differences for every kind of lift truck you operate. It is very important that you the operator inspect the forklift at the beginning of every shift. If the vehicle is found to be unsafe or there is apparent damage you should report it to your supervisor immediately and it should be locked out and tagged according to your employer's lockout tagout procedures. these are the areas to be inspected. the tires is the inflation of pneumatic tires correct? are the tires in good condition? are all running lights working? is the battery in good condition? batteries should only be changed or serviced by maintenance personnel or those specifically trained to do so. check the forward and reverse mechanism. and the lift and tilt controls are the forks or other other load engaging devices working properly? With the forklift shut down, visually check the condition of hydraulic hoses for pinch points and worn spots. Check chains making sure the cotter pins are in place and make sure carriage carriage bolts are secure. Then with the forklift turned on and under pressure check the hydraulic hoses for fluid leaks by by running a piece of paper over all the surfaces of the hoses. Never use your bare hands to do this. Are the brakes working properly? Is the the steering mechanism okay? and is the fuel system operational? It is a good idea to keep inspection logs for each each forklift in operation. It takes a little effort, but once you get in the habit of doing so, it isn't that bad. This will give you a verifiable record for regulatory agencies it also provides a maintenance history of of each machine and can point to major problems that might develop. Once again it is is very important that you study the operator's manual for your specific specific forklift",
+  "audio_duration_ms": 133040,
+  "fps": 29.97002997002997,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 0,
+      "end_ms": 7660,
+      "start_frame": 0,
+      "end_frame": 229,
+      "text": "the operating manual supplied with your lift truck and become familiar with these differences for every kind of lift truck you operate."
+    },
+    {
+      "turn_id": 1,
+      "start_ms": 8300,
+      "end_ms": 27020,
+      "start_frame": 248,
+      "end_frame": 809,
+      "text": "It is very important that you the operator inspect the forklift at the beginning of every shift. If the vehicle is found to be unsafe or there is apparent damage you should report it to your supervisor immediately and it should be locked out and tagged according to your employer's lockout tagout procedures."
+    },
+    {
+      "turn_id": 2,
+      "start_ms": 27980,
+      "end_ms": 47660,
+      "start_frame": 838,
+      "end_frame": 1428,
+      "text": "these are the areas to be inspected. the tires is the inflation of pneumatic tires correct? are the tires in good condition? are all running lights working? is the battery in good condition? batteries should only be changed or serviced by maintenance personnel or those specifically trained to do so."
+    },
+    {
+      "turn_id": 3,
+      "start_ms": 48780,
+      "end_ms": 54860,
+      "start_frame": 1461,
+      "end_frame": 1644,
+      "text": "check the forward and reverse mechanism. and the lift and tilt controls"
+    },
+    {
+      "turn_id": 4,
+      "start_ms": 58780,
+      "end_ms": 62620,
+      "start_frame": 1761,
+      "end_frame": 1876,
+      "text": "are the forks or other other load engaging devices working properly?"
+    },
+    {
+      "turn_id": 5,
+      "start_ms": 65020,
+      "end_ms": 72060,
+      "start_frame": 1948,
+      "end_frame": 2159,
+      "text": "With the forklift shut down, visually check the condition of hydraulic hoses for pinch points and worn spots."
+    },
+    {
+      "turn_id": 6,
+      "start_ms": 72460,
+      "end_ms": 77980,
+      "start_frame": 2171,
+      "end_frame": 2337,
+      "text": "Check chains making sure the cotter pins are in place and make sure carriage carriage bolts are secure."
+    },
+    {
+      "turn_id": 7,
+      "start_ms": 78460,
+      "end_ms": 88700,
+      "start_frame": 2351,
+      "end_frame": 2658,
+      "text": "Then with the forklift turned on and under pressure check the hydraulic hoses for fluid leaks by by running a piece of paper over all the surfaces of the hoses."
+    },
+    {
+      "turn_id": 8,
+      "start_ms": 89260,
+      "end_ms": 91420,
+      "start_frame": 2675,
+      "end_frame": 2739,
+      "text": "Never use your bare hands to do this."
+    },
+    {
+      "turn_id": 9,
+      "start_ms": 93020,
+      "end_ms": 94620,
+      "start_frame": 2787,
+      "end_frame": 2835,
+      "text": "Are the brakes working properly?"
+    },
+    {
+      "turn_id": 10,
+      "start_ms": 96940,
+      "end_ms": 98940,
+      "start_frame": 2905,
+      "end_frame": 2965,
+      "text": "Is the the steering mechanism okay?"
+    },
+    {
+      "turn_id": 11,
+      "start_ms": 100060,
+      "end_ms": 102140,
+      "start_frame": 2998,
+      "end_frame": 3061,
+      "text": "and is the fuel system operational?"
+    },
+    {
+      "turn_id": 12,
+      "start_ms": 104460,
+      "end_ms": 126220,
+      "start_frame": 3130,
+      "end_frame": 3782,
+      "text": "It is a good idea to keep inspection logs for each each forklift in operation. It takes a little effort, but once you get in the habit of doing so, it isn't that bad. This will give you a verifiable record for regulatory agencies it also provides a maintenance history of of each machine and can point to major problems that might develop."
+    },
+    {
+      "turn_id": 13,
+      "start_ms": 126940,
+      "end_ms": 132540,
+      "start_frame": 3804,
+      "end_frame": 3972,
+      "text": "Once again it is is very important that you study the operator's manual for your specific specific forklift"
+    }
+  ]
+}

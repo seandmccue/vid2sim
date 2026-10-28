@@ -13,6 +13,14 @@ namespace Vid2Sim
         public bool Started => _started;
         public Vector3 pivot = new(0f, 0.8f, 0.7f);    // just above the bench, 0.7 m ahead of the seat
         public float distance = 0.85f;
+
+        /// <summary>Pull back and re-centre for a bench with more than one row of parts.</summary>
+        public void Frame(int rows)
+        {
+            rows = Mathf.Max(1, rows);
+            pivot = new Vector3(pivot.x, pivot.y, 0.7f + (rows - 1) * 0.11f);
+            distance = 0.85f + (rows - 1) * 0.22f;
+        }
         public float yaw = 0f, pitch = 30f;
         public float orbitSpeed = 60f, zoomSpeed = 0.4f;
         public bool showHint = true;

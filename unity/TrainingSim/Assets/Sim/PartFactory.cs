@@ -17,7 +17,8 @@ namespace Vid2Sim
         public float benchHeight = 0.75f;
         public float reachWidth = 0.6f;
         public float minColliderSize = 0.04f;
-        public int rowCapacity = 6;
+        public int rowCapacity = 5;
+        public float rowSpacing = 0.22f;
         [Tooltip("Photo cards never get wider than this, whatever the size hint says, so a big panel still fits the bench")]
         public float maxCardSize = 0.22f;
         public Material baseMaterial;
@@ -41,7 +42,10 @@ namespace Vid2Sim
             top.name = "BenchTop";
             top.transform.SetParent(_bench, false);
             top.transform.localPosition = new Vector3(0f, -0.03f, 0f);
-            top.transform.localScale = new Vector3(reachWidth + 0.2f, 0.04f, 0.4f);
+            int rowsForTop = Mathf.CeilToInt(OrderOfAppearance(spec).Count / (float)rowCapacity);
+            float depth = 0.36f + Mathf.Max(0, rowsForTop - 1) * rowSpacing;
+            top.transform.localScale = new Vector3(reachWidth + 0.2f, 0.04f, depth);
+            top.transform.localPosition = new Vector3(0f, -0.03f, (depth - 0.4f) / 2f);   // front edge stays where it was
             top.GetComponent<Renderer>().material = NewMaterial(new Color(0.93f, 0.90f, 0.84f));   // pale wood
             Destroy(top.GetComponent<Collider>());
             // four legs down to the floor, so the bench reads as a table in a room rather than a floating slab
@@ -52,7 +56,7 @@ namespace Vid2Sim
                 leg.name = "BenchLeg";
                 leg.transform.SetParent(_bench, false);
                 leg.transform.localScale = new Vector3(0.04f, legDrop, 0.04f);
-                leg.transform.localPosition = new Vector3(lx * (reachWidth / 2f + 0.06f), -0.05f - legDrop / 2f, lz * 0.16f);
+                leg.transform.localPosition = new Vector3(lx * (reachWidth / 2f + 0.06f), -0.05f - legDrop / 2f, (depth - 0.4f) / 2f + lz * (depth / 2f - 0.04f));
                 leg.GetComponent<Renderer>().material = NewMaterial(new Color(0.55f, 0.52f, 0.48f));
                 Destroy(leg.GetComponent<Collider>());
             }
@@ -66,8 +70,10 @@ namespace Vid2Sim
                 var part = spec.FindPart(order[i]);
                 int row = i / perRow, col = i % perRow, inRow = Mathf.Min(perRow, n - row * perRow);
                 float x = inRow == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, col / (float)(inRow - 1));
-                float z = rows == 1 ? 0f : Mathf.Lerp(0f, 0.16f, row / (float)(rows - 1));
+                float z = row * rowSpacing;
                 float size = Mathf.Max(part.size_hint_m, minColliderSize);
+                // crowded benches get smaller parts so neighbours don't overlap
+                float cap = Mathf.Min(maxCardSize, inRow > 1 ? reachWidth / (inRow - 1) * 0.8f : maxCardSize);
 
                 Texture2D cutout = null;
                 var shape = ShapeKit.Find(spec.procedure.id, part.id);
@@ -76,11 +82,11 @@ namespace Vid2Sim
                 float height;
                 if (shape != null)
                 {
-                    go = CreateShaped(shape, part, Mathf.Min(size, maxCardSize), out height);
+                    go = CreateShaped(shape, part, Mathf.Min(size, cap), out height);
                 }
                 else if (cutout != null)
                 {
-                    go = CreateCard(cutout, Mathf.Min(size, maxCardSize));
+                    go = CreateCard(cutout, Mathf.Min(size, cap));
                     height = go.transform.localScale.y;
                 }
                 else

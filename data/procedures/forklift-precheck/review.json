@@ -1,0 +1,102 @@
+{
+  "steps": [
+    {
+      "evidence": "[frame 0-229] the operating manual supplied with your lift truck and become familiar with these differences for every kind of lift truck you operate.",
+      "order": 1,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 248-809] It is very important that you the operator inspect the forklift at the beginning of every shift. If the vehicle is found to be unsafe or there is apparent damage you should report it to your supervisor immediately and it should be locked out and tagged according to your employer's lockout tagout procedures.",
+      "order": 2,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 838-1428] is the inflation of pneumatic tires correct? are the tires in good condition?",
+      "order": 3,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 838-1428] are all running lights working?",
+      "order": 4,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 838-1428] is the battery in good condition? batteries should only be changed or serviced by maintenance personnel or those specifically trained to do so.",
+      "order": 5,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1461-1644] check the forward and reverse mechanism.",
+      "order": 6,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1461-1644] and the lift and tilt controls",
+      "order": 7,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1761-1876] are the forks or other other load engaging devices working properly?",
+      "order": 8,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 1948-2159] With the forklift shut down, visually check the condition of hydraulic hoses for pinch points and worn spots.",
+      "order": 9,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2171-2337] Check chains making sure the cotter pins are in place",
+      "order": 10,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2171-2337] and make sure carriage carriage bolts are secure.",
+      "order": 11,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2351-2658] Then with the forklift turned on and under pressure check the hydraulic hoses for fluid leaks by by running a piece of paper over all the surfaces of the hoses. [frame 2675-2739] Never use your bare hands to do this.",
+      "order": 12,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2787-2835] Are the brakes working properly?",
+      "order": 13,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2905-2965] Is the the steering mechanism okay?",
+      "order": 14,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 2998-3061] and is the fuel system operational?",
+      "order": 15,
+      "suggested_fix": "",
+      "supported": true
+    },
+    {
+      "evidence": "[frame 3130-3782] It is a good idea to keep inspection logs for each each forklift in operation. This will give you a verifiable record for regulatory agencies it also provides a maintenance history",
+      "order": 16,
+      "suggested_fix": "",
+      "supported": true
+    }
+  ],
+  "evidence_mode": "narration",
+  "flagged_count": 0
+}
