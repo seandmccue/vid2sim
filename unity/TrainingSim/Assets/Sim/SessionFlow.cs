@@ -20,7 +20,7 @@ namespace Vid2Sim
         public float hotReloadPollSeconds = 2f;
         public KeyCode restartKey = KeyCode.R, pauseKey = KeyCode.P, skipKey = KeyCode.N, reloadKey = KeyCode.L, helpKey = KeyCode.H;
 
-        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech; StepGuide _guide;
+        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech; StepGuide _guide; FaultInjector _faults;
         System.DateTime _lastSpecMtime;
         float _bootStart;
 
@@ -29,6 +29,8 @@ namespace Vid2Sim
             _loader = GetComponent<SpecLoader>(); _factory = GetComponent<PartFactory>(); _seq = GetComponent<StepSequencer>();
             _scorer = GetComponent<Scorer>(); _ui = GetComponent<CoachUI>(); _speech = GetComponent<Speech>();
             _guide = GetComponent<StepGuide>() ?? gameObject.AddComponent<StepGuide>();
+            _faults = GetComponent<FaultInjector>() ?? gameObject.AddComponent<FaultInjector>();
+            _scorer.UseFaults(_faults);
             if (origin == null) origin = Camera.main ? (Camera.main.transform.parent ?? Camera.main.transform) : transform;
         }
 
@@ -62,6 +64,7 @@ namespace Vid2Sim
             _lastSpecMtime = _loader.HotSpecMtime();
             _ui.SetTitle(_loader.Procedure.procedure.title);
             yield return _factory.Spawn(_loader.Procedure, _loader, origin);
+            _factory.Verdicts?.Attach(_seq);
             var rig = FindFirstObjectByType<WebCameraRig>();
             if (rig) rig.Frame(Mathf.CeilToInt(_loader.Procedure.parts.Length / (float)_factory.rowCapacity));
             var gate = GetComponent<IStartGate>() ?? (IStartGate)FindFirstObjectByType<WebCameraRig>();
@@ -72,6 +75,7 @@ namespace Vid2Sim
                 while (!gate.Started) yield return null;              // the start screen's click
                 yield return _guide.PlayFullDemo(_loader.Procedure);  // show the whole thing once, then play
             }
+            _faults.PlanFaults(_loader.Procedure, _factory);
             _seq.Begin(_loader.Procedure, _factory);
             Debug.Log($"[SessionFlow] cold start to first step: {Time.realtimeSinceStartup - _bootStart:0.0}s");
         }
@@ -80,6 +84,7 @@ namespace Vid2Sim
         {
             _seq.Stop();
             _factory.ResetPoses();
+            _faults.PlanFaults(_loader.Procedure, _factory);   // a different exam every time
             _scorer.Begin(_loader.Procedure);
             _seq.Begin(_loader.Procedure, _factory);
         }

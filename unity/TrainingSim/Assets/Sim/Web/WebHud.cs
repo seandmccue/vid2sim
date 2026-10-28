@@ -32,7 +32,16 @@ namespace Vid2Sim
                 _how = StepGuide.HowTo(s, factory.Backend);
                 if (s.safety) _how += "  (safety step: can't be skipped)";
             };
-            seq.StepCompleted += (s, secs) => { _done.Add(s.order); Toast($"Step {s.order} done in {secs:0.0}s", new Color(0.3f, 0.9f, 0.5f)); };
+            seq.StepCompleted += (s, secs) =>
+            {
+                _done.Add(s.order);
+                string what = s.action == Actions.Inspect
+                    ? (factory.Spawned.TryGetValue(s.part_id, out var ip) && ip.Faulty ? $"Fault caught: {s.failure}" : $"Right, it's fine: {s.check}")
+                    : $"Step {s.order} done in {secs:0.0}s";
+                Toast(what, new Color(0.3f, 0.9f, 0.5f), s.action == Actions.Inspect ? 4f : 2.5f);
+            };
+            seq.Misjudged += (s, p, saidFault) =>
+                Toast($"Not quite. Look for: {s.check}. " + (p.Faulty ? $"This one is faulty: {s.failure}" : "This one is fine."), new Color(1f, 0.55f, 0.4f), 6f);
             seq.WrongPart += (s, p) => Toast($"That's the {p.Part.name}. You need the {NameOf(s.part_id)}.", new Color(1f, 0.55f, 0.4f));
             seq.Stalled += (s, p) => Toast($"Stuck? Watch the yellow ghost. {s.coach}", new Color(1f, 0.85f, 0.3f), 5f);
             seq.Finished += passed => { _finished = true; _passed = passed; };
@@ -70,10 +79,26 @@ namespace Vid2Sim
             SimpleMouseDriver.PointerOverHud = running && _barRect.Contains(new Vector2(Input.mousePosition.x, H - Input.mousePosition.y));
             if (!running) return;
             HudPanel.Draw(_barRect);
-            string who = sel != null ? $"Selected: {sel.part.Part.name}" : "Click a part to select it, then use these (or drag it).";
-            GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), who, sel != null ? _body : _small);
             string need = _spec.steps[_index].action;
             float x = _barRect.x + 20, y = _barRect.y + 40;
+            if (need != Actions.Inspect)
+            {
+                string who = sel != null ? $"Selected: {sel.part.Part.name}" : "Click a part to select it, then use these (or drag it).";
+                GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), who, sel != null ? _body : _small);
+            }
+            if (need == Actions.Inspect)
+            {
+                // a judgment step: the two verdict buttons replace the motion buttons
+                GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), $"Look it over, then make the call: {_spec.steps[_index].check}", _body);
+                var v = _factory.Verdicts;
+                GUI.enabled = v != null;
+                float vw = 2 * bw + gap + 60f;
+                x = W / 2f - vw / 2f;
+                if (GUI.Button(new Rect(x, y, bw + 30f, bh), "Looks OK  1", _btnHot)) v.Give(false);
+                if (GUI.Button(new Rect(x + bw + 30f + gap, y, bw + 30f, bh), "Fault found  2", _btnHot)) v.Give(true);
+                GUI.enabled = true;
+                return;
+            }
             GUI.enabled = sel != null && !sel.isPress;
             Button(ref x, y, bw, bh, "↺ Turn left  Q", need == Actions.TurnCcw, () => sel.Turn(-sel.turnStepDegrees));
             Button(ref x, y, bw, bh, "↻ Turn right  E", need == Actions.TurnCw, () => sel.Turn(sel.turnStepDegrees));
@@ -108,7 +133,7 @@ namespace Vid2Sim
             {
                 var r = _scorer != null ? _scorer.Current : null;
                 GUI.Label(new Rect(24, 36, W - 48, 48), _passed ? "Procedure complete." : "Attempt failed.", _h1);
-                GUI.Label(new Rect(24, 90, W - 48, 36), r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches. Press R to try again." : "Press R to try again.", _h2);
+                GUI.Label(new Rect(24, 90, W - 48, 36), r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches" + (r.faults_total > 0 ? $", faults caught {r.faults_caught}/{r.faults_total}, {r.misjudgements} wrong calls" : "") + ". Press R for a new exam." : "Press R to try again.", _h2);
             }
             else
             {

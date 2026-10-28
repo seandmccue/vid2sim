@@ -12,7 +12,7 @@ namespace Vid2Sim
     ///   lift      select, then raised >= liftHeight above spawn
     ///   place     released within snapRadius of the part's SnapZone
     ///   turn_cw   accumulated clockwise yaw >= turnDegrees (turn_ccw mirrored)
-    ///   inspect   hovered for >= inspectSeconds
+    ///   inspect   the trainee's Pass/Fail verdict matches whether the part was spawned faulty
     /// </summary>
     public class ActionDetector : MonoBehaviour
     {
@@ -26,16 +26,18 @@ namespace Vid2Sim
         PartBehaviour _part;
         Action<StepEvent> _emit;
         Action<PartBehaviour> _wrong;
+        Action<PartBehaviour, bool> _misjudged;
         PartFactory _factory;
         bool _done;
         MonoBehaviour _custom;
         Vector3 _basePos;      // pose when the step armed: motion before that must not count
         float _baseYaw;
 
-        public void Arm(Step step, PartFactory factory, Action<StepEvent> emit, Action<PartBehaviour> wrongPart)
+        public void Arm(Step step, PartFactory factory, Action<StepEvent> emit, Action<PartBehaviour> wrongPart,
+                        Action<PartBehaviour, bool> misjudged = null)
         {
             Disarm();
-            _step = step; _factory = factory; _emit = emit; _wrong = wrongPart; _done = false;
+            _step = step; _factory = factory; _emit = emit; _wrong = wrongPart; _misjudged = misjudged; _done = false;
             factory.Spawned.TryGetValue(step.part_id, out _part);
             Debug.Log($"[Detector] armed step {step.order} {step.action} on '{step.part_id}' found={_part != null} custom={step.custom_action}");
             foreach (var p in factory.Spawned.Values)
@@ -48,6 +50,7 @@ namespace Vid2Sim
             _baseYaw = _part.SignedYawFromSpawn();
             _part.Selected += OnSelect;
             _part.Unselected += OnUnselect;
+            _part.VerdictGiven += OnVerdict;
 
             if (step.HasCustomAction && TryBindGenerated(step)) return;
         }
@@ -56,7 +59,7 @@ namespace Vid2Sim
         {
             if (_factory != null)
                 foreach (var p in _factory.Spawned.Values) p.Selected -= OnWrongSelect;
-            if (_part != null) { _part.Selected -= OnSelect; _part.Unselected -= OnUnselect; }
+            if (_part != null) { _part.Selected -= OnSelect; _part.Unselected -= OnUnselect; _part.VerdictGiven -= OnVerdict; }
             if (_custom) Destroy(_custom);
             _custom = null; _part = null; _step = null;
         }
@@ -86,6 +89,14 @@ namespace Vid2Sim
             if (!enabled || _done) return;
             Debug.Log($"[Detector] wrong part '{p.Part.id}' while step {_step?.order} expects '{_step?.part_id}'");
             _wrong?.Invoke(p);
+        }
+
+        // inspect is a judgment: the step completes on the right call, a wrong call is coached and counted
+        void OnVerdict(PartBehaviour p, bool saidFault)
+        {
+            if (!enabled || _done || _custom || _step.action != Actions.Inspect) return;
+            if (saidFault == p.Faulty) Complete();
+            else _misjudged?.Invoke(p, saidFault);
         }
 
         void OnSelect(PartBehaviour p)
@@ -122,8 +133,7 @@ namespace Vid2Sim
                     if (Mathf.DeltaAngle(_baseYaw, _part.SignedYawFromSpawn()) <= -turnDegrees) Complete();
                     break;
                 case Actions.Inspect:
-                    if (_part.HoverSeconds >= inspectSeconds) Complete();
-                    break;
+                    break;   // completed by OnVerdict
             }
         }
 

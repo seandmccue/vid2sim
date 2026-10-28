@@ -99,20 +99,23 @@ namespace Vid2Sim.Generated
 """
 
 
-def mock_shape_csharp(cls: str, procedure_id: str, part: dict) -> str:
-    """A body plus one detail, the shape of what Muse Code returns, so the gate and the engine are exercised."""
+def mock_shape_csharp(cls: str, procedure_id: str, part: dict, faulty: bool = False) -> str:
+    """A body plus one detail, the shape of what Muse Code returns, so the gate and the engine are exercised.
+    The faulty variant adds a red crack so the judgment step has something to catch."""
+    variant = ', "faulty"' if faulty else ""
+    defect = "\n            ShapeKit.Box(root, new Vector3(size * 0.2f, size * 0.3f, -size * 0.31f), new Vector3(size * 0.05f, size * 0.5f, size * 0.02f), ShapeKit.Red);" if faulty else ""
     return f"""using UnityEngine;
 using Vid2Sim;
 
 namespace Vid2Sim.Generated.Shapes
 {{
-    [PartShape("{procedure_id}", "{part['id']}")]
+    [PartShape("{procedure_id}", "{part['id']}"{variant})]
     public class {cls} : IPartShape
     {{
         public void Build(GameObject root, float size, Color accent)
         {{
             ShapeKit.Box(root, new Vector3(0f, size * 0.3f, 0f), new Vector3(size, size * 0.6f, size * 0.6f), accent);
-            ShapeKit.Cylinder(root, new Vector3(0f, size * 0.75f, 0f), size * 0.3f, size * 0.3f, ShapeKit.DarkSteel);
+            ShapeKit.Cylinder(root, new Vector3(0f, size * 0.75f, 0f), size * 0.3f, size * 0.3f, ShapeKit.DarkSteel);{defect}
         }}
     }}
 }}

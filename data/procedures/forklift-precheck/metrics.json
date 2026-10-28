@@ -1,308 +1,14 @@
 {
-  "run_id": "20261027-220455-cf1cd4",
+  "run_id": "20261028-094444-019e60",
   "procedure": "forklift-pre-shift-inspection",
-  "upload_to_spec_s": 936.8,
-  "api_cost_usd": 2.9802,
+  "upload_to_spec_s": 54.6,
+  "api_cost_usd": 0.2016,
   "steps": 16,
   "parts": 14,
   "parts_found_concept": 8,
   "parts_found_box": 4,
   "parts_manual": 2,
   "stages": [
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 28.22,
-      "cost_usd": 0.0,
-      "note": "p.mp4"
-    },
-    {
-      "stage": "transcribe",
-      "model": "muse-voice-transcribe-1.0",
-      "wall_s": 23.31,
-      "cost_usd": 0.0133,
-      "note": "2.22 min, cost is an estimate"
-    },
-    {
-      "stage": "extract",
-      "model": "muse-spark-1.3",
-      "wall_s": 42.81,
-      "cost_usd": 0.0772,
-      "note": "completed, budget 16000"
-    },
-    {
-      "stage": "verify",
-      "model": "muse-spark-1.3",
-      "wall_s": 20.08,
-      "cost_usd": 0.0295,
-      "note": "completed, budget 16000"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.7,
-      "cost_usd": 0.0,
-      "note": "operator_manual.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 10.43,
-      "cost_usd": 0.049,
-      "note": "printed paper operator manual"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 12.91,
-      "cost_usd": 0.0,
-      "note": "inspection_clipboard.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 72.35,
-      "cost_usd": 0.6166,
-      "note": "white paper inspection checklist"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 7.54,
-      "cost_usd": 0.0069,
-      "note": "inspection_clipboard"
-    },
-    {
-      "stage": "segment_box",
-      "model": "sam-3.1",
-      "wall_s": 232.15,
-      "cost_usd": 0.6032,
-      "note": "<67f>1<|box;x1=173;y1=280;x2=704;y2=479;w=720;h=480|>"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.81,
-      "cost_usd": 0.0,
-      "note": "drive_tire.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 8.31,
-      "cost_usd": 0.0286,
-      "note": "black treaded pneumatic tire"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 3.34,
-      "cost_usd": 0.0,
-      "note": "running_light.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 6.02,
-      "cost_usd": 0.036,
-      "note": "red rectangular tail light"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 12.92,
-      "cost_usd": 0.0117,
-      "note": "running_light"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 3.62,
-      "cost_usd": 0.0,
-      "note": "forklift_battery.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 10.57,
-      "cost_usd": 0.0716,
-      "note": "black rectangular forklift battery"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.62,
-      "cost_usd": 0.0,
-      "note": "direction_pedal.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 7.25,
-      "cost_usd": 0.024,
-      "note": "red monotrol foot pedal"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.57,
-      "cost_usd": 0.0,
-      "note": "control_lever.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 5.82,
-      "cost_usd": 0.0248,
-      "note": "black hydraulic control lever"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.57,
-      "cost_usd": 0.0,
-      "note": "fork_tine.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 5.17,
-      "cost_usd": 0.0292,
-      "note": "steel fork tine"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 11.76,
-      "cost_usd": 0.0118,
-      "note": "fork_tine"
-    },
-    {
-      "stage": "segment_box",
-      "model": "sam-3.1",
-      "wall_s": 8.2,
-      "cost_usd": 0.0184,
-      "note": "<54f>1<|box;x1=100;y1=190;x2=719;y2=479;w=720;h=480|>"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 6.12,
-      "cost_usd": 0.0,
-      "note": "hydraulic_hose.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 18.42,
-      "cost_usd": 0.1482,
-      "note": "black rubber hydraulic hose"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 8.27,
-      "cost_usd": 0.0084,
-      "note": "hydraulic_hose"
-    },
-    {
-      "stage": "segment_box",
-      "model": "sam-3.1",
-      "wall_s": 46.54,
-      "cost_usd": 0.1248,
-      "note": "<117f>1<|box;x1=285;y1=0;x2=476;y2=479;w=720;h=480|>"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.49,
-      "cost_usd": 0.0,
-      "note": "lift_chain.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 4.39,
-      "cost_usd": 0.023,
-      "note": "oiled metal roller chain"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 6.37,
-      "cost_usd": 0.0057,
-      "note": "lift_chain"
-    },
-    {
-      "stage": "segment_box",
-      "model": "sam-3.1",
-      "wall_s": 5.33,
-      "cost_usd": 0.0102,
-      "note": "<64f>1<|box;x1=352;y1=0;x2=492;y2=194;w=720;h=480|>"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 69.56,
-      "cost_usd": 0.0,
-      "note": "carriage_bolt.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 5.44,
-      "cost_usd": 0.0224,
-      "note": "hex steel carriage bolt"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 2.97,
-      "cost_usd": 0.0,
-      "note": "brake_pedal.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 3.88,
-      "cost_usd": 0.0158,
-      "note": "ribbed metal brake pedal"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 3.51,
-      "cost_usd": 0.0,
-      "note": "steering_wheel.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 3.79,
-      "cost_usd": 0.0182,
-      "note": "black circular steering wheel"
-    },
-    {
-      "stage": "box_fallback",
-      "model": "muse-spark-1.3",
-      "wall_s": 2.78,
-      "cost_usd": 0.0032,
-      "note": "steering_wheel"
-    },
-    {
-      "stage": "upload",
-      "model": "files",
-      "wall_s": 3.19,
-      "cost_usd": 0.0,
-      "note": "propane_tank.mp4"
-    },
-    {
-      "stage": "segment_concept",
-      "model": "sam-3.1",
-      "wall_s": 4.86,
-      "cost_usd": 0.0188,
-      "note": "yellow propane fuel tank"
-    },
     {
       "stage": "upload",
       "model": "files",
@@ -474,205 +180,72 @@
     {
       "stage": "generate_code",
       "model": "muse-spark-1.3",
-      "wall_s": 14.29,
-      "cost_usd": 0.0188,
+      "wall_s": 7.6,
+      "cost_usd": 0.0123,
       "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
       "stage": "generate_code",
       "model": "muse-spark-1.3",
-      "wall_s": 15.71,
-      "cost_usd": 0.0192,
+      "wall_s": 16.51,
+      "cost_usd": 0.0209,
       "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
       "stage": "generate_code",
       "model": "muse-spark-1.3",
-      "wall_s": 20.94,
-      "cost_usd": 0.0245,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 22.01,
-      "cost_usd": 0.0307,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 26.5,
-      "cost_usd": 0.0324,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 13.29,
-      "cost_usd": 0.0189,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 14.21,
-      "cost_usd": 0.0202,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 19.02,
-      "cost_usd": 0.023,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 16.54,
-      "cost_usd": 0.0206,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 16.4,
-      "cost_usd": 0.0204,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 15.19,
-      "cost_usd": 0.0204,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 17.2,
-      "cost_usd": 0.0228,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 19.72,
-      "cost_usd": 0.0257,
-      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
-    },
-    {
-      "stage": "generate_code",
-      "model": "muse-spark-1.3",
-      "wall_s": 15.35,
+      "wall_s": 18.35,
       "cost_usd": 0.0223,
       "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
       "stage": "generate_code",
       "model": "muse-spark-1.3",
-      "wall_s": 44.41,
-      "cost_usd": 0.0498,
+      "wall_s": 19.29,
+      "cost_usd": 0.0244,
       "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 9.98,
-      "cost_usd": 0.04,
-      "note": "inspection_clipboard (cost is an estimate)"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 18.99,
+      "cost_usd": 0.0223,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 9.97,
-      "cost_usd": 0.04,
-      "note": "running_light (cost is an estimate)"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 16.95,
+      "cost_usd": 0.0217,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 15.63,
-      "cost_usd": 0.04,
-      "note": "drive_tire (cost is an estimate)"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 20.54,
+      "cost_usd": 0.0257,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 20.87,
-      "cost_usd": 0.04,
-      "note": "operator_manual (cost is an estimate)"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 13.43,
+      "cost_usd": 0.0185,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 13.3,
-      "cost_usd": 0.04,
-      "note": "direction_pedal (cost is an estimate)"
+      "stage": "generate_code",
+      "model": "muse-spark-1.3",
+      "wall_s": 29.21,
+      "cost_usd": 0.0335,
+      "note": "Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
     },
     {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 9.25,
-      "cost_usd": 0.04,
-      "note": "control_lever (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 15.39,
-      "cost_usd": 0.04,
-      "note": "forklift_battery (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 8.91,
-      "cost_usd": 0.04,
-      "note": "lift_chain (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 15.86,
-      "cost_usd": 0.04,
-      "note": "fork_tine (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 18.64,
-      "cost_usd": 0.04,
-      "note": "hydraulic_hose (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 20.76,
-      "cost_usd": 0.04,
-      "note": "carriage_bolt (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 19.39,
-      "cost_usd": 0.04,
-      "note": "brake_pedal (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 15.52,
-      "cost_usd": 0.04,
-      "note": "propane_tank (cost is an estimate)"
-    },
-    {
-      "stage": "texture",
-      "model": "muse-image-1.0",
-      "wall_s": 24.92,
-      "cost_usd": 0.04,
-      "note": "steering_wheel (cost is an estimate)"
+      "stage": "total",
+      "model": "pipeline",
+      "wall_s": 54.65,
+      "cost_usd": 0.0,
+      "note": "upload to StreamingAssets"
     }
   ],
   "ground_truth": {
@@ -840,14 +413,12 @@
       "class": "WriteAction",
       "path": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/Generated/WriteAction.cs",
       "compiled": true,
-      "note": "een prematurely finalized\nThread 0x170093000 may have been prematurely finalized\nAcceleratorClientConnectionCallback - disconnected - :0\n\u001b[40m\u001b[32minfo\u001b[39m\u001b[22m\u001b[49m: Microsoft.Hosting.Lifetime[0]\n      Application is shutting down...\nCleanup mono\ndebugger-agent: Unable to listen on 40\n[usbmuxd] Stop listen thread\n[usbmuxd] Error: \n[usbmuxd] Listen thread exiting\nExiting batchmode successfully now!\n[Package Manager] Server process was shutdown\nlibc++abi: terminate_handler unexpectedly returned\n"
+      "note": "cached"
     }
   ],
   "textures": 14,
-  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/forklift-pre-shift-inspection",
-  "runs": [
-    "20261027-215157-08a10d",
-    "20261027-220455-cf1cd4"
-  ],
-  "note": "aggregated across 2 run(s); resumed stages cost $0 and 0 s"
+  "shapes": 23,
+  "cutouts": 14,
+  "step_cards": 0,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/unity/TrainingSim/Assets/StreamingAssets/procedures/forklift-pre-shift-inspection"
 }
