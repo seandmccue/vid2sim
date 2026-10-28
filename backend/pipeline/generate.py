@@ -323,6 +323,29 @@ Constraints:
 """
 
 
+def _faulty_prompt(spec: dict, part: dict, good_code: str, step: dict) -> str:
+    cls = _shape_class(spec["procedure"]["id"], part["id"]) + "_faulty"
+    return f"""Below is a Unity 6 C# class that builds a stylised low-poly model of a {part['name']} from ShapeKit primitives.
+Write a second class named {cls} in the same namespace, implementing Vid2Sim.IPartShape, with the attribute
+[Vid2Sim.PartShape("{spec['procedure']['id']}", "{part['id']}", "faulty")], that builds the SAME model but with one
+defect clearly visible: the thing a trainee doing this check would catch.
+
+The check: "{step.get('check', '')}"
+What goes wrong when it is missed: "{step.get('failure', '')}"
+
+Make the defect obvious at a glance but plausible (a missing pin, a frayed or kinked hose section, a flat or cut tyre,
+a loose or missing bolt, a cracked or bent part, a dark/dead lamp, corroded terminals). Draw the defect feature with
+ShapeKit.Red or ShapeKit.Rubber as appropriate; keep every other primitive exactly as in the good model so the two
+look identical apart from the defect. Same constraints as the original: only ShapeKit calls, local metres as
+fractions of size, bottom at y = 0, inside size x size x size.
+
+Good model:
+{good_code}
+
+Output only the C# file contents of the new class, no markdown fences, no commentary.
+"""
+
+
 def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: bool = True) -> list[dict]:
     """One stylised primitive model per part, generated in parallel, compile-gated as a batch.
     Returns one record per part: {part, class, path, compiled, note}. Cached by class name."""
@@ -338,8 +361,7 @@ def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: boo
             continue
         pend = staging / f"{cls}.cs.pending"
         jobs.append((part, cls, pend.read_text() if pend.exists() else None))
-    if not jobs:
-        return out
+    # no early return: the faulty variants below may still be missing when every good model is cached
 
     def produce(job):
         part, cls, existing = job
@@ -360,9 +382,10 @@ def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: boo
         return part, cls, code
 
     with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
-        produced = list(pool.map(produce, jobs))
+        produced = list(pool.map(produce, jobs)) if jobs else []
 
     pending: list[tuple[dict, str, Path]] = []
+    good_code: dict[str, str] = {}
     for part, cls, code in produced:
         if not code or "class " not in code:
             out.append({"part": part["id"], "class": cls, "path": "", "compiled": False, "note": "generator returned no code; engine uses the photo card"})
@@ -370,6 +393,50 @@ def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: boo
         candidate = staging / f"{cls}.cs.pending"
         candidate.write_text(ensure_usings(strip_fences(code)))
         pending.append((part, cls, candidate))
+        good_code[part["id"]] = candidate.read_text()
+
+    # faulty variants for every part an inspect step looks at (judgment steps), written from the good model
+    inspect_steps = {s["part_id"]: s for s in spec["steps"] if s["action"] == "inspect"}
+    fjobs: list[tuple[dict, str, str, dict]] = []
+    for part in spec["parts"]:
+        if part["id"] not in inspect_steps:
+            continue
+        cls = _shape_class(pid, part["id"]) + "_faulty"
+        if (staging / f"{cls}.cs").exists():
+            out.append({"part": part["id"], "class": cls, "path": str(staging / f"{cls}.cs"), "compiled": True, "note": "cached"})
+            continue
+        pend = staging / f"{cls}.cs.pending"
+        if pend.exists():
+            pending.append((part, cls, pend)); good_code.setdefault(part["id"], "")
+            continue
+        good = good_code.get(part["id"]) or ((staging / f"{_shape_class(pid, part['id'])}.cs").read_text() if (staging / f"{_shape_class(pid, part['id'])}.cs").exists() else "")
+        if good:
+            fjobs.append((part, cls, good, inspect_steps[part["id"]]))
+
+    def produce_faulty(job):
+        part, cls, good, step = job
+        if is_mock():
+            from ..mock import mock_shape_csharp
+            metrics.log("generate_shape", "muse-code", 0.0, 0.0, note="mock faulty")
+            return part, cls, mock_shape_csharp(cls, pid, part, faulty=True)
+        prompt = _faulty_prompt(spec, part, good, step)
+        with Timer() as t:
+            code = _muse_code(prompt)
+        if code is not None:
+            metrics.log("generate_shape", "muse-code", t.wall, 0.0, note=f"{part['id']} faulty -> {cls}")
+        else:
+            code = _spark_code(prompt, metrics)
+        return part, cls, code
+
+    if fjobs:
+        with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+            for part, cls, code in pool.map(produce_faulty, fjobs):
+                if not code or "class " not in code:
+                    out.append({"part": part["id"], "class": cls, "path": "", "compiled": False, "note": "no faulty variant; engine marks the fault generically"})
+                    continue
+                candidate = staging / f"{cls}.cs.pending"
+                candidate.write_text(ensure_usings(strip_fences(code)))
+                pending.append((part, cls, candidate))
     if not pending:
         return out
 

@@ -22,8 +22,9 @@ namespace Vid2Sim
     [AttributeUsage(AttributeTargets.Class)]
     public class PartShapeAttribute : Attribute
     {
-        public readonly string ProcedureId, PartId;
-        public PartShapeAttribute(string procedureId, string partId) { ProcedureId = procedureId; PartId = partId; }
+        public readonly string ProcedureId, PartId, Variant;
+        /// <param name="variant">"" for the good part; "faulty" for the same part with its defect visible.</param>
+        public PartShapeAttribute(string procedureId, string partId, string variant = "") { ProcedureId = procedureId; PartId = partId; Variant = variant ?? ""; }
     }
 
     /// <summary>
@@ -80,8 +81,9 @@ namespace Vid2Sim
         }
 
         /// <summary>Generated shape for a part, if one compiled into this build.</summary>
-        public static IPartShape Find(string procedureId, string partId)
+        public static IPartShape Find(string procedureId, string partId, string variant = "")
         {
+            variant ??= "";
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 Type[] types;
@@ -90,7 +92,7 @@ namespace Vid2Sim
                 {
                     if (t == null || !typeof(IPartShape).IsAssignableFrom(t) || t.IsInterface || t.IsAbstract) continue;
                     var attr = (PartShapeAttribute)Attribute.GetCustomAttribute(t, typeof(PartShapeAttribute));
-                    if (attr == null || attr.PartId != partId) continue;
+                    if (attr == null || attr.PartId != partId || attr.Variant != variant) continue;
                     if (attr.ProcedureId == procedureId || attr.ProcedureId == "*")
                         return (IPartShape)Activator.CreateInstance(t);
                 }

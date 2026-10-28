@@ -61,7 +61,16 @@ namespace Vid2Sim
                 _coach.text = "";
                 _speech?.Say(s.instruction);
             };
-            seq.StepCompleted += (s, secs) => { if (_status) _status.text = $"Done in {secs:0.0}s."; };
+            seq.StepCompleted += (s, secs) =>
+            {
+                if (_status) _status.text = s.action == Actions.Inspect ? $"Right call. {s.check}." : $"Done in {secs:0.0}s.";
+            };
+            seq.Misjudged += (s, p, saidFault) =>
+            {
+                string verdict = p.Faulty ? $"This one is faulty: {s.failure}" : "This one is fine.";
+                if (_coach) _coach.text = $"Not quite. Look for: {s.check}. {verdict}";
+                _speech?.Say($"Not quite. {s.check}. {verdict}");
+            };
             seq.WrongPart += (s, p) =>
             {
                 // the coach calls it out once per step
@@ -87,7 +96,7 @@ namespace Vid2Sim
                 var r = scorer.Current;
                 if (_how) _how.text = "";
                 if (_step) _step.text = passed ? "Procedure complete." : "Attempt failed.";
-                if (_coach) _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches." : "";
+                if (_coach) _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches" + (r.faults_total > 0 ? $", faults caught {r.faults_caught}/{r.faults_total}, {r.misjudgements} wrong calls." : ".") : "";
                 if (_status) _status.text = "Say or press Restart to try again.";
                 _speech?.Say(passed ? "Procedure complete. Well done." : "Attempt failed.");
             };

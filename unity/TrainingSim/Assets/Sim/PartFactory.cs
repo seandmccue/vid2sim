@@ -26,6 +26,9 @@ namespace Vid2Sim
 
         public IInteractionBackend Backend { get; private set; }
         public readonly Dictionary<string, PartBehaviour> Spawned = new();
+        /// <summary>Bench controls that are not parts: the two verdict buttons. Never wrong-part touches.</summary>
+        public readonly Dictionary<string, PartBehaviour> Controls = new();
+        public VerdictPanel Verdicts { get; private set; }
         Transform _bench;
 
         void Awake() { Backend = InteractionBackends.Create(); }
@@ -83,6 +86,8 @@ namespace Vid2Sim
                 if (shape != null)
                 {
                     go = CreateShaped(shape, part, Mathf.Min(size, cap), out height);
+                    var faulty = ShapeKit.Find(spec.procedure.id, part.id, "faulty");
+                    if (faulty != null) AddFaultyModel(go, faulty, part, Mathf.Min(size, cap));
                 }
                 else if (cutout != null)
                 {
@@ -128,12 +133,15 @@ namespace Vid2Sim
 
                 Spawned[part.id] = pb;
             }
+            Verdicts = VerdictPanel.Create(this, _bench, spec, reachWidth);
             Debug.Log($"[PartFactory] spawned {Spawned.Count} parts with {Backend.Name}");
         }
 
         public void Clear()
         {
             Spawned.Clear();
+            Controls.Clear();
+            Verdicts = null;
             if (_bench) Destroy(_bench.gameObject);
         }
 
@@ -182,6 +190,23 @@ namespace Vid2Sim
             bc.size = b.size;
             height = b.size.y;
             return root;
+        }
+
+        /// <summary>The same part with its defect visible, built by the generated "faulty" variant; hidden until a fault is injected.</summary>
+        static void AddFaultyModel(GameObject root, IPartShape faulty, Part part, float size)
+        {
+            var body = new GameObject("Model:faulty");
+            body.transform.SetParent(root.transform, false);
+            try { faulty.Build(body, size, ColorFor(part)); }
+            catch (System.Exception e) { Debug.LogWarning($"[PartFactory] faulty shape for {part.id} threw: {e.Message}"); }
+            var b = ShapeKit.LocalBounds(body);
+            if (b.size.sqrMagnitude < 1e-6f) { Destroy(body); return; }
+            float longest = Mathf.Max(b.size.x, b.size.y, b.size.z);
+            if (longest > size * 1.05f) { body.transform.localScale = Vector3.one * (size / longest); b = ShapeKit.LocalBounds(body); }
+            var good = root.transform.Find("Model");
+            // same footprint as the good model: bottom on the bench, centred like it
+            body.transform.localPosition = good ? new Vector3(-b.center.x, good.localPosition.y + (ShapeKit.LocalBounds(good.gameObject).min.y - b.min.y), -b.center.z) : -b.center;
+            body.SetActive(false);
         }
 
         /// <summary>

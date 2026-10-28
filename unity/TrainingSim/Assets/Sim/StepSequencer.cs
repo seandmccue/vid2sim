@@ -24,6 +24,8 @@ namespace Vid2Sim
         /// <summary>Raised once per step when nothing has happened for stallSeconds: the coach repeats the
         /// instruction and the expected part is highlighted (the pitch's "coaching when the trainee stalls").</summary>
         public event Action<Step, PartBehaviour> Stalled;
+        /// <summary>Inspect step: the trainee's Pass/Fail call was wrong (part, they said "fault"). The step stays open.</summary>
+        public event Action<Step, PartBehaviour, bool> Misjudged;
         public float stallSeconds = 20f;
         bool _stallRaised;
 
@@ -82,7 +84,8 @@ namespace Vid2Sim
             _stepStart = Time.unscaledTime;
             _stallRaised = false;
             var step = Current;
-            _detector.Arm(step, _factory, OnEvent, p => { _stepStart = Time.unscaledTime; WrongPart?.Invoke(step, p); });
+            _detector.Arm(step, _factory, OnEvent, p => { _stepStart = Time.unscaledTime; WrongPart?.Invoke(step, p); },
+                          (p, saidFault) => { _stepStart = Time.unscaledTime; Misjudged?.Invoke(step, p, saidFault); });
             StepStarted?.Invoke(step, Index);
         }
 

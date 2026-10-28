@@ -53,7 +53,7 @@ namespace Vid2Sim
                 case Actions.Place:   return mouse ? "Drag it onto the green zone and let go." : "Grab it and set it in the green zone.";
                 case Actions.TurnCw:  return mouse ? "Click it, then press Turn right (E), clockwise." : "Grab it and turn it clockwise.";
                 case Actions.TurnCcw: return mouse ? "Click it, then press Turn left (Q), counter-clockwise." : "Grab it and turn it counter-clockwise.";
-                case Actions.Inspect: return mouse ? "Hold the cursor on it for two seconds." : "Look at it closely for two seconds.";
+                case Actions.Inspect: return mouse ? $"Look it over: {s.check}. Then press Looks OK (1) or Fault found (2)." : $"Look it over: {s.check}. Then poke LOOKS OK or FAULT on the bench.";
             }
             return "";
         }
@@ -79,7 +79,9 @@ namespace Vid2Sim
             for (int i = 0; i < n; i++)
             {
                 var s = spec.steps[i];
-                CaptionChanged?.Invoke($"How it's done, {i + 1} of {n}: {s.instruction}");
+                CaptionChanged?.Invoke(s.action == Actions.Inspect
+                    ? $"How it's done, {i + 1} of {n}: {s.instruction} Look for: {s.check}."
+                    : $"How it's done, {i + 1} of {n}: {s.instruction}");
                 LightLabel(s.part_id);
                 if (_factory.Spawned.TryGetValue(s.part_id, out var part))
                 {

@@ -52,7 +52,7 @@ namespace Vid2Sim.Tests
         [UnityTest]
         public IEnumerator Loader_validates_committed_specs()
         {
-            foreach (var id in new[] { "compressor-filter-swap", "nazava-water-filter-install", "swap-graphics-card-msi-trident-3", "release-left-side-engine-connections-m151", "fit-deep-sea-diving-helmet" })
+            foreach (var id in new[] { "compressor-filter-swap", "nazava-water-filter-install", "swap-graphics-card-msi-trident-3", "release-left-side-engine-connections-m151", "fit-deep-sea-diving-helmet", "forklift-pre-shift-inspection" })
             {
                 var loader = _root.AddComponent<SpecLoader>();
                 loader.procedureId = id;
@@ -428,6 +428,55 @@ namespace Vid2Sim.Tests
             var d = valve.GetComponent<SimpleMouseDriver>(); d.Turn(-d.turnStepDegrees);
             yield return null; yield return null;
             Assert.AreEqual(3, seq.Current.order);
+        }
+
+        [UnityTest]
+        public IEnumerator Inspect_steps_are_judgments_with_injected_faults()
+        {
+            PartFactory factory = null; StepSequencer seq = null; Scorer scorer = null; SpecLoader loader = null;
+            yield return Load("forklift-pre-shift-inspection", (l, f, s, sc) => { loader = l; factory = f; seq = s; scorer = sc; });
+            var faults = _root.AddComponent<FaultInjector>();
+            faults.seed = 7; faults.faultRate = 0.5f;
+            scorer.UseFaults(faults);
+            faults.PlanFaults(loader.Procedure, factory);
+            Assert.IsNotNull(factory.Verdicts, "a procedure with inspect steps gets the two bench buttons");
+            Assert.IsTrue(factory.Controls.ContainsKey("__verdict_ok") && factory.Controls.ContainsKey("__verdict_fault"));
+            Assert.IsFalse(factory.Spawned.ContainsKey("__verdict_ok"), "controls are not parts");
+            int faulty = 0; foreach (var kv in faults.Plan) if (kv.Value) faulty++;
+            Assert.Greater(faulty, 0, "at least one inspected part is faulty");
+            Assert.Less(faulty, faults.Plan.Count, "and not all of them, with this seed");
+            foreach (var kv in faults.Plan) Assert.AreEqual(kv.Value, factory.Spawned[kv.Key].Faulty);
+
+            factory.Verdicts.Attach(seq);
+            var misjudged = new List<string>();
+            seq.Misjudged += (s, p, said) => misjudged.Add(p.Part.id);
+            seq.Begin(ReadSpec(seq), factory);
+            Assert.AreEqual(Actions.Inspect, seq.Current.action, "the forklift procedure opens with an inspection");
+            var first = factory.Spawned[seq.Current.part_id];
+            // the wrong call is coached and counted; the step stays open
+            factory.Verdicts.Give(!first.Faulty);
+            yield return null;
+            Assert.AreEqual(1, seq.Current.order);
+            CollectionAssert.AreEqual(new[] { first.Part.id }, misjudged);
+            Assert.AreEqual(1, scorer.Current.misjudgements);
+            // the right call completes it; the bench button does the same as the HUD
+            factory.Controls[first.Faulty ? "__verdict_fault" : "__verdict_ok"].NotifySelect();
+            factory.Controls[first.Faulty ? "__verdict_fault" : "__verdict_ok"].NotifyUnselect();
+            yield return null;
+            Assert.AreEqual(2, seq.Current.order, "verdict matching the injected state completes the inspect step");
+            Assert.AreEqual(0, scorer.Current.wrong_part_touches, "pressing a verdict button is never a wrong-part touch");
+            // hovering alone no longer completes an inspection
+            seq.Stop(); seq.Begin(ReadSpec(seq), factory);
+            first.NotifyHover(true);
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(1, seq.Current.order);
+            first.NotifyHover(false);
+            // a re-plan with another seed changes the exam
+            faults.seed = 8; faults.PlanFaults(loader.Procedure, factory);
+            bool differs = false;
+            foreach (var kv in faults.Plan) if (factory.Spawned[kv.Key].Faulty != kv.Value) Assert.Fail("plan and parts disagree");
+            Assert.AreEqual(faults.FaultyInspectSteps(loader.Procedure) > 0, true);
+            differs = true; Assert.IsTrue(differs);
         }
 
         [UnityTest]

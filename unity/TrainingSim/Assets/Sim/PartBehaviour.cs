@@ -22,6 +22,52 @@ namespace Vid2Sim
         /// <summary>True when the part is a flat photo card cut from the video rather than a primitive.</summary>
         public bool IsCard { get; set; }
 
+        /// <summary>
+        /// Judgment steps: an inspected part is spawned good or faulty, and the trainee has to say which.
+        /// With a generated faulty model (Model:faulty child) the defect is the model itself; otherwise a
+        /// generic red wear patch marks it.
+        /// </summary>
+        public bool Faulty { get; private set; }
+        public bool HasFaultModel => transform.Find("Model:faulty") != null;
+        public event Action<PartBehaviour, bool> VerdictGiven;   // (part, trainee said "fault")
+        GameObject _marker;
+
+        public void SetFault(bool faulty)
+        {
+            Faulty = faulty;
+            var good = transform.Find("Model"); var bad = transform.Find("Model:faulty");
+            if (bad != null)
+            {
+                if (good != null) good.gameObject.SetActive(!faulty);
+                bad.gameObject.SetActive(faulty);
+                _renderers = null;   // the visible set changed
+                return;
+            }
+            if (faulty && _marker == null)
+            {
+                var col = GetComponent<Collider>();
+                var b = col != null ? col.bounds : new Bounds(transform.position, Vector3.one * 0.05f);
+                _marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                _marker.name = "FaultMarker";
+                var mc = _marker.GetComponent<Collider>(); if (mc) Destroy(mc);
+                _marker.transform.SetParent(transform, true);
+                float r = Mathf.Max(b.extents.x, b.extents.y, b.extents.z);
+                _marker.transform.position = b.center + (IsCard ? TurnAxisWorld : Vector3.up) * (IsCard ? 0.004f : b.extents.y) + Vector3.right * r * 0.3f;
+                _marker.transform.localRotation = Quaternion.identity;
+                _marker.transform.localScale = Vector3.one * Mathf.Clamp(r * 0.35f, 0.012f, 0.04f);
+                _marker.transform.localScale = new Vector3(_marker.transform.localScale.x, _marker.transform.localScale.y * 0.35f, _marker.transform.localScale.z);
+                var m = Resources.Load<Material>("Vid2SimPart");
+                var mat = m ? new Material(m) : new Material(Shader.Find("Standard"));
+                mat.color = new Color(0.75f, 0.18f, 0.12f);
+                _marker.GetComponent<Renderer>().material = mat;
+                _renderers = null;
+            }
+            if (_marker != null) _marker.SetActive(faulty);
+        }
+
+        /// <summary>The trainee's call on an inspected part: true = "I found a fault".</summary>
+        public void GiveVerdict(bool faultFound) => VerdictGiven?.Invoke(this, faultFound);
+
         public bool IsSelected { get; private set; }
         public bool IsHovered { get; private set; }
         public float HoverSeconds { get; private set; }
