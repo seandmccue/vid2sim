@@ -50,33 +50,40 @@ namespace Vid2Sim
             if (on) { HoverSeconds = 0f; HoverStarted?.Invoke(this); } else HoverEnded?.Invoke(this);
         }
 
-        Renderer _renderer;
-        Color _baseColor;
+        Renderer[] _renderers;
+        Color[] _baseColors;
         float _highlightUntil;
+
+        void CacheRenderers()
+        {
+            if (_renderers != null) return;
+            _renderers = GetComponentsInChildren<Renderer>();
+            _baseColors = new Color[_renderers.Length];
+        }
 
         void Update()
         {
             if (IsHovered) HoverSeconds += Time.deltaTime;
             if (_highlightUntil > 0f)
             {
-                if (_renderer == null) _renderer = GetComponent<Renderer>();
-                if (_renderer != null)
+                CacheRenderers();
+                bool on = Time.unscaledTime < _highlightUntil;
+                float t = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 8f);
+                for (int i = 0; i < _renderers.Length; i++)
                 {
-                    if (Time.unscaledTime < _highlightUntil)
-                    {
-                        float t = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 8f);
-                        _renderer.material.color = Color.Lerp(_baseColor, new Color(1f, 0.85f, 0.2f), t);
-                    }
-                    else { _renderer.material.color = _baseColor; _highlightUntil = 0f; }
+                    if (_renderers[i] == null) continue;
+                    _renderers[i].material.color = on ? Color.Lerp(_baseColors[i], new Color(1f, 0.85f, 0.2f), t) : _baseColors[i];
                 }
+                if (!on) _highlightUntil = 0f;
             }
         }
 
         /// <summary>Pulse the part yellow for a few seconds so a stalled trainee sees what the coach means.</summary>
         public void Highlight(float seconds = 4f)
         {
-            if (_renderer == null) _renderer = GetComponent<Renderer>();
-            if (_renderer != null && _highlightUntil <= 0f) _baseColor = _renderer.material.color;
+            CacheRenderers();
+            if (_highlightUntil <= 0f)
+                for (int i = 0; i < _renderers.Length; i++) if (_renderers[i] != null) _baseColors[i] = _renderers[i].material.color;
             _highlightUntil = Time.unscaledTime + seconds;
         }
 

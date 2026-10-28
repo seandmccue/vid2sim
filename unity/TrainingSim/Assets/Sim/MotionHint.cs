@@ -9,7 +9,7 @@ namespace Vid2Sim
     /// </summary>
     public class MotionHint : MonoBehaviour
     {
-        public Color color = new(0.35f, 0.9f, 1f, 0.95f);
+        public Color color = new(0.12f, 0.50f, 1f, 0.95f);
         public float width = 0.006f;
 
         LineRenderer _line;

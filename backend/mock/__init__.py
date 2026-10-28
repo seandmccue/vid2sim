@@ -97,3 +97,23 @@ namespace Vid2Sim.Generated
     }}
 }}
 """
+
+
+def mock_shape_csharp(cls: str, procedure_id: str, part: dict) -> str:
+    """A body plus one detail, the shape of what Muse Code returns, so the gate and the engine are exercised."""
+    return f"""using UnityEngine;
+using Vid2Sim;
+
+namespace Vid2Sim.Generated.Shapes
+{{
+    [PartShape("{procedure_id}", "{part['id']}")]
+    public class {cls} : IPartShape
+    {{
+        public void Build(GameObject root, float size, Color accent)
+        {{
+            ShapeKit.Box(root, new Vector3(0f, size * 0.3f, 0f), new Vector3(size, size * 0.6f, size * 0.6f), accent);
+            ShapeKit.Cylinder(root, new Vector3(0f, size * 0.75f, 0f), size * 0.3f, size * 0.3f, ShapeKit.DarkSteel);
+        }}
+    }}
+}}
+"""

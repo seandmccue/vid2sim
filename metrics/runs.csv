@@ -405,3 +405,100 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261027-123634-0ed517,nazava,step_card,muse-image-1.0,8.89,0.0400,0,0,0,step 7 (estimate)
 20261027-123634-0ed517,nazava,step_card,muse-image-1.0,7.99,0.0400,0,0,0,step 8 (estimate)
 20261027-123634-0ed517,nazava,total,pipeline,74.23,0.0000,0,0,0,upload to StreamingAssets
+20261027-215157-08a10d,forklift-precheck,upload,files,28.22,0.0000,0,0,0,p.mp4
+20261027-215157-08a10d,forklift-precheck,transcribe,muse-voice-transcribe-1.0,23.31,0.0133,0,0,0,"2.22 min, cost is an estimate"
+20261027-215157-08a10d,forklift-precheck,extract,muse-spark-1.3,42.81,0.0772,0,36535,7427,"completed, budget 16000"
+20261027-215157-08a10d,forklift-precheck,verify,muse-spark-1.3,20.08,0.0295,0,3088,6030,"completed, budget 16000"
+20261027-215157-08a10d,forklift-precheck,upload,files,2.70,0.0000,0,0,0,operator_manual.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,10.43,0.0490,245,0,0,printed paper operator manual
+20261027-215157-08a10d,forklift-precheck,upload,files,12.91,0.0000,0,0,0,inspection_clipboard.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,72.35,0.6166,3083,0,0,white paper inspection checklist
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,7.54,0.0069,0,494,1468,inspection_clipboard
+20261027-215157-08a10d,forklift-precheck,segment_box,sam-3.1,232.15,0.6032,3016,0,0,<67f>1<|box;x1=173;y1=280;x2=704;y2=479;w=720;h=480|>
+20261027-215157-08a10d,forklift-precheck,upload,files,2.81,0.0000,0,0,0,drive_tire.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,8.31,0.0286,143,0,0,black treaded pneumatic tire
+20261027-215157-08a10d,forklift-precheck,upload,files,3.34,0.0000,0,0,0,running_light.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,6.02,0.0360,180,0,0,red rectangular tail light
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,12.92,0.0117,0,494,2601,running_light
+20261027-215157-08a10d,forklift-precheck,upload,files,3.62,0.0000,0,0,0,forklift_battery.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,10.57,0.0716,358,0,0,black rectangular forklift battery
+20261027-215157-08a10d,forklift-precheck,upload,files,2.62,0.0000,0,0,0,direction_pedal.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,7.25,0.0240,120,0,0,red monotrol foot pedal
+20261027-215157-08a10d,forklift-precheck,upload,files,2.57,0.0000,0,0,0,control_lever.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,5.82,0.0248,124,0,0,black hydraulic control lever
+20261027-215157-08a10d,forklift-precheck,upload,files,2.57,0.0000,0,0,0,fork_tine.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,5.17,0.0292,146,0,0,steel fork tine
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,11.76,0.0118,0,494,2641,fork_tine
+20261027-215157-08a10d,forklift-precheck,segment_box,sam-3.1,8.20,0.0184,92,0,0,<54f>1<|box;x1=100;y1=190;x2=719;y2=479;w=720;h=480|>
+20261027-215157-08a10d,forklift-precheck,upload,files,6.12,0.0000,0,0,0,hydraulic_hose.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,18.42,0.1482,741,0,0,black rubber hydraulic hose
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,8.27,0.0084,0,494,1834,hydraulic_hose
+20261027-215157-08a10d,forklift-precheck,segment_box,sam-3.1,46.54,0.1248,624,0,0,<117f>1<|box;x1=285;y1=0;x2=476;y2=479;w=720;h=480|>
+20261027-215157-08a10d,forklift-precheck,upload,files,2.49,0.0000,0,0,0,lift_chain.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,4.39,0.0230,115,0,0,oiled metal roller chain
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,6.37,0.0057,0,495,1192,lift_chain
+20261027-215157-08a10d,forklift-precheck,segment_box,sam-3.1,5.33,0.0102,51,0,0,<64f>1<|box;x1=352;y1=0;x2=492;y2=194;w=720;h=480|>
+20261027-215157-08a10d,forklift-precheck,upload,files,69.56,0.0000,0,0,0,carriage_bolt.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,5.44,0.0224,112,0,0,hex steel carriage bolt
+20261027-215157-08a10d,forklift-precheck,upload,files,2.97,0.0000,0,0,0,brake_pedal.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,3.88,0.0158,79,0,0,ribbed metal brake pedal
+20261027-215157-08a10d,forklift-precheck,upload,files,3.51,0.0000,0,0,0,steering_wheel.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,3.79,0.0182,91,0,0,black circular steering wheel
+20261027-215157-08a10d,forklift-precheck,box_fallback,muse-spark-1.3,2.78,0.0032,0,494,600,steering_wheel
+20261027-215157-08a10d,forklift-precheck,upload,files,3.19,0.0000,0,0,0,propane_tank.mp4
+20261027-215157-08a10d,forklift-precheck,segment_concept,sam-3.1,4.86,0.0188,94,0,0,yellow propane fuel tank
+20261027-215157-08a10d,forklift-precheck,total,pipeline,762.77,0.0000,0,0,0,upload to StreamingAssets
+20261027-220455-cf1cd4,forklift-precheck,upload,files,0.00,0.0000,0,0,0,reused file-1657820622603620
+20261027-220455-cf1cd4,forklift-precheck,transcribe,muse-voice-transcribe-1.0,0.00,0.0000,0,0,0,resumed from transcript.json
+20261027-220455-cf1cd4,forklift-precheck,extract,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from draft.json
+20261027-220455-cf1cd4,forklift-precheck,verify,muse-spark-1.3,0.00,0.0000,0,0,0,resumed from review.json
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,245,0,0,resumed from operator_manual_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,3083,0,0,resumed from inspection_clipboard_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from inspection_clipboard_box.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,143,0,0,resumed from drive_tire_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,180,0,0,resumed from running_light_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,box_fallback,muse-spark-1.3,0.00,0.0000,0,0,0,resumed: running_light not found before
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,358,0,0,resumed from forklift_battery_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,120,0,0,resumed from direction_pedal_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,124,0,0,resumed from control_lever_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,146,0,0,resumed from fork_tine_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from fork_tine_box.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,741,0,0,resumed from hydraulic_hose_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from hydraulic_hose_box.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,115,0,0,resumed from lift_chain_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_box,sam-3.1,0.00,0.0000,0,0,0,resumed from lift_chain_box.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,112,0,0,resumed from carriage_bolt_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,79,0,0,resumed from brake_pedal_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,91,0,0,resumed from steering_wheel_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,box_fallback,muse-spark-1.3,0.00,0.0000,0,0,0,resumed: steering_wheel not found before
+20261027-220455-cf1cd4,forklift-precheck,segment_concept,sam-3.1,0.00,0.0000,94,0,0,resumed from propane_tank_concept.txt
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,14.29,0.0188,0,455,4282,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,15.71,0.0192,0,706,4305,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,20.94,0.0245,0,703,5549,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,22.01,0.0307,0,733,7004,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,26.50,0.0324,0,713,7417,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,13.29,0.0189,0,713,4246,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,14.21,0.0202,0,712,4545,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,19.02,0.0230,0,711,5198,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,16.54,0.0206,0,709,4628,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,16.40,0.0204,0,742,4575,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,15.19,0.0204,0,709,4601,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,17.20,0.0228,0,708,5163,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,19.72,0.0257,0,712,5841,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,15.35,0.0223,0,711,5047,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,generate_code,muse-spark-1.3,44.41,0.0498,0,712,11497,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,9.98,0.0400,0,0,0,inspection_clipboard (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,9.97,0.0400,0,0,0,running_light (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,15.63,0.0400,0,0,0,drive_tire (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,20.87,0.0400,0,0,0,operator_manual (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,13.30,0.0400,0,0,0,direction_pedal (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,9.25,0.0400,0,0,0,control_lever (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,15.39,0.0400,0,0,0,forklift_battery (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,8.91,0.0400,0,0,0,lift_chain (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,15.86,0.0400,0,0,0,fork_tine (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,18.64,0.0400,0,0,0,hydraulic_hose (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,20.76,0.0400,0,0,0,carriage_bolt (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,19.39,0.0400,0,0,0,brake_pedal (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,15.52,0.0400,0,0,0,propane_tank (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,texture,muse-image-1.0,24.92,0.0400,0,0,0,steering_wheel (cost is an estimate)
+20261027-220455-cf1cd4,forklift-precheck,total,pipeline,174.04,0.0000,0,0,0,upload to StreamingAssets

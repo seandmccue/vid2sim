@@ -38,6 +38,7 @@ namespace Vid2Sim
 #if UNITY_WEBGL
             _ui.showWorldPanel = false;   // the screen HUD carries the text in the browser
 #endif
+            (GetComponent<SceneStyle>() ?? gameObject.AddComponent<SceneStyle>()).Apply(origin);
             _ui.Build(origin, _speech);
             _scorer.Attach(_seq);
             _ui.Attach(_seq, _scorer);
@@ -61,6 +62,8 @@ namespace Vid2Sim
             _lastSpecMtime = _loader.HotSpecMtime();
             _ui.SetTitle(_loader.Procedure.procedure.title);
             yield return _factory.Spawn(_loader.Procedure, _loader, origin);
+            var rig = FindFirstObjectByType<WebCameraRig>();
+            if (rig) rig.Frame(Mathf.CeilToInt(_loader.Procedure.parts.Length / (float)_factory.rowCapacity));
             var gate = GetComponent<IStartGate>() ?? (IStartGate)FindFirstObjectByType<WebCameraRig>();
             var hud = FindFirstObjectByType<WebHud>();
             if (hud) hud.Attach(_seq, _guide, _scorer, _factory, _loader.Procedure.procedure.title, _loader.Procedure);

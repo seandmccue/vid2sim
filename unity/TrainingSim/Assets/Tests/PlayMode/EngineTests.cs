@@ -384,6 +384,52 @@ namespace Vid2Sim.Tests
             Assert.AreEqual(0, scorer.Current.wrong_part_touches);
         }
 
+        /// <summary>Stand-in for a Muse Code shape: a body and a knob, the way generated classes are written.</summary>
+        [PartShape("compressor-filter-swap", "drain_valve")]
+        public class TestValveShape : IPartShape
+        {
+            public void Build(GameObject root, float size, Color accent)
+            {
+                ShapeKit.Cylinder(root, new Vector3(0f, size * 0.15f, 0f), size, size * 0.3f, ShapeKit.DarkSteel);
+                ShapeKit.Box(root, new Vector3(0f, size * 0.45f, 0f), new Vector3(size * 0.9f, size * 0.3f, size * 0.2f), accent);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator Generated_shape_replaces_the_primitive_and_still_turns_and_ghosts()
+        {
+            PartFactory factory = null; StepSequencer seq = null;
+            yield return Load("compressor-filter-swap", (l, f, s, sc) => { factory = f; seq = s; });
+            var valve = factory.Spawned["drain_valve"];
+            Assert.IsFalse(valve.IsCard);
+            Assert.IsNull(valve.GetComponent<Renderer>(), "a shaped part is a root with child primitives");
+            Assert.AreEqual(2, valve.GetComponentsInChildren<Renderer>().Length, "the test shape built two primitives");
+            var b = valve.GetComponent<BoxCollider>().bounds.size;
+            Assert.Greater(Mathf.Min(b.x, b.y, b.z), 0.01f, "collider wraps what was built");
+            Assert.LessOrEqual(Mathf.Max(b.x, b.y, b.z), 0.22f * 1.1f, "model kept inside the size budget");
+            Assert.AreEqual(valve.transform.position.y - b.y / 2f, factory.Spawned["power_switch"].transform.position.y - factory.Spawned["power_switch"].GetComponent<Collider>().bounds.size.y / 2f, 0.01f, "sits on the bench like its neighbours");
+            // highlight tints every child; the ghost is a translucent copy with the same number of renderers
+            valve.Highlight(1f);
+            yield return null;
+            foreach (var r in valve.GetComponentsInChildren<Renderer>()) Assert.AreNotEqual(ShapeKit.DarkSteel, r.material.color, "tinted");
+            var guide = _root.AddComponent<StepGuide>();
+            guide.demoSeconds = 0.05f; guide.demoLoops = 1;
+            guide.Attach(seq, factory, null);
+            guide.Demonstrate(ReadSpec(seq).steps[1]);
+            yield return null;
+            var ghost = GameObject.Find("Ghost:drain_valve");
+            Assert.IsNotNull(ghost);
+            Assert.AreEqual(2, ghost.GetComponentsInChildren<Renderer>().Length);
+            Assert.AreEqual(0, ghost.GetComponentsInChildren<Collider>().Length, "ghost is not interactable");
+            // and the turn step still completes through the driver
+            seq.Begin(ReadSpec(seq), factory);
+            var sw = factory.Spawned["power_switch"]; sw.NotifySelect(); sw.NotifyUnselect();
+            yield return null;
+            var d = valve.GetComponent<SimpleMouseDriver>(); d.Turn(-d.turnStepDegrees);
+            yield return null; yield return null;
+            Assert.AreEqual(3, seq.Current.order);
+        }
+
         [UnityTest]
         public IEnumerator Pause_blocks_completion_and_resume_allows_it()
         {

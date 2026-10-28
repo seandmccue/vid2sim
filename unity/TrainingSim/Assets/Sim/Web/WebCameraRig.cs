@@ -13,6 +13,14 @@ namespace Vid2Sim
         public bool Started => _started;
         public Vector3 pivot = new(0f, 0.8f, 0.7f);    // just above the bench, 0.7 m ahead of the seat
         public float distance = 0.85f;
+
+        /// <summary>Pull back and re-centre for a bench with more than one row of parts.</summary>
+        public void Frame(int rows)
+        {
+            rows = Mathf.Max(1, rows);
+            pivot = new Vector3(pivot.x, pivot.y, 0.7f + (rows - 1) * 0.11f);
+            distance = 0.85f + (rows - 1) * 0.22f;
+        }
         public float yaw = 0f, pitch = 30f;
         public float orbitSpeed = 60f, zoomSpeed = 0.4f;
         public bool showHint = true;
@@ -60,7 +68,7 @@ namespace Vid2Sim
                 _body ??= new GUIStyle(GUI.skin.label) { fontSize = 26, normal = { textColor = new Color(0.9f, 0.93f, 1f) }, wordWrap = true };
                 float w = Mathf.Min(1100f, Screen.width - 80f), h = 520f;
                 var r = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
-                GUI.Box(r, GUIContent.none); GUI.Box(r, GUIContent.none);
+                HudPanel.Draw(r);
                 GUILayout.BeginArea(new Rect(r.x + 40, r.y + 30, r.width - 80, r.height - 60));
                 GUILayout.Label("Training sim", _big);
                 GUILayout.Space(10);
@@ -78,7 +86,7 @@ namespace Vid2Sim
             }
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
-            GUI.Box(new Rect(12, Screen.height - 52, Screen.width - 24, 40), GUIContent.none);
+            HudPanel.Draw(new Rect(12, Screen.height - 52, Screen.width - 24, 40));
             GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · Hover 2 s = inspect · H show me · R restart · Arrows orbit · Scroll zooms", style);
             if (debugReadout)
             {

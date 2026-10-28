@@ -17,7 +17,8 @@ namespace Vid2Sim
         public float benchHeight = 0.75f;
         public float reachWidth = 0.6f;
         public float minColliderSize = 0.04f;
-        public int rowCapacity = 6;
+        public int rowCapacity = 5;
+        public float rowSpacing = 0.22f;
         [Tooltip("Photo cards never get wider than this, whatever the size hint says, so a big panel still fits the bench")]
         public float maxCardSize = 0.22f;
         public Material baseMaterial;
@@ -41,9 +42,24 @@ namespace Vid2Sim
             top.name = "BenchTop";
             top.transform.SetParent(_bench, false);
             top.transform.localPosition = new Vector3(0f, -0.03f, 0f);
-            top.transform.localScale = new Vector3(reachWidth + 0.2f, 0.04f, 0.4f);
-            top.GetComponent<Renderer>().material = NewMaterial(new Color(0.25f, 0.25f, 0.27f));
+            int rowsForTop = Mathf.CeilToInt(OrderOfAppearance(spec).Count / (float)rowCapacity);
+            float depth = 0.36f + Mathf.Max(0, rowsForTop - 1) * rowSpacing;
+            top.transform.localScale = new Vector3(reachWidth + 0.2f, 0.04f, depth);
+            top.transform.localPosition = new Vector3(0f, -0.03f, (depth - 0.4f) / 2f);   // front edge stays where it was
+            top.GetComponent<Renderer>().material = NewMaterial(new Color(0.93f, 0.90f, 0.84f));   // pale wood
             Destroy(top.GetComponent<Collider>());
+            // four legs down to the floor, so the bench reads as a table in a room rather than a floating slab
+            float legDrop = benchHeight - 0.05f;
+            foreach (var (lx, lz) in new[] { (-1f, -1f), (1f, -1f), (-1f, 1f), (1f, 1f) })
+            {
+                var leg = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                leg.name = "BenchLeg";
+                leg.transform.SetParent(_bench, false);
+                leg.transform.localScale = new Vector3(0.04f, legDrop, 0.04f);
+                leg.transform.localPosition = new Vector3(lx * (reachWidth / 2f + 0.06f), -0.05f - legDrop / 2f, (depth - 0.4f) / 2f + lz * (depth / 2f - 0.04f));
+                leg.GetComponent<Renderer>().material = NewMaterial(new Color(0.55f, 0.52f, 0.48f));
+                Destroy(leg.GetComponent<Collider>());
+            }
 
             var order = OrderOfAppearance(spec);
             int n = order.Count;
@@ -54,36 +70,50 @@ namespace Vid2Sim
                 var part = spec.FindPart(order[i]);
                 int row = i / perRow, col = i % perRow, inRow = Mathf.Min(perRow, n - row * perRow);
                 float x = inRow == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, col / (float)(inRow - 1));
-                float z = rows == 1 ? 0f : Mathf.Lerp(0f, 0.16f, row / (float)(rows - 1));
+                float z = row * rowSpacing;
                 float size = Mathf.Max(part.size_hint_m, minColliderSize);
+                // crowded benches get smaller parts so neighbours don't overlap
+                float cap = Mathf.Min(maxCardSize, inRow > 1 ? reachWidth / (inRow - 1) * 0.8f : maxCardSize);
 
                 Texture2D cutout = null;
-                yield return loader.LoadCutout(part.id, t => cutout = t);
+                var shape = ShapeKit.Find(spec.procedure.id, part.id);
+                if (shape == null) yield return loader.LoadCutout(part.id, t => cutout = t);
                 GameObject go;
-                if (cutout != null)
+                float height;
+                if (shape != null)
                 {
-                    go = CreateCard(cutout, Mathf.Min(size, maxCardSize));
+                    go = CreateShaped(shape, part, Mathf.Min(size, cap), out height);
+                }
+                else if (cutout != null)
+                {
+                    go = CreateCard(cutout, Mathf.Min(size, cap));
+                    height = go.transform.localScale.y;
                 }
                 else
                 {
                     go = CreatePrimitiveFor(part);
                     go.transform.localScale = ScaleFor(part, size);
+                    height = go.transform.localScale.y;
                 }
                 go.name = $"Part:{part.id}";
                 go.transform.SetParent(_bench, false);
-                go.transform.localPosition = new Vector3(x, go.transform.localScale.y / 2f, z);
+                go.transform.localPosition = new Vector3(x, height / 2f, z);
                 go.transform.localRotation = Quaternion.identity;
                 EnsureCollider(go, size);
 
                 var pb = go.AddComponent<PartBehaviour>();
-                if (cutout != null) { pb.IsCard = true; pb.TurnAxisLocal = Vector3.back; }   // a card turns about its normal, like the lid in the video
+                if (shape == null && cutout != null) { pb.IsCard = true; pb.TurnAxisLocal = Vector3.back; }   // a card turns about its normal, like the lid in the video
                 pb.Init(part);
-                PartLabel.Create(pb, go.transform.localScale.y + 0.045f);
+                PartLabel.Create(pb, height + 0.045f);
                 bool needsRotate = UsesAction(spec, part.id, Actions.TurnCw) || UsesAction(spec, part.id, Actions.TurnCcw);
                 Backend.Attach(pb, go, part.interaction, needsRotate);
 
                 var rend = go.GetComponent<Renderer>();
-                if (cutout != null)
+                if (shape != null)
+                {
+                    // the generated model carries its own materials
+                }
+                else if (cutout != null)
                 {
                     rend.material = NewCutoutMaterial(cutout);
                 }
@@ -124,6 +154,34 @@ namespace Vid2Sim
         {
             foreach (var s in spec.steps) if (s.part_id == partId && s.action == action) return true;
             return false;
+        }
+
+        /// <summary>
+        /// A stylised model built by generated code (Muse Code, compile-gated): primitives under an empty root,
+        /// re-centred so the model sits on the bench, with a box collider around everything it built.
+        /// </summary>
+        static GameObject CreateShaped(IPartShape shape, Part part, float size, out float height)
+        {
+            var root = new GameObject("Shape");
+            var body = new GameObject("Model");
+            body.transform.SetParent(root.transform, false);
+            try { shape.Build(body, size, ColorFor(part)); }
+            catch (System.Exception e) { Debug.LogWarning($"[PartFactory] shape for {part.id} threw: {e.Message}"); }
+            var b = ShapeKit.LocalBounds(body);
+            if (b.size.sqrMagnitude < 1e-6f)
+            {
+                // nothing built: a plain block so the part still exists
+                ShapeKit.Box(body, Vector3.zero, Vector3.one * size, ColorFor(part));
+                b = ShapeKit.LocalBounds(body);
+            }
+            // keep the model inside the size budget whatever the generator did
+            float longest = Mathf.Max(b.size.x, b.size.y, b.size.z);
+            if (longest > size * 1.05f) { body.transform.localScale = Vector3.one * (size / longest); b = ShapeKit.LocalBounds(body); }
+            body.transform.localPosition = -b.center;   // centred on the root
+            var bc = root.AddComponent<BoxCollider>();
+            bc.size = b.size;
+            height = b.size.y;
+            return root;
         }
 
         /// <summary>
@@ -216,6 +274,16 @@ namespace Vid2Sim
             GameObject zone;
             var pb = part.GetComponent<PartBehaviour>();
             var pr = part.GetComponent<Renderer>();
+            if (pr == null)
+            {
+                // generated model: a green translucent copy of it where it must go
+                zone = PartVisuals.CloneTranslucent(part, $"SnapZone:{p.id}", new Color(0.2f, 0.8f, 0.4f, 0.45f));
+                zone.transform.SetParent(_bench, false);
+                zone.transform.localScale = part.transform.localScale;
+                zone.transform.localPosition = part.transform.localPosition + new Vector3(0f, 0f, -0.14f);
+                zone.transform.localRotation = Quaternion.identity;
+                return zone.transform;
+            }
             if (pb != null && pb.IsCard)
             {
                 // a green silhouette of the card itself where it has to go: "put the lid here"
@@ -267,10 +335,10 @@ namespace Vid2Sim
 
         static Color ColorFor(Part part) => part.interaction switch
         {
-            "press" => new Color(0.85f, 0.2f, 0.2f),
-            "turn" => new Color(0.8f, 0.65f, 0.2f),
-            "inspect" => new Color(0.3f, 0.6f, 0.9f),
-            _ => new Color(0.75f, 0.75f, 0.75f),
+            "press" => new Color(0.93f, 0.42f, 0.36f),   // coral
+            "turn" => new Color(0.96f, 0.72f, 0.30f),    // amber
+            "inspect" => new Color(0.45f, 0.66f, 0.95f), // sky
+            _ => new Color(0.62f, 0.66f, 0.74f),         // slate
         };
 
         static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude < 1e-4f ? Vector3.forward : v.normalized; }

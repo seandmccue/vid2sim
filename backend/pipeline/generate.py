@@ -9,6 +9,10 @@ and the metrics row says so.
 
 generate_textures(): Muse Image edits the keyframe crop into a clean flat-lit texture,
 once per part, cached by part id. Step cards for the dashboard come from the same model.
+
+generate_shapes(): Muse Code writes a stylised low-poly model of each part from primitives
+(ShapeKit calls) against the engine's IPartShape interface, one class per part, compile-gated
+as a batch into Assets/Generated/Shapes/. The engine prefers a shape over the photo card.
 """
 from __future__ import annotations
 
@@ -256,6 +260,149 @@ def generate_actions(spec: dict, unity_project: Path, metrics: Metrics, gate: bo
             target.rename(candidate)
         out.append({"verb": verb, "class": cls, "path": str(target if ok else candidate), "compiled": ok,
                     "note": ("failed the compile gate; engine falls back to the vocabulary verb" if not ok else note)[-500:]})
+    return out
+
+
+IPART_SHAPE_INTERFACE = """
+// Engine side (Assets/Sim/PartShapes.cs).
+namespace Vid2Sim {
+  public interface IPartShape {
+    // root: empty GameObject at the part's spawn pose; add primitives as children (local space, metres).
+    // size: longest side of the part in metres; keep everything inside it. accent: palette colour for the part type.
+    void Build(UnityEngine.GameObject root, float size, UnityEngine.Color accent);
+  }
+  [System.AttributeUsage(System.AttributeTargets.Class)]
+  public class PartShapeAttribute : System.Attribute { public PartShapeAttribute(string procedureId, string partId); }
+  public static class ShapeKit {
+    // Colours: Steel, DarkSteel, Rubber, Yellow, Red, Blue, Green, Cream, Black (UnityEngine.Color)
+    public static GameObject Box(GameObject root, Vector3 centre, Vector3 size, Color color, Vector3? euler = null);
+    public static GameObject Cylinder(GameObject root, Vector3 centre, float diameter, float height, Color color, Vector3? euler = null); // axis along local Y
+    public static GameObject Sphere(GameObject root, Vector3 centre, float diameter, Color color);
+    public static GameObject Capsule(GameObject root, Vector3 centre, float diameter, float height, Color color, Vector3? euler = null); // axis along local Y
+  }
+}
+"""
+
+
+def _shape_class(procedure_id: str, part_id: str) -> str:
+    clean = lambda s: re.sub(r"[^a-zA-Z0-9]+", "_", s).strip("_")
+    return f"Shape_{clean(procedure_id)}__{clean(part_id)}"
+
+
+def _shape_prompt(spec: dict, part: dict) -> str:
+    cls = _shape_class(spec["procedure"]["id"], part["id"])
+    box = part.get("box") or [0, 0, 1, 1]
+    w, h = max(1, box[2] - box[0] + 1), max(1, box[3] - box[1] + 1)
+    aspect = "wider than tall" if w > h * 1.3 else ("taller than wide" if h > w * 1.3 else "about square")
+    steps = [s["instruction"] for s in spec["steps"] if s["part_id"] == part["id"]][:3]
+    return f"""Write a Unity 6 C# class named {cls} in namespace Vid2Sim.Generated.Shapes that implements Vid2Sim.IPartShape
+and carries the attribute [Vid2Sim.PartShape("{spec['procedure']['id']}", "{part['id']}")].
+
+It builds a stylised low-poly 3D model of this part from primitives, the kind of clean toy-like model you see in a
+Spline or Blender low-poly scene: a recognisable silhouette, a main body plus one to three distinguishing details,
+flat pastel colours, 4 to 14 primitives in total.
+
+Part: {part['name']} (id {part['id']})
+Looks like: {part.get('prompt_phrase', part['name'])}
+How it is used: interaction "{part['interaction']}"; steps: {steps}
+Procedure: {spec['procedure'].get('title', spec['procedure']['id'])}
+Proportions in the video: {aspect}. Longest side = size (the Build argument), typically {part.get('size_hint_m', 0.1)} m.
+
+Engine interface:
+{IPART_SHAPE_INTERFACE}
+
+Constraints:
+- using UnityEngine; using Vid2Sim; Only call ShapeKit.Box / Cylinder / Sphere / Capsule with root as the first
+  argument. No other Unity API calls, no materials, no colliders, no Resources.Load, no coroutines, no fields.
+- Local space: X = width (left-right as the trainee sees it), Y = up, Z = depth; the trainee looks along +Z, so the
+  front of the part faces -Z. Put the bottom of the model at y = 0 and keep every primitive inside a box of
+  size x size x size centred on x = 0, z = 0.
+- Express every dimension as a fraction of size (e.g. size * 0.4f), never a literal metre value.
+- Use the accent colour for the main body or the one feature the trainee interacts with; ShapeKit colours for the rest.
+- Output only the C# file contents, no markdown fences, no commentary.
+"""
+
+
+def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: bool = True) -> list[dict]:
+    """One stylised primitive model per part, generated in parallel, compile-gated as a batch.
+    Returns one record per part: {part, class, path, compiled, note}. Cached by class name."""
+    staging = unity_project / "Assets" / "Generated" / "Shapes"
+    staging.mkdir(parents=True, exist_ok=True)
+    pid = spec["procedure"]["id"]
+    jobs: list[tuple[dict, str, str | None]] = []
+    out: list[dict] = []
+    for part in spec["parts"]:
+        cls = _shape_class(pid, part["id"])
+        if (staging / f"{cls}.cs").exists():
+            out.append({"part": part["id"], "class": cls, "path": str(staging / f"{cls}.cs"), "compiled": True, "note": "cached"})
+            continue
+        pend = staging / f"{cls}.cs.pending"
+        jobs.append((part, cls, pend.read_text() if pend.exists() else None))
+    if not jobs:
+        return out
+
+    def produce(job):
+        part, cls, existing = job
+        if existing:
+            metrics.log("generate_shape", "cache", 0.0, 0.0, note=f"{part['id']}: re-gating pended shape")
+            return part, cls, existing
+        prompt = _shape_prompt(spec, part)
+        if is_mock():
+            from ..mock import mock_shape_csharp
+            metrics.log("generate_shape", "muse-code", 0.0, 0.0, note="mock")
+            return part, cls, mock_shape_csharp(cls, pid, part)
+        with Timer() as t:
+            code = _muse_code(prompt)
+        if code is not None:
+            metrics.log("generate_shape", "muse-code", t.wall, 0.0, note=f"{part['id']} -> {cls}")
+        else:
+            code = _spark_code(prompt, metrics)
+        return part, cls, code
+
+    with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
+        produced = list(pool.map(produce, jobs))
+
+    pending: list[tuple[dict, str, Path]] = []
+    for part, cls, code in produced:
+        if not code or "class " not in code:
+            out.append({"part": part["id"], "class": cls, "path": "", "compiled": False, "note": "generator returned no code; engine uses the photo card"})
+            continue
+        candidate = staging / f"{cls}.cs.pending"
+        candidate.write_text(ensure_usings(strip_fences(code)))
+        pending.append((part, cls, candidate))
+    if not pending:
+        return out
+
+    for _, cls, candidate in pending:
+        candidate.rename(staging / f"{cls}.cs")
+    if not gate:
+        compiled, note = True, "gate skipped"
+    elif is_mock():
+        compiled, note = True, "mock gate"
+    else:
+        compiled, note = headless_compile(unity_project)
+    failed: set[str] = set()
+    if not compiled:
+        failed = set(re.findall(r"Assets/Generated/Shapes/([A-Za-z0-9_]+)\.cs\(", note))
+        if failed and len(failed) < len(pending):
+            for _, cls, candidate in pending:
+                if cls in failed:
+                    (staging / f"{cls}.cs").rename(candidate)
+            compiled2, note2 = headless_compile(unity_project)
+            if compiled2:
+                compiled, note = True, f"{len(failed)} shape(s) pended, rest compiled"
+            else:
+                failed = {cls for _, cls, _ in pending}
+                note = note2
+        else:
+            failed = {cls for _, cls, _ in pending}
+    for part, cls, candidate in pending:
+        target = staging / f"{cls}.cs"
+        ok = cls not in failed
+        if not ok and target.exists():
+            target.rename(candidate)
+        out.append({"part": part["id"], "class": cls, "path": str(target if ok else candidate), "compiled": ok,
+                    "note": ("failed the compile gate; engine uses the photo card" if not ok else note)[-500:]})
     return out
 
 

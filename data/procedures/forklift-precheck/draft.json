@@ -1,0 +1,301 @@
+{
+  "parts": [
+    {
+      "id": "operator_manual",
+      "interaction": "inspect",
+      "keyframe": 50,
+      "name": "Operator Manual",
+      "prompt_phrase": "printed paper operator manual"
+    },
+    {
+      "id": "inspection_clipboard",
+      "interaction": "grab",
+      "keyframe": 300,
+      "name": "Inspection Checklist",
+      "prompt_phrase": "white paper inspection checklist"
+    },
+    {
+      "id": "drive_tire",
+      "interaction": "inspect",
+      "keyframe": 900,
+      "name": "Drive Tire",
+      "prompt_phrase": "black treaded pneumatic tire"
+    },
+    {
+      "id": "running_light",
+      "interaction": "inspect",
+      "keyframe": 1050,
+      "name": "Running Light",
+      "prompt_phrase": "red rectangular tail light"
+    },
+    {
+      "id": "forklift_battery",
+      "interaction": "inspect",
+      "keyframe": 1300,
+      "name": "Forklift Battery",
+      "prompt_phrase": "black rectangular forklift battery"
+    },
+    {
+      "id": "direction_pedal",
+      "interaction": "press",
+      "keyframe": 1500,
+      "name": "Direction Pedal",
+      "prompt_phrase": "red monotrol foot pedal"
+    },
+    {
+      "id": "control_lever",
+      "interaction": "grab",
+      "keyframe": 1600,
+      "name": "Lift Tilt Lever",
+      "prompt_phrase": "black hydraulic control lever"
+    },
+    {
+      "id": "fork_tine",
+      "interaction": "inspect",
+      "keyframe": 1800,
+      "name": "Fork Tine",
+      "prompt_phrase": "steel fork tine"
+    },
+    {
+      "id": "hydraulic_hose",
+      "interaction": "inspect",
+      "keyframe": 2050,
+      "name": "Hydraulic Hose",
+      "prompt_phrase": "black rubber hydraulic hose"
+    },
+    {
+      "id": "lift_chain",
+      "interaction": "inspect",
+      "keyframe": 2220,
+      "name": "Lift Chain",
+      "prompt_phrase": "oiled metal roller chain"
+    },
+    {
+      "id": "carriage_bolt",
+      "interaction": "inspect",
+      "keyframe": 2300,
+      "name": "Carriage Bolt",
+      "prompt_phrase": "hex steel carriage bolt"
+    },
+    {
+      "id": "brake_pedal",
+      "interaction": "press",
+      "keyframe": 2810,
+      "name": "Brake Pedal",
+      "prompt_phrase": "ribbed metal brake pedal"
+    },
+    {
+      "id": "steering_wheel",
+      "interaction": "turn",
+      "keyframe": 2930,
+      "name": "Steering Wheel",
+      "prompt_phrase": "black circular steering wheel"
+    },
+    {
+      "id": "propane_tank",
+      "interaction": "inspect",
+      "keyframe": 3030,
+      "name": "Propane Tank",
+      "prompt_phrase": "yellow propane fuel tank"
+    }
+  ],
+  "procedure": {
+    "id": "forklift-pre-shift-inspection",
+    "title": "Forklift pre-shift inspection"
+  },
+  "steps": [
+    {
+      "action": "inspect",
+      "check": "Differences for this lift truck type are understood",
+      "coach": "Read the manual for the truck you will drive.",
+      "end_frame": 229,
+      "failure": "Operator misses model-specific hazards and controls.",
+      "instruction": "Study the operating manual supplied with the lift truck.",
+      "order": 1,
+      "part_id": "operator_manual",
+      "safety": false,
+      "start_frame": 0
+    },
+    {
+      "action": "grab",
+      "check": "Checklist is in hand and truck is evaluated for lockout",
+      "coach": "If it looks unsafe, lock it out and tell your supervisor.",
+      "end_frame": 809,
+      "failure": "Unsafe truck stays in service and causes injury.",
+      "instruction": "Take the inspection checklist and inspect the forklift at start of shift; report damage and lock out and tag if unsafe.",
+      "order": 2,
+      "part_id": "inspection_clipboard",
+      "safety": true,
+      "start_frame": 248
+    },
+    {
+      "action": "inspect",
+      "check": "Tread is intact and inflation looks correct",
+      "coach": "Feel the tread and look for cuts.",
+      "end_frame": 950,
+      "failure": "Tire failure causes tipover or loss of load.",
+      "instruction": "Visually and manually inspect pneumatic tire condition and inflation.",
+      "order": 3,
+      "part_id": "drive_tire",
+      "safety": true,
+      "start_frame": 838
+    },
+    {
+      "action": "inspect",
+      "check": "All running lights illuminate",
+      "coach": "Check every light before you move.",
+      "end_frame": 1100,
+      "failure": "Truck is not visible to others in the yard.",
+      "instruction": "Inspect all running lights for operation.",
+      "order": 4,
+      "part_id": "running_light",
+      "safety": false,
+      "start_frame": 951
+    },
+    {
+      "action": "inspect",
+      "check": "Battery is clean, connected, and undamaged",
+      "coach": "Look only, let trained staff service batteries.",
+      "end_frame": 1428,
+      "failure": "Acid burn, short, or no-start from bad battery.",
+      "instruction": "Inspect battery condition without servicing it.",
+      "order": 5,
+      "part_id": "forklift_battery",
+      "safety": true,
+      "start_frame": 1101
+    },
+    {
+      "action": "press",
+      "check": "Truck moves forward and reverse on command",
+      "coach": "Rock the pedal both ways.",
+      "end_frame": 1550,
+      "failure": "Unexpected travel or no directional control.",
+      "instruction": "Press the forward and reverse direction pedal to check operation.",
+      "order": 6,
+      "part_id": "direction_pedal",
+      "safety": false,
+      "start_frame": 1461
+    },
+    {
+      "action": "pull",
+      "check": "Lift and tilt respond smoothly to levers",
+      "coach": "Work each lever through its travel.",
+      "end_frame": 1644,
+      "failure": "Load cannot be lifted or tilted safely.",
+      "instruction": "Pull the lift and tilt control levers to check function.",
+      "order": 7,
+      "part_id": "control_lever",
+      "safety": false,
+      "start_frame": 1551
+    },
+    {
+      "action": "inspect",
+      "check": "Forks are straight, latched, and functional",
+      "coach": "Check both forks and the latch.",
+      "end_frame": 1876,
+      "failure": "Cracked fork drops the load.",
+      "instruction": "Inspect forks and load engaging devices for proper operation.",
+      "order": 8,
+      "part_id": "fork_tine",
+      "safety": true,
+      "start_frame": 1761
+    },
+    {
+      "action": "inspect",
+      "check": "No pinch points, cuts, or worn spots seen",
+      "coach": "Shut it down first, then look close.",
+      "end_frame": 2159,
+      "failure": "Worn hose bursts under load.",
+      "instruction": "With forklift shut down, visually check hydraulic hoses for pinch points and worn spots.",
+      "order": 9,
+      "part_id": "hydraulic_hose",
+      "safety": true,
+      "start_frame": 1948
+    },
+    {
+      "action": "inspect",
+      "check": "Chains are seated and cotter pins are in place",
+      "coach": "Confirm every pin is still there.",
+      "end_frame": 2255,
+      "failure": "Chain jumps and carriage falls.",
+      "instruction": "Check lift chains and verify cotter pins are in place.",
+      "order": 10,
+      "part_id": "lift_chain",
+      "safety": true,
+      "start_frame": 2171
+    },
+    {
+      "action": "inspect",
+      "check": "Carriage bolts are tight and secure",
+      "coach": "Wiggle each bolt, no movement.",
+      "end_frame": 2337,
+      "failure": "Carriage loosens and load shifts.",
+      "instruction": "Check carriage bolts are secure.",
+      "order": 11,
+      "part_id": "carriage_bolt",
+      "safety": true,
+      "start_frame": 2256
+    },
+    {
+      "action": "inspect",
+      "check": "Paper stays dry with no fluid spots",
+      "coach": "Use paper only, never your hand.",
+      "end_frame": 2658,
+      "failure": "High-pressure leak injects fluid into skin.",
+      "instruction": "With forklift on and under pressure, run a piece of paper over hose surfaces to check for fluid leaks.",
+      "order": 12,
+      "part_id": "hydraulic_hose",
+      "safety": true,
+      "start_frame": 2351
+    },
+    {
+      "action": "press",
+      "check": "Brakes stop the truck firmly",
+      "coach": "Press hard, it must hold.",
+      "end_frame": 2835,
+      "failure": "Truck cannot stop and strikes people.",
+      "instruction": "Press the service brake pedal to verify brakes work.",
+      "order": 13,
+      "part_id": "brake_pedal",
+      "safety": true,
+      "start_frame": 2787
+    },
+    {
+      "action": "turn_cw",
+      "check": "Steering turns freely both directions",
+      "coach": "Turn it lock to lock.",
+      "end_frame": 2965,
+      "failure": "Loss of steering causes collision.",
+      "instruction": "Turn the steering wheel to verify steering mechanism is okay.",
+      "order": 14,
+      "part_id": "steering_wheel",
+      "safety": true,
+      "start_frame": 2905
+    },
+    {
+      "action": "inspect",
+      "check": "Fuel connections and gauge show operational system",
+      "coach": "Look for leaks at the tank.",
+      "end_frame": 3061,
+      "failure": "Fuel leak causes fire or stall.",
+      "instruction": "Inspect the fuel system including propane tank and fittings.",
+      "order": 15,
+      "part_id": "propane_tank",
+      "safety": true,
+      "start_frame": 2998
+    },
+    {
+      "action": "grab",
+      "check": "All inspection boxes are marked on the log",
+      "coach": "Log it every shift, no shortcuts.",
+      "custom_action": "write",
+      "end_frame": 3300,
+      "failure": "No verifiable record and problems are missed.",
+      "instruction": "Mark the inspection log for the forklift.",
+      "order": 16,
+      "part_id": "inspection_clipboard",
+      "safety": false,
+      "start_frame": 3130
+    }
+  ]
+}
