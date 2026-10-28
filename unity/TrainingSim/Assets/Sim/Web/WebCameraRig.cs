@@ -14,12 +14,13 @@ namespace Vid2Sim
         public Vector3 pivot = new(0f, 0.8f, 0.7f);    // just above the bench, 0.7 m ahead of the seat
         public float distance = 0.85f;
 
-        /// <summary>Pull back and re-centre for a bench with more than one row of parts.</summary>
-        public void Frame(int rows)
+        /// <summary>Pull back and re-centre so everything on the bench (a machine body, rows of parts) is in frame.</summary>
+        public void Frame(Bounds stage)
         {
-            rows = Mathf.Max(1, rows);
-            pivot = new Vector3(pivot.x, pivot.y, 0.7f + (rows - 1) * 0.11f);
-            distance = 0.85f + (rows - 1) * 0.22f;
+            pivot = stage.center + Vector3.up * 0.02f;
+            float longest = Mathf.Max(stage.size.x, stage.size.y, stage.size.z);
+            distance = Mathf.Clamp(Mathf.Max(0.85f, longest * 0.95f + 0.2f), 0.4f, 2.5f);
+            Apply();
         }
         public float yaw = 0f, pitch = 30f;
         public float orbitSpeed = 60f, zoomSpeed = 0.4f;
@@ -76,7 +77,7 @@ namespace Vid2Sim
                 GUILayout.Space(12);
                 GUILayout.Label("Click a part to select it. A cyan arrow on the part shows the motion the step needs.", _body);
                 GUILayout.Label("Buttons at the bottom (or keys) move the selected part: Q / E turn, W / S lift / lower, X pull out. Or drag it; drop it on the green zone to place it.", _body);
-                GUILayout.Label("Click = press          Hover for 2 s = inspect", _body);
+                GUILayout.Label("Click = press          Inspect = look it over, then 1 = Looks OK, 2 = Fault found", _body);
                 GUILayout.Label("Arrow keys orbit    Scroll zooms    H = show me again    R = restart    P = pause", _body);
                 GUILayout.Space(16);
                 GUILayout.Label("Click anywhere to begin.", _big);
@@ -87,7 +88,7 @@ namespace Vid2Sim
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
             HudPanel.Draw(new Rect(12, Screen.height - 52, Screen.width - 24, 40));
-            GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · Hover 2 s = inspect · H show me · R restart · Arrows orbit · Scroll zooms", style);
+            GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · 1/2 = Looks OK / Fault · H show me · R restart · Arrows orbit · Scroll zooms", style);
             if (debugReadout)
             {
                 var cam = Camera.main;

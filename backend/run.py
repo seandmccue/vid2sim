@@ -63,6 +63,7 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
         unity = unity_project or (REPO_ROOT / "unity" / "TrainingSim")
         generated = [] if skip_generate else generate_mod.generate_actions(spec, unity, metrics, gate=not skip_generate and os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
         shapes = [] if (skip_generate or not shapes_on) else generate_mod.generate_shapes(spec, unity, metrics, gate=os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
+        host = {} if (skip_generate or not shapes_on) else generate_mod.generate_host(spec, unity, metrics, gate=os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1", work=work)
         textures = {} if skip_generate else generate_mod.generate_textures(spec, work, metrics)
         cards = generate_mod.generate_step_cards(spec, work, metrics) if (step_cards and not skip_generate) else {}
         cutouts = cutouts_mod.generate_cutouts(spec, work)   # photo cards for the engine; no API cost
@@ -73,6 +74,8 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
     card["generated_actions"] = generated
     card["textures"] = len(textures)
     card["shapes"] = sum(1 for r in shapes if r.get("compiled"))
+    card["host"] = host.get("compiled", False)
+    card["host_subject"] = host.get("subject", "") or (host.get("decision") or {}).get("subject", "")
     card["cutouts"] = len(cutouts)
     card["step_cards"] = len(cards)
     card["streaming_assets"] = str(out_dir)

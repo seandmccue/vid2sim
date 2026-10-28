@@ -17,6 +17,7 @@ as a batch into Assets/Generated/Shapes/. The engine prefers a shape over the ph
 from __future__ import annotations
 
 import base64
+import json
 import os
 import re
 import shutil
@@ -471,6 +472,175 @@ def generate_shapes(spec: dict, unity_project: Path, metrics: Metrics, gate: boo
         out.append({"part": part["id"], "class": cls, "path": str(target if ok else candidate), "compiled": ok,
                     "note": ("failed the compile gate; engine uses the photo card" if not ok else note)[-500:]})
     return out
+
+
+IHOST_SHAPE_INTERFACE = """
+// Engine side (Assets/Sim/PartShapes.cs).
+namespace Vid2Sim {
+  public interface IHostShape {
+    // root: empty GameObject; add primitives and anchors as children, in metres at real scale.
+    void Build(UnityEngine.GameObject root);
+  }
+  [System.AttributeUsage(System.AttributeTargets.Class)]
+  public class HostShapeAttribute : System.Attribute { public HostShapeAttribute(string procedureId); }
+  public static class ShapeKit {
+    // Colours: Steel, DarkSteel, Rubber, Yellow, Red, Blue, Green, Cream, Black (UnityEngine.Color)
+    public static GameObject Box(GameObject root, Vector3 centre, Vector3 size, Color color, Vector3? euler = null);
+    public static GameObject Cylinder(GameObject root, Vector3 centre, float diameter, float height, Color color, Vector3? euler = null); // axis along local Y
+    public static GameObject Sphere(GameObject root, Vector3 centre, float diameter, Color color);
+    public static GameObject Capsule(GameObject root, Vector3 centre, float diameter, float height, Color color, Vector3? euler = null); // axis along local Y
+    // Where a part lives: centre of the part (metres, same local space), outward = unit direction from the machine's
+    // surface toward whoever looks at the part, size = the part's real longest side in metres.
+    public static GameObject Anchor(GameObject root, string partId, Vector3 centre, Vector3 outward, float size = 0f);
+  }
+}
+"""
+
+HOST_DECISION_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["host", "subject", "length_m", "width_m", "height_m", "reason"],
+    "properties": {
+        "host": {"type": "boolean", "description": "true when the parts are attached to one machine or object the trainee works around"},
+        "subject": {"type": "string", "description": "what that machine or object is, e.g. 'counterbalance forklift'; empty when host is false"},
+        "length_m": {"type": "number"}, "width_m": {"type": "number"}, "height_m": {"type": "number"},
+        "reason": {"type": "string"},
+    },
+}
+
+
+def _host_class(procedure_id: str) -> str:
+    return "Host_" + re.sub(r"[^a-zA-Z0-9]+", "_", procedure_id).strip("_")
+
+
+def _host_decision(spec: dict, metrics: Metrics) -> dict:
+    """Spark says whether the parts belong to one machine (a forklift, an engine) that should be modelled with the
+    parts placed on it, or are loose items handled on a table (a filter kit, a graphics card), and how big it is."""
+    if is_mock():
+        return {"host": True, "subject": spec["procedure"].get("title", "machine"), "length_m": 2.0, "width_m": 1.2,
+                "height_m": 1.0, "reason": "mock"}
+    from .extract import _responses_structured
+    parts = "\n".join(f"- {p['id']}: {p['name']} ({p['interaction']}, about {p.get('size_hint_m', 0.1)} m)" for p in spec["parts"])
+    steps = "\n".join(f"- {s['instruction']}" for s in spec["steps"][:12])
+    prompt = f"""A training sim is being built from a video of this procedure. Decide how to stage it.
+
+Procedure: {spec['procedure'].get('title', spec['procedure']['id'])}
+Parts the trainee touches or inspects:
+{parts}
+Steps:
+{steps}
+
+Question: are these parts attached to ONE machine or large object that the trainee works around or sits at (a forklift,
+a compressor, a car engine, a boiler)? If so host = true, name it, and give its real overall size in metres. If instead
+the parts are loose items handled on a table or held in the hands (a filter kit, a graphics card into a PC, a helmet
+assembly), host = false. Small items that travel with the operator (a manual, a clipboard, a tool) never decide this.
+"""
+    return _responses_structured([{"type": "input_text", "text": prompt}], HOST_DECISION_SCHEMA, "host_decision", metrics, "host_decision")
+
+
+def _host_prompt(spec: dict, decision: dict) -> str:
+    pid = spec["procedure"]["id"]
+    cls = _host_class(pid)
+    how = {}
+    for s in spec["steps"]:
+        how.setdefault(s["part_id"], []).append(s["instruction"])
+    parts = "\n".join(f"- {p['id']}: {p['name']} ({p['interaction']}; {'; '.join(how.get(p['id'], [])[:2])})" for p in spec["parts"])
+    L, W, H = decision.get("length_m", 2.0), decision.get("width_m", 1.0), decision.get("height_m", 1.5)
+    return f"""Write a Unity 6 C# class named {cls} in namespace Vid2Sim.Generated.Hosts that implements Vid2Sim.IHostShape
+and carries the attribute [Vid2Sim.HostShape("{pid}")].
+
+It builds a stylised low-poly 3D model of the whole {decision.get('subject', 'machine')} from primitives at REAL scale in
+metres: about {L} m long, {W} m wide, {H} m tall. The clean toy-like look of a Spline or Blender low-poly scene: a
+recognisable silhouette, 25 to 70 primitives, flat colours from the ShapeKit palette (a forklift is Yellow with Black
+tyres and DarkSteel mast; pick what the real machine looks like).
+
+Then it marks where each of these parts lives with ShapeKit.Anchor(root, partId, centre, outward, size):
+  centre  = the part's centre, metres, same local space as the model
+  outward = unit direction from the machine's surface toward whoever looks at the part
+            (right flank -> new Vector3(1,0,0); floor pedals or a seat -> (0,1,0); the front -> (0,0,-1))
+  size    = the part's real longest side in metres
+Parts (id: name (interaction; what the trainee does)):
+{parts}
+
+Rules for the parts:
+- Do NOT model a part that gets an anchor: the engine places its own model of it at the anchor, so leave its space.
+- Where a part is one of several identical items (one tyre of four, one fork of two), model the others and leave the
+  anchor for the inspected one, in a plausible spot (the drive tyre at the front, the steer tyre at the back).
+- Everything else that makes the machine recognisable IS modelled: chassis, counterweight, mast uprights, overhead
+  guard, seat, dashboard, other wheels, exhaust, and so on.
+- A part that is not fixed to the machine (an operator manual, a clipboard, a hand tool, a spare) gets NO anchor.
+- Anchors must be on or just outside the surface they belong to, never buried inside a primitive.
+- Put inspected parts where a walk-around would find them: spread around the machine, not all on one side.
+
+Procedure: {spec['procedure'].get('title', pid)}
+
+Engine interface:
+{IHOST_SHAPE_INTERFACE}
+
+Constraints:
+- using UnityEngine; using Vid2Sim; Only call ShapeKit.Box / Cylinder / Sphere / Capsule / Anchor with root as the
+  first argument. No other Unity API calls, no materials, no colliders, no Resources.Load, no coroutines, no fields.
+- Local space: X = width, Y = up with the bottom of the wheels at y = 0, Z = length; the machine's FRONT faces -Z
+  (forks toward -Z, counterweight toward +Z). Centre the footprint on x = 0, z = 0. Literal metres are fine.
+- Output only the C# file contents, no markdown fences, no commentary.
+"""
+
+
+def generate_host(spec: dict, unity_project: Path, metrics: Metrics, gate: bool = True, work: Path | None = None) -> dict:
+    """The machine the parts belong to, as one generated class at real scale with an anchor per part, compile-gated.
+    Returns {host, class, path, compiled, note, decision}. Cached by class name; the decision is cached in work."""
+    pid = spec["procedure"]["id"]
+    cls = _host_class(pid)
+    staging = unity_project / "Assets" / "Generated" / "Hosts"
+    staging.mkdir(parents=True, exist_ok=True)
+    target, pend = staging / f"{cls}.cs", staging / f"{cls}.cs.pending"
+    if target.exists():
+        return {"host": True, "class": cls, "path": str(target), "compiled": True, "note": "cached"}
+
+    decision_path = (work / "host_decision.json") if work else None
+    if decision_path and decision_path.exists():
+        decision = json.loads(decision_path.read_text())
+    else:
+        with Timer() as t:
+            decision = _host_decision(spec, metrics)
+        if decision_path:
+            decision_path.write_text(json.dumps(decision, indent=2))
+    if not decision.get("host"):
+        metrics.log("generate_host", SPARK_MODEL, 0.0, 0.0, note=f"no host: {decision.get('reason', '')[:120]}")
+        return {"host": False, "class": "", "path": "", "compiled": False, "note": decision.get("reason", "loose items on a bench"), "decision": decision}
+
+    if pend.exists():
+        code = pend.read_text()
+        metrics.log("generate_host", "cache", 0.0, 0.0, note="re-gating pended host")
+    elif is_mock():
+        from ..mock import mock_host_csharp
+        code = mock_host_csharp(cls, pid, spec["parts"])
+        metrics.log("generate_host", "muse-code", 0.0, 0.0, note="mock")
+    else:
+        prompt = _host_prompt(spec, decision)
+        with Timer() as t:
+            code = _muse_code(prompt)
+        if code is not None:
+            metrics.log("generate_host", "muse-code", t.wall, 0.0, note=f"{decision.get('subject')} -> {cls}")
+        else:
+            code = _spark_code(prompt, metrics, budget=CODE_MAX_OUTPUT_TOKENS * 2)
+    if not code or "class " not in code:
+        return {"host": True, "class": cls, "path": "", "compiled": False, "note": "generator returned no code; parts stay on the bench", "decision": decision}
+    pend.write_text(ensure_usings(strip_fences(code)))
+    anchors = len(re.findall(r"ShapeKit\.Anchor\(", pend.read_text()))
+    pend.rename(target)
+    if not gate:
+        compiled, note = True, "gate skipped"
+    elif is_mock():
+        compiled, note = True, "mock gate"
+    else:
+        compiled, note = headless_compile(unity_project)
+    if not compiled:
+        target.rename(pend)
+    return {"host": True, "class": cls, "path": str(target if compiled else pend), "compiled": compiled,
+            "anchors": anchors, "subject": decision.get("subject", ""),
+            "note": ("failed the compile gate; parts stay on the bench" if not compiled else f"{anchors} anchors; {note}")[-500:],
+            "decision": decision}
 
 
 MAX_PARALLEL = int(os.environ.get("VID2SIM_PARALLEL", "4"))

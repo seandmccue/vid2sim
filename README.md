@@ -33,9 +33,14 @@ Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in
 3. **Segment.** **SAM 3.1**, one request per part on a frame-accurate trim of that part's step range. Concept
    prompt first; if it returns nothing or mean confidence < 0.5, Spark returns a box on the keyframe and SAM
    re-runs with `propagation_direction: forward`. `source` on each part records which path found it.
-4. **Build.** A data-driven Unity engine reads the spec. **Muse Code** generates a `MonoBehaviour` only for verbs
-   outside the engine's vocabulary, gated by a headless Unity compile. **Muse Image** turns keyframe crops into
-   part textures.
+4. **Build.** A data-driven Unity engine reads the spec. **Muse Code** writes a stylised low-poly model of every
+   part from primitives (`Assets/Generated/Shapes`), a faulty variant of each inspected part, and, when Spark says
+   the parts belong to one machine, the machine itself at real scale with an anchor where each part lives
+   (`Assets/Generated/Hosts`). The engine scales the machine onto the bench and spawns each part at its anchor, so
+   inspecting means finding things where they actually are; loose items (a manual, a clipboard) sit in a row in
+   front. Every generated file passes a headless Unity compile before the engine sees it. Parts without a model
+   are photo cards cut from the video; **Muse Code** also generates a `MonoBehaviour` for verbs outside the
+   engine's vocabulary, and **Muse Image** paints textures.
 5. **Review.** The trainer sees the steps and the masks in the dashboard, renames a part or reorders a step,
    and hits Rebuild. The spec hot-loads into a running dev build on the headset over adb.
 6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored;
@@ -158,7 +163,7 @@ Transcribe and Image rows are labelled estimates until Billing confirms the unit
 | Spark merges or misreads steps | Structured output against a fixed schema; second pass verifies each step against the transcript; dashboard review catches the rest |
 | SAM's text prompt misses an industrial part | Box fallback from Spark on the keyframe, or the trainer draws one in the dashboard. Zero matches is a branch, never a crash |
 | Generated Unity code doesn't compile | Engine is data-driven; Muse Code only writes the long tail, and every script passes a headless compile before it is referenced |
-| Parts have no 3D geometry | Each part is a photo card cut from the video: the SAM 3.1 keyframe mask (or the Muse Image product shot with its background removed) on a double-sided card sized from SAM's box, turning about its own face. Primitives only when a part has no image at all. Photogrammetry is the roadmap, not the demo |
+| Parts have no 3D geometry | Muse Code builds a low-poly model of each part (and of the machine they sit on, with anchors) from primitives, compile-gated; a part it cannot model is a photo card cut from the video (SAM 3.1 mask or Muse Image shot on a double-sided card). Photogrammetry is the roadmap, not the demo |
 | Spark 1.3 audio is degraded | Narration goes through Voice Transcribe; Spark gets frames plus text |
 | Hand tracking flaky on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
 

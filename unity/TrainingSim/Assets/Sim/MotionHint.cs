@@ -48,7 +48,7 @@ namespace Vid2Sim
             var col = _part.GetComponent<Collider>();
             var b = col != null ? col.bounds : new Bounds(_part.transform.position, Vector3.one * 0.05f);
             var centre = b.center; float r = Mathf.Max(b.extents.x, b.extents.y, b.extents.z);
-            var toward = _part.transform.parent ? -_part.transform.parent.forward : Vector3.back;
+            var toward = _part.Outward;   // off the bench, or off the machine's surface
             float slide = 0.01f * Mathf.Sin(Time.unscaledTime * 3f);
             switch (_step.action)
             {

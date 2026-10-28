@@ -9,6 +9,10 @@ namespace Vid2Sim
         public TextMeshPro Text { get; private set; }
         Transform _cam;
         float _lift;
+        PartBehaviour _part;
+        bool _current;
+        /// <summary>Parts on a host model sit close together, so their names show only while current or hovered.</summary>
+        public bool hideWhenIdle;
 
         public static PartLabel Create(PartBehaviour part, float liftAbovePart)
         {
@@ -26,6 +30,7 @@ namespace Vid2Sim
             tmp.outlineColor = new Color(1f, 1f, 1f, 0.85f);   // light halo: dark text stays readable over any part
             go.transform.localScale = Vector3.one * 0.06f;
             label.Text = tmp;
+            label._part = part;
             label.Follow(part.transform);
             return label;
         }
@@ -39,6 +44,7 @@ namespace Vid2Sim
         public void SetCurrent(bool on)
         {
             if (!Text) return;
+            _current = on;
             Text.color = on ? Current : Idle;
             Text.fontStyle = on ? FontStyles.Bold : FontStyles.Normal;
             transform.localScale = Vector3.one * (on ? 0.08f : 0.06f);
@@ -47,6 +53,7 @@ namespace Vid2Sim
         void LateUpdate()
         {
             if (_target) transform.position = _target.position + Vector3.up * _lift;
+            if (Text) Text.enabled = !hideWhenIdle || _current || (_part && (_part.IsHovered || _part.IsSelected || _part.IsHighlighted));
             if (_cam == null && Camera.main) _cam = Camera.main.transform;
             if (_cam) transform.rotation = Quaternion.LookRotation(transform.position - _cam.position, Vector3.up);
         }

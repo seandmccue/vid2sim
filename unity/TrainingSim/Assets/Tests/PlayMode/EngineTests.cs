@@ -384,6 +384,82 @@ namespace Vid2Sim.Tests
             Assert.AreEqual(0, scorer.Current.wrong_part_touches);
         }
 
+        /// <summary>Stand-in for a Muse Code host model: a 2 m body with anchors on its right flank and roof.</summary>
+        [HostShape("test-host-rig")]
+        public class TestHost : IHostShape
+        {
+            public void Build(GameObject root)
+            {
+                ShapeKit.Box(root, new Vector3(0f, 0.5f, 0f), new Vector3(1.2f, 1.0f, 2.0f), ShapeKit.Yellow);
+                ShapeKit.Anchor(root, "side_lamp", new Vector3(0.6f, 0.8f, 0f), Vector3.right, 0.2f);
+                ShapeKit.Anchor(root, "roof_cap", new Vector3(0f, 1.0f, 0.5f), Vector3.up, 0.3f);
+            }
+        }
+
+        static ProcedureSpec HostRigSpec() => new ProcedureSpec
+        {
+            schema_version = "1.0",
+            procedure = new ProcedureInfo { id = "test-host-rig", title = "Host rig", fps = 30, width = 100, height = 100, duration_s = 1 },
+            parts = new[]
+            {
+                new Part { id = "side_lamp", name = "Side lamp", prompt_phrase = "lamp", interaction = "grab", box = new[] { 0, 0, 9, 9 }, size_hint_m = 0.4f, source = "concept" },
+                new Part { id = "roof_cap", name = "Roof cap", prompt_phrase = "cap", interaction = "turn", box = new[] { 0, 0, 9, 9 }, size_hint_m = 0.1f, source = "concept" },
+                new Part { id = "manual", name = "Manual", prompt_phrase = "manual", interaction = "inspect", box = new[] { 0, 0, 9, 9 }, size_hint_m = 0.3f, source = "concept" },
+            },
+            steps = new[]
+            {
+                new Step { order = 1, part_id = "side_lamp", action = "pull", instruction = "Pull the lamp", check = "", failure = "", coach = "" },
+                new Step { order = 2, part_id = "roof_cap", action = "turn_cw", instruction = "Turn the cap", check = "", failure = "", coach = "" },
+                new Step { order = 3, part_id = "manual", action = "inspect", instruction = "Check the manual", check = "present", failure = "", coach = "" },
+            },
+        };
+
+        [UnityTest]
+        public IEnumerator Host_model_places_parts_at_their_anchors_and_loose_items_in_front()
+        {
+            var spec = HostRigSpec();
+            var loader = _root.AddComponent<SpecLoader>();
+            loader.procedureId = spec.procedure.id;
+            var factory = _root.AddComponent<PartFactory>();
+            yield return factory.Spawn(spec, loader, _cam.transform);
+
+            Assert.IsNotNull(factory.Host, "a [HostShape] class for the procedure builds the machine body");
+            Assert.AreEqual(factory.hostSize / 2.0f, factory.HostScale, 1e-4f, "scaled so the 2 m body spans hostSize on the bench");
+            var bench = factory.Host.parent;
+
+            var lamp = factory.Spawned["side_lamp"];
+            var anchorWorld = factory.Host.TransformPoint(new Vector3(0.6f, 0.8f, 0f));
+            Assert.Less(Vector3.Distance(lamp.transform.position, anchorWorld), 1e-3f, "the lamp sits at its anchor on the right flank");
+            Assert.Greater(Vector3.Dot(lamp.Outward, bench.right), 0.99f, "its outward direction is the flank normal");
+            Assert.Greater(Vector3.Dot(-lamp.transform.forward, bench.right), 0.99f, "its front faces out of the flank");
+            var lb = lamp.GetComponent<Collider>().bounds;
+            Assert.LessOrEqual(Mathf.Max(lb.size.x, lb.size.y, lb.size.z), 0.2f * factory.HostScale + 0.03f, "sized from the anchor's real size, not the video hint");
+
+            // pull moves along Outward (off the flank), not toward the seat
+            var d = lamp.GetComponent<SimpleMouseDriver>(); d.nudgeSeconds = 0.05f;
+            var before = lamp.transform.position;
+            d.Pull(1);
+            yield return new WaitForSeconds(0.2f);
+            var moved = lamp.transform.position - before;
+            Assert.Greater(Vector3.Dot(moved.normalized, bench.right), 0.99f);
+            Assert.Greater(moved.magnitude, 0.05f);
+
+            // a turn on a roof part still measures cleanly in the part's own frame
+            var cap = factory.Spawned["roof_cap"];
+            Assert.Greater(Vector3.Dot(cap.Outward, Vector3.up), 0.99f);
+            cap.TurnBy(50f);
+            Assert.AreEqual(50f, cap.SignedYawFromSpawn(), 0.5f);
+
+            // no anchor: a loose item in the front row, ahead of the machine
+            var manual = factory.Spawned["manual"];
+            var local = bench.InverseTransformPoint(manual.transform.position);
+            Assert.AreEqual(0f, local.x, 1e-3f);
+            Assert.AreEqual(0f, local.z, 1e-3f);
+            Assert.Less(local.z, bench.InverseTransformPoint(factory.Host.position).z - 0.3f);
+
+            Assert.Greater(factory.StageBounds.size.z, 0.9f, "the stage bounds cover the body for camera framing");
+        }
+
         /// <summary>Stand-in for a Muse Code shape: a body and a knob, the way generated classes are written.</summary>
         [PartShape("compressor-filter-swap", "drain_valve")]
         public class TestValveShape : IPartShape

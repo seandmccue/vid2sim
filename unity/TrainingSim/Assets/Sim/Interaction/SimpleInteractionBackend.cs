@@ -140,8 +140,7 @@ namespace Vid2Sim.Interaction
         /// <summary>Pull toward the trainee (+1) or push back (-1) by pullStep, held the whole way so a pull step counts.</summary>
         public void Pull(int direction)
         {
-            var toward = transform.parent ? -transform.parent.forward : Vector3.back;   // off the bench, toward the seat
-            Nudge(toward * pullStep * Mathf.Sign(direction));
+            Nudge(part.Outward * pullStep * Mathf.Sign(direction));
         }
 
         public void Nudge(Vector3 worldDelta)

@@ -561,3 +561,5 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261028-094444-019e60,forklift-precheck,generate_code,muse-spark-1.3,13.43,0.0185,0,893,4093,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
 20261028-094444-019e60,forklift-precheck,generate_code,muse-spark-1.3,29.21,0.0335,0,1155,7538,"Muse Code CLI not found; Spark wrote the script (completed, budget 16000)"
 20261028-094444-019e60,forklift-precheck,total,pipeline,54.65,0.0000,0,0,0,upload to StreamingAssets
+20261028-175058-00e515,forklift-pre-shift-inspection,host_decision,muse-spark-1.3,7.51,0.0076,0,565,1626,"completed, budget 16000"
+20261028-175058-00e515,forklift-pre-shift-inspection,generate_code,muse-spark-1.3,52.10,0.0719,0,1308,16535,"Muse Code CLI not found; Spark wrote the script (completed, budget 32000)"
