@@ -60,7 +60,7 @@ namespace Vid2Sim
                 _body ??= new GUIStyle(GUI.skin.label) { fontSize = 26, normal = { textColor = new Color(0.9f, 0.93f, 1f) }, wordWrap = true };
                 float w = Mathf.Min(1100f, Screen.width - 80f), h = 520f;
                 var r = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
-                GUI.Box(r, GUIContent.none); GUI.Box(r, GUIContent.none);
+                HudPanel.Draw(r);
                 GUILayout.BeginArea(new Rect(r.x + 40, r.y + 30, r.width - 80, r.height - 60));
                 GUILayout.Label("Training sim", _big);
                 GUILayout.Space(10);
@@ -78,7 +78,7 @@ namespace Vid2Sim
             }
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
-            GUI.Box(new Rect(12, Screen.height - 52, Screen.width - 24, 40), GUIContent.none);
+            HudPanel.Draw(new Rect(12, Screen.height - 52, Screen.width - 24, 40));
             GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · Hover 2 s = inspect · H show me · R restart · Arrows orbit · Scroll zooms", style);
             if (debugReadout)
             {

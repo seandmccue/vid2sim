@@ -51,7 +51,7 @@ namespace Vid2Sim
             _body = new GUIStyle(GUI.skin.label) { fontSize = 20, normal = { textColor = new Color(0.85f, 0.88f, 0.95f) } };
             _small = new GUIStyle(GUI.skin.label) { fontSize = 18, normal = { textColor = new Color(0.6f, 0.65f, 0.75f) } };
             _pill = new GUIStyle(GUI.skin.box) { fontSize = 22, fontStyle = FontStyle.Bold, normal = { textColor = Color.white }, alignment = TextAnchor.MiddleCenter, wordWrap = true };
-            _toastStyle = new GUIStyle(GUI.skin.box) { fontSize = 24, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter, wordWrap = true };
+            _toastStyle = new GUIStyle(GUI.skin.label) { fontSize = 24, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter, wordWrap = true, normal = { textColor = Color.white } };
             _btn = new GUIStyle(GUI.skin.button) { fontSize = 20, fontStyle = FontStyle.Bold, normal = { textColor = Color.white }, hover = { textColor = Color.white } };
             _btnHot = new GUIStyle(_btn) { normal = { textColor = new Color(0.35f, 0.95f, 1f) }, hover = { textColor = new Color(0.35f, 0.95f, 1f) } };
         }
@@ -69,7 +69,7 @@ namespace Vid2Sim
             _barRect = new Rect(W / 2f - barW / 2f, H - 60f - barH, barW, barH);
             SimpleMouseDriver.PointerOverHud = running && _barRect.Contains(new Vector2(Input.mousePosition.x, H - Input.mousePosition.y));
             if (!running) return;
-            GUI.Box(_barRect, GUIContent.none); GUI.Box(_barRect, GUIContent.none);
+            HudPanel.Draw(_barRect);
             string who = sel != null ? $"Selected: {sel.part.Part.name}" : "Click a part to select it, then use these (or drag it).";
             GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), who, sel != null ? _body : _small);
             string need = _spec.steps[_index].action;
@@ -97,7 +97,7 @@ namespace Vid2Sim
             float W = Screen.width, H = Screen.height;
 
             // top band: title, step, how, progress
-            GUI.Box(new Rect(0, 0, W, 150), GUIContent.none); GUI.Box(new Rect(0, 0, W, 150), GUIContent.none);
+            HudPanel.Draw(new Rect(0, 0, W, 150));
             GUI.Label(new Rect(24, 8, W - 48, 28), _title, _small);
             if (!string.IsNullOrEmpty(_caption))
             {
@@ -116,14 +116,13 @@ namespace Vid2Sim
                 GUI.Label(new Rect(24, 90, W - 48, 36), _how, _h2);
             }
             float frac = _count > 0 ? (_finished ? 1f : _index / (float)_count) : 0f;
-            GUI.Box(new Rect(24, 134, W - 48, 8), GUIContent.none);
-            var old = GUI.color; GUI.color = new Color(0.3f, 0.9f, 0.5f);
-            GUI.Box(new Rect(24, 134, (W - 48) * frac, 8), GUIContent.none); GUI.color = old;
+            HudPanel.Draw(new Rect(24, 134, W - 48, 8), new Color(0.3f, 0.32f, 0.38f));
+            HudPanel.Draw(new Rect(24, 134, (W - 48) * frac, 8), new Color(0.3f, 0.9f, 0.5f));
 
             // left: step list
             var steps = _spec.steps;
             float y = 170f;
-            GUI.Box(new Rect(16, y - 8, 380, 20 + steps.Length * 28), GUIContent.none);
+            HudPanel.Draw(new Rect(16, y - 8, 380, 20 + steps.Length * 28));
             for (int i = 0; i < steps.Length; i++)
             {
                 string mark = _done.Contains(steps[i].order) ? "✓" : (i == _index && !_finished ? "▶" : " ");
@@ -136,8 +135,10 @@ namespace Vid2Sim
             // toast
             if (Time.unscaledTime < _toastUntil)
             {
-                old = GUI.color; GUI.color = _toastColor;
-                GUI.Box(new Rect(W / 2f - 320, H - 220, 640, 56), _toast, _toastStyle);
+                var tr = new Rect(W / 2f - 320, H - 220, 640, 56);
+                HudPanel.Draw(tr);
+                var old = GUI.color; GUI.color = _toastColor;
+                GUI.Label(tr, _toast, _toastStyle);
                 GUI.color = old;
             }
         }

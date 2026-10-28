@@ -38,6 +38,7 @@ namespace Vid2Sim
 #if UNITY_WEBGL
             _ui.showWorldPanel = false;   // the screen HUD carries the text in the browser
 #endif
+            (GetComponent<SceneStyle>() ?? gameObject.AddComponent<SceneStyle>()).Apply(origin);
             _ui.Build(origin, _speech);
             _scorer.Attach(_seq);
             _ui.Attach(_seq, _scorer);

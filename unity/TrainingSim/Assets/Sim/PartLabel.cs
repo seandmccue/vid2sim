@@ -20,15 +20,18 @@ namespace Vid2Sim
             tmp.text = part.Part.name;
             tmp.fontSize = 3.4f;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.85f, 0.88f, 0.95f, 0.95f);
+            tmp.color = Idle;
             tmp.enableWordWrapping = false;
             tmp.outlineWidth = 0.2f;
-            tmp.outlineColor = new Color(0f, 0f, 0f, 0.9f);
+            tmp.outlineColor = new Color(1f, 1f, 1f, 0.85f);   // light halo: dark text stays readable over any part
             go.transform.localScale = Vector3.one * 0.06f;
             label.Text = tmp;
             label.Follow(part.transform);
             return label;
         }
+
+        static readonly Color Idle = new(0.20f, 0.23f, 0.30f, 1f);      // slate on the light studio background
+        static readonly Color Current = new(0.85f, 0.45f, 0.05f, 1f);   // deep amber for the step's part
 
         Transform _target;
         public void Follow(Transform t) { _target = t; }
@@ -36,7 +39,7 @@ namespace Vid2Sim
         public void SetCurrent(bool on)
         {
             if (!Text) return;
-            Text.color = on ? new Color(1f, 0.85f, 0.2f) : new Color(0.85f, 0.88f, 0.95f, 0.95f);
+            Text.color = on ? Current : Idle;
             Text.fontStyle = on ? FontStyles.Bold : FontStyles.Normal;
             transform.localScale = Vector3.one * (on ? 0.08f : 0.06f);
         }

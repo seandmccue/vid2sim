@@ -115,6 +115,11 @@ namespace Vid2Sim
             _running = null;
             if (_ghost) Destroy(_ghost);
             _ghost = null;
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                var c = transform.GetChild(i);
+                if (c.name.StartsWith("Ghost:")) Destroy(c.gameObject);
+            }
         }
 
         IEnumerator DemoRoutine(PartBehaviour part, Step s)
@@ -157,23 +162,15 @@ namespace Vid2Sim
             _running = null;
         }
 
-        static GameObject MakeGhost(PartBehaviour part)
+        GameObject MakeGhost(PartBehaviour part)
         {
-            var src = part.GetComponent<MeshFilter>();
-            var g = new GameObject($"Ghost:{part.Part.id}");
+            // a yellow translucent copy of the part, whatever it is (primitive, photo card or generated model);
+            // no colliders or behaviours: the ghost is never interactable
+            var g = PartVisuals.CloneTranslucent(part.gameObject, $"Ghost:{part.Part.id}", new Color(1f, 0.85f, 0.2f, 0.45f));
+            g.transform.SetParent(transform, true);
             g.transform.SetPositionAndRotation(part.transform.position, part.transform.rotation);
             g.transform.localScale = part.transform.localScale;
-            var mf = g.AddComponent<MeshFilter>();
-            mf.sharedMesh = src ? src.sharedMesh : null;
-            var mr = g.AddComponent<MeshRenderer>();
-            var zone = Resources.Load<Material>("Vid2SimZone");
-            var m = zone ? new Material(zone) : new Material(Shader.Find("Standard"));
-            m.color = new Color(1f, 0.85f, 0.2f, 0.45f);
-            var pr = part.GetComponent<Renderer>();
-            if (part.IsCard && pr && pr.material.mainTexture) m.mainTexture = pr.material.mainTexture;   // a yellow ghost of the real part
-            mr.material = m;
-            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            return g;   // no collider: the ghost is never interactable
+            return g;
         }
     }
 }
