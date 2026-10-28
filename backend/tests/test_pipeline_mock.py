@@ -53,6 +53,11 @@ def test_full_mock_run(synthetic_video, tmp_path):
     assert card["parts_found_box"] == 1 and card["parts_found_concept"] == 4
     # custom action 'unscrew' produced a generated script
     assert any(g["verb"] == "pry" and g["compiled"] for g in card["generated_actions"])   # a synonym like "unscrew" folds onto the vocabulary instead
+    # host model: the mock decision says the parts belong to one machine, so a Host_<id> class with anchors is staged
+    assert card["host"] is True
+    host_cs = next((tmp_path / "unity" / "Assets" / "Generated" / "Hosts").glob("Host_*.cs"))
+    assert "IHostShape" in host_cs.read_text() and host_cs.read_text().count("ShapeKit.Anchor(") >= 3
+    assert json.loads((work / "host_decision.json").read_text())["host"] is True
 
 
 def test_long_audio_is_chunked_with_offsets(monkeypatch, tmp_path):

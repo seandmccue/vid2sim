@@ -66,7 +66,7 @@ namespace Vid2Sim
             yield return _factory.Spawn(_loader.Procedure, _loader, origin);
             _factory.Verdicts?.Attach(_seq);
             var rig = FindFirstObjectByType<WebCameraRig>();
-            if (rig) rig.Frame(Mathf.CeilToInt(_loader.Procedure.parts.Length / (float)_factory.rowCapacity));
+            if (rig) rig.Frame(_factory.StageBounds);
             var gate = GetComponent<IStartGate>() ?? (IStartGate)FindFirstObjectByType<WebCameraRig>();
             var hud = FindFirstObjectByType<WebHud>();
             if (hud) hud.Attach(_seq, _guide, _scorer, _factory, _loader.Procedure.procedure.title, _loader.Procedure);

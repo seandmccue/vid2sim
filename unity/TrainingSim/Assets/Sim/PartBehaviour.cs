@@ -21,6 +21,16 @@ namespace Vid2Sim
         public Vector3 TurnAxisWorld => SpawnRotation * TurnAxisLocal;
         /// <summary>True when the part is a flat photo card cut from the video rather than a primitive.</summary>
         public bool IsCard { get; set; }
+        Vector3 _outward;
+        /// <summary>
+        /// World direction a pull moves the part and the demo ghost / hint arrows point: off the bench toward the
+        /// trainee, or off the machine's surface for a part placed on a host model.
+        /// </summary>
+        public Vector3 Outward
+        {
+            get => _outward.sqrMagnitude > 1e-6f ? _outward : (transform.parent ? -transform.parent.forward : Vector3.back);
+            set => _outward = value;
+        }
 
         /// <summary>
         /// Judgment steps: an inspected part is spawned good or faulty, and the trainee has to say which.

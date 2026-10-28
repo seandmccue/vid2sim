@@ -28,6 +28,33 @@ namespace Vid2Sim
     }
 
     /// <summary>
+    /// The machine the parts belong to (the forklift, the compressor), built by generated code at real scale in
+    /// metres, with one ShapeKit.Anchor per part that lives on it. The factory scales the body onto the bench and
+    /// spawns each part at its anchor, so inspecting means finding things where they actually are. Parts without
+    /// an anchor (a manual, a clipboard) are loose items on the bench in front.
+    /// </summary>
+    public interface IHostShape
+    {
+        /// <param name="root">Empty GameObject; add primitives and anchors as children. X = width, Y = up (bottom at 0), Z = length, front toward -Z.</param>
+        void Build(GameObject root);
+    }
+
+    /// <summary>Where one part lives on a host model (created by ShapeKit.Anchor; read by the factory).</summary>
+    public class HostAnchor : MonoBehaviour
+    {
+        public string partId;
+        public float size;   // real longest side in metres, 0 = unknown
+    }
+
+    /// <summary>Marks a generated host model with the procedure it belongs to.</summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class HostShapeAttribute : Attribute
+    {
+        public readonly string ProcedureId;
+        public HostShapeAttribute(string procedureId) { ProcedureId = procedureId; }
+    }
+
+    /// <summary>
     /// What generated shapes call: primitives with the project's lit material (so nothing is stripped from
     /// player builds), no colliders, a small pastel palette. Positions and sizes are in metres, local to root.
     /// </summary>
@@ -71,6 +98,24 @@ namespace Vid2Sim
             return go;
         }
 
+        /// <summary>
+        /// Where a part lives on a host model: an empty child named "Anchor:{partId}" at the part's centre, with
+        /// forward = the outward direction a trainee looks at it from (the surface normal), in root's local space.
+        /// </summary>
+        /// <param name="size">Longest side of the part on the real machine, metres; 0 = use the spec's size hint.</param>
+        public static GameObject Anchor(GameObject root, string partId, Vector3 centre, Vector3 outward, float size = 0f)
+        {
+            var go = new GameObject($"Anchor:{partId}");
+            var a = go.AddComponent<HostAnchor>();
+            a.partId = partId; a.size = Mathf.Max(0f, size);
+            go.transform.SetParent(root.transform, false);
+            go.transform.localPosition = centre;
+            var o = outward.sqrMagnitude < 1e-6f ? Vector3.back : outward.normalized;
+            var up = Mathf.Abs(Vector3.Dot(o, Vector3.up)) > 0.9f ? Vector3.forward : Vector3.up;
+            go.transform.localRotation = Quaternion.LookRotation(o, up);
+            return go;
+        }
+
         public static Material Material(Color color)
         {
             var src = Resources.Load<Material>("Vid2SimPart");
@@ -95,6 +140,23 @@ namespace Vid2Sim
                     if (attr == null || attr.PartId != partId || attr.Variant != variant) continue;
                     if (attr.ProcedureId == procedureId || attr.ProcedureId == "*")
                         return (IPartShape)Activator.CreateInstance(t);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>Generated host model for a procedure, if one compiled into this build.</summary>
+        public static IHostShape FindHost(string procedureId)
+        {
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] types;
+                try { types = asm.GetTypes(); } catch (System.Reflection.ReflectionTypeLoadException e) { types = e.Types; }
+                foreach (var t in types)
+                {
+                    if (t == null || !typeof(IHostShape).IsAssignableFrom(t) || t.IsInterface || t.IsAbstract) continue;
+                    var attr = (HostShapeAttribute)Attribute.GetCustomAttribute(t, typeof(HostShapeAttribute));
+                    if (attr != null && attr.ProcedureId == procedureId) return (IHostShape)Activator.CreateInstance(t);
                 }
             }
             return null;

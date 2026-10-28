@@ -130,7 +130,7 @@ namespace Vid2Sim
             var t0 = part.transform.position;
             var r0 = part.transform.rotation;
             var up = Vector3.up;
-            var outward = part.transform.parent ? -part.transform.parent.forward : Vector3.back;   // off the bench, toward the trainee
+            var outward = part.Outward;   // off the bench toward the trainee, or off the machine's surface
             var target = part.SnapZone ? part.SnapZone.position : t0 + outward * 0.14f;
             for (int loop = 0; loop < demoLoops; loop++)
             {

@@ -21,6 +21,13 @@ namespace Vid2Sim
         public float rowSpacing = 0.22f;
         [Tooltip("Photo cards never get wider than this, whatever the size hint says, so a big panel still fits the bench")]
         public float maxCardSize = 0.22f;
+        [Header("Host model (parts on the machine)")]
+        [Tooltip("Longest horizontal side of a generated host model once scaled onto the bench")]
+        public float hostSize = 0.8f;
+        public float hostMaxHeight = 0.7f;
+        [Tooltip("A part on the host never gets smaller than this, so a running light is still something you can grab")]
+        public float hostedMinPart = 0.06f;
+        public float hostedMaxPart = 0.4f;
         public Material baseMaterial;
         static Mesh _cardMesh;
 
@@ -29,6 +36,12 @@ namespace Vid2Sim
         /// <summary>Bench controls that are not parts: the two verdict buttons. Never wrong-part touches.</summary>
         public readonly Dictionary<string, PartBehaviour> Controls = new();
         public VerdictPanel Verdicts { get; private set; }
+        /// <summary>The generated machine body the parts sit on, or null when the procedure is loose items on a bench.</summary>
+        public Transform Host { get; private set; }
+        /// <summary>Metres on the bench per metre on the real machine (1 without a host).</summary>
+        public float HostScale { get; private set; } = 1f;
+        /// <summary>World bounds of everything on the bench, for camera framing.</summary>
+        public Bounds StageBounds { get; private set; }
         Transform _bench;
 
         void Awake() { Backend = InteractionBackends.Create(); }
@@ -41,14 +54,26 @@ namespace Vid2Sim
             _bench.position = origin.position + origin.forward * benchDistance + Vector3.up * benchHeight;
             _bench.rotation = Quaternion.LookRotation(Flat(origin.forward), Vector3.up);
 
+            var order = OrderOfAppearance(spec);
+            // the machine the parts belong to, when generated code built one: scaled onto the bench, one anchor per
+            // part that lives on it; everything else is a loose item in a row at the front
+            var anchors = new Dictionary<string, HostAnchor>();
+            float hostWidth = 0f, hostDepth = 0f;
+            var hostShape = ShapeKit.FindHost(spec.procedure.id);
+            if (hostShape != null) BuildHost(hostShape, anchors, out hostWidth, out hostDepth);
+            var loose = new List<string>();
+            foreach (var id in order) if (!anchors.ContainsKey(id)) loose.Add(id);
+            float hostFrontZ = loose.Count > 0 ? 0.18f : 0f;
+            if (Host) Host.localPosition = new Vector3(0f, 0f, hostFrontZ + hostDepth / 2f);
+
+            int looseRows = Mathf.CeilToInt(loose.Count / (float)rowCapacity);
+            float depth = Host ? 0.2f + hostFrontZ + hostDepth + 0.1f : 0.36f + Mathf.Max(0, looseRows - 1) * rowSpacing;
+            float width = Mathf.Max(reachWidth, hostWidth) + 0.2f;
             var top = GameObject.CreatePrimitive(PrimitiveType.Cube);
             top.name = "BenchTop";
             top.transform.SetParent(_bench, false);
-            top.transform.localPosition = new Vector3(0f, -0.03f, 0f);
-            int rowsForTop = Mathf.CeilToInt(OrderOfAppearance(spec).Count / (float)rowCapacity);
-            float depth = 0.36f + Mathf.Max(0, rowsForTop - 1) * rowSpacing;
-            top.transform.localScale = new Vector3(reachWidth + 0.2f, 0.04f, depth);
-            top.transform.localPosition = new Vector3(0f, -0.03f, (depth - 0.4f) / 2f);   // front edge stays where it was
+            top.transform.localScale = new Vector3(width, 0.04f, depth);
+            top.transform.localPosition = new Vector3(0f, -0.03f, (depth - 0.4f) / 2f);   // front edge stays at z = -0.2
             top.GetComponent<Renderer>().material = NewMaterial(new Color(0.93f, 0.90f, 0.84f));   // pale wood
             Destroy(top.GetComponent<Collider>());
             // four legs down to the floor, so the bench reads as a table in a room rather than a floating slab
@@ -59,33 +84,48 @@ namespace Vid2Sim
                 leg.name = "BenchLeg";
                 leg.transform.SetParent(_bench, false);
                 leg.transform.localScale = new Vector3(0.04f, legDrop, 0.04f);
-                leg.transform.localPosition = new Vector3(lx * (reachWidth / 2f + 0.06f), -0.05f - legDrop / 2f, (depth - 0.4f) / 2f + lz * (depth / 2f - 0.04f));
+                leg.transform.localPosition = new Vector3(lx * (width / 2f - 0.04f), -0.05f - legDrop / 2f, (depth - 0.4f) / 2f + lz * (depth / 2f - 0.04f));
                 leg.GetComponent<Renderer>().material = NewMaterial(new Color(0.55f, 0.52f, 0.48f));
                 Destroy(leg.GetComponent<Collider>());
             }
 
-            var order = OrderOfAppearance(spec);
-            int n = order.Count;
-            // up to rowCapacity parts per row; further rows sit behind, where the 30-degree camera still sees them
+            // loose items: up to rowCapacity per row; further rows sit behind, where the 30-degree camera still sees them
+            int n = loose.Count;
             int rows = Mathf.CeilToInt(n / (float)rowCapacity), perRow = Mathf.CeilToInt(n / (float)Mathf.Max(1, rows));
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < order.Count; i++)
             {
                 var part = spec.FindPart(order[i]);
-                int row = i / perRow, col = i % perRow, inRow = Mathf.Min(perRow, n - row * perRow);
-                float x = inRow == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, col / (float)(inRow - 1));
-                float z = row * rowSpacing;
-                float size = Mathf.Max(part.size_hint_m, minColliderSize);
-                // crowded benches get smaller parts so neighbours don't overlap
-                float cap = Mathf.Min(maxCardSize, inRow > 1 ? reachWidth / (inRow - 1) * 0.8f : maxCardSize);
+                anchors.TryGetValue(part.id, out var anchor);
+                float size, cap, x = 0f, z = 0f;
+                if (anchor != null)
+                {
+                    // real size on the machine, scaled with it; clamped so it stays something a hand can take
+                    size = cap = Mathf.Clamp((anchor.size > 0f ? anchor.size : part.size_hint_m) * HostScale, hostedMinPart, hostedMaxPart);
+                }
+                else
+                {
+                    int li = loose.IndexOf(part.id);
+                    int row = li / perRow, col = li % perRow, inRow = Mathf.Min(perRow, n - row * perRow);
+                    x = inRow == 1 ? 0f : Mathf.Lerp(-reachWidth / 2f, reachWidth / 2f, col / (float)(inRow - 1));
+                    z = row * rowSpacing;
+                    size = Mathf.Max(part.size_hint_m, minColliderSize);
+                    // crowded benches get smaller parts so neighbours don't overlap
+                    cap = Mathf.Min(maxCardSize, inRow > 1 ? reachWidth / (inRow - 1) * 0.8f : maxCardSize);
+                }
+                bool needsRotate = UsesAction(spec, part.id, Actions.TurnCw) || UsesAction(spec, part.id, Actions.TurnCcw);
 
                 Texture2D cutout = null;
                 var shape = ShapeKit.Find(spec.procedure.id, part.id);
                 if (shape == null) yield return loader.LoadCutout(part.id, t => cutout = t);
                 GameObject go;
                 float height;
+                Vector3 turnAxis = Vector3.up;
                 if (shape != null)
                 {
-                    go = CreateShaped(shape, part, Mathf.Min(size, cap), out height);
+                    go = CreateShaped(shape, part, Mathf.Min(size, cap), out var modelSize);
+                    height = modelSize.y;
+                    // a wheel or a dial stands facing the trainee and turns about its face normal; a cap lying flat turns about up
+                    if (needsRotate && modelSize.z < modelSize.y * 0.6f) turnAxis = Vector3.back;
                     var faulty = ShapeKit.Find(spec.procedure.id, part.id, "faulty");
                     if (faulty != null) AddFaultyModel(go, faulty, part, Mathf.Min(size, cap));
                 }
@@ -93,6 +133,7 @@ namespace Vid2Sim
                 {
                     go = CreateCard(cutout, Mathf.Min(size, cap));
                     height = go.transform.localScale.y;
+                    turnAxis = Vector3.back;   // a card turns about its normal, like the lid in the video
                 }
                 else
                 {
@@ -102,15 +143,28 @@ namespace Vid2Sim
                 }
                 go.name = $"Part:{part.id}";
                 go.transform.SetParent(_bench, false);
-                go.transform.localPosition = new Vector3(x, height / 2f, z);
-                go.transform.localRotation = Quaternion.identity;
+                Vector3 outward;
+                if (anchor != null)
+                {
+                    // the part's front (-Z) faces out of the machine's surface; for a pedal seen from above, its top points away from the seat
+                    outward = anchor.transform.forward;
+                    var upHint = Mathf.Abs(Vector3.Dot(outward, Vector3.up)) > 0.9f ? Host.forward : Vector3.up;
+                    go.transform.SetPositionAndRotation(anchor.transform.position, Quaternion.LookRotation(-outward, upHint));
+                }
+                else
+                {
+                    outward = -_bench.forward;
+                    go.transform.localPosition = new Vector3(x, height / 2f, z);
+                    go.transform.localRotation = Quaternion.identity;
+                }
                 EnsureCollider(go, size);
 
                 var pb = go.AddComponent<PartBehaviour>();
-                if (shape == null && cutout != null) { pb.IsCard = true; pb.TurnAxisLocal = Vector3.back; }   // a card turns about its normal, like the lid in the video
+                pb.IsCard = shape == null && cutout != null;
+                pb.TurnAxisLocal = turnAxis;
+                pb.Outward = outward;
                 pb.Init(part);
-                PartLabel.Create(pb, height + 0.045f);
-                bool needsRotate = UsesAction(spec, part.id, Actions.TurnCw) || UsesAction(spec, part.id, Actions.TurnCcw);
+                PartLabel.Create(pb, height + 0.045f).hideWhenIdle = anchor != null;   // a dozen names on one machine is noise
                 Backend.Attach(pb, go, part.interaction, needsRotate);
 
                 var rend = go.GetComponent<Renderer>();
@@ -134,7 +188,41 @@ namespace Vid2Sim
                 Spawned[part.id] = pb;
             }
             Verdicts = VerdictPanel.Create(this, _bench, spec, reachWidth);
-            Debug.Log($"[PartFactory] spawned {Spawned.Count} parts with {Backend.Name}");
+            StageBounds = ComputeStageBounds();
+            Debug.Log($"[PartFactory] spawned {Spawned.Count} parts with {Backend.Name}" + (Host ? $", {anchors.Count} on the host model, {loose.Count} loose" : ""));
+        }
+
+        /// <summary>
+        /// Build the generated machine body at real scale, then scale it onto the bench (longest horizontal side =
+        /// hostSize, no taller than hostMaxHeight) with its bottom centre at the root. Collects its anchors.
+        /// </summary>
+        void BuildHost(IHostShape host, Dictionary<string, HostAnchor> anchors, out float width, out float depth)
+        {
+            width = depth = 0f;
+            var root = new GameObject("Host").transform;
+            root.SetParent(_bench, false);
+            var body = new GameObject("Model");
+            body.transform.SetParent(root, false);
+            try { host.Build(body); }
+            catch (System.Exception e) { Debug.LogWarning($"[PartFactory] host model threw: {e.Message}"); }
+            var b = ShapeKit.LocalBounds(body);
+            if (b.size.sqrMagnitude < 1e-6f) { Destroy(root.gameObject); return; }
+            foreach (var c in body.GetComponentsInChildren<Collider>()) Destroy(c);   // the body is scenery, never a wrong-part touch
+            float k = Mathf.Min(hostSize / Mathf.Max(b.size.x, b.size.z, 1e-3f), hostMaxHeight / Mathf.Max(b.size.y, 1e-3f));
+            root.localScale = Vector3.one * k;
+            body.transform.localPosition = new Vector3(-b.center.x, -b.min.y, -b.center.z);   // bottom centre at the root
+            Host = root; HostScale = k;
+            width = b.size.x * k; depth = b.size.z * k;
+            foreach (var a in body.GetComponentsInChildren<HostAnchor>())
+                if (!string.IsNullOrEmpty(a.partId)) anchors[a.partId] = a;
+        }
+
+        Bounds ComputeStageBounds()
+        {
+            var b = new Bounds(_bench.position, Vector3.one * 0.3f);
+            foreach (var r in _bench.GetComponentsInChildren<Renderer>())
+                if (r.gameObject.name != "BenchLeg" && r.gameObject.name != "BenchTop") b.Encapsulate(r.bounds);   // the things on the bench, not the table
+            return b;
         }
 
         public void Clear()
@@ -142,6 +230,7 @@ namespace Vid2Sim
             Spawned.Clear();
             Controls.Clear();
             Verdicts = null;
+            Host = null; HostScale = 1f;
             if (_bench) Destroy(_bench.gameObject);
         }
 
@@ -168,7 +257,7 @@ namespace Vid2Sim
         /// A stylised model built by generated code (Muse Code, compile-gated): primitives under an empty root,
         /// re-centred so the model sits on the bench, with a box collider around everything it built.
         /// </summary>
-        static GameObject CreateShaped(IPartShape shape, Part part, float size, out float height)
+        static GameObject CreateShaped(IPartShape shape, Part part, float size, out Vector3 modelSize)
         {
             var root = new GameObject("Shape");
             var body = new GameObject("Model");
@@ -188,7 +277,7 @@ namespace Vid2Sim
             body.transform.localPosition = -b.center;   // centred on the root
             var bc = root.AddComponent<BoxCollider>();
             bc.size = b.size;
-            height = b.size.y;
+            modelSize = b.size;
             return root;
         }
 
@@ -305,8 +394,7 @@ namespace Vid2Sim
                 zone = PartVisuals.CloneTranslucent(part, $"SnapZone:{p.id}", new Color(0.2f, 0.8f, 0.4f, 0.45f));
                 zone.transform.SetParent(_bench, false);
                 zone.transform.localScale = part.transform.localScale;
-                zone.transform.localPosition = part.transform.localPosition + new Vector3(0f, 0f, -0.14f);
-                zone.transform.localRotation = Quaternion.identity;
+                zone.transform.SetPositionAndRotation(part.transform.position + pb.Outward * 0.14f, part.transform.rotation);
                 return zone.transform;
             }
             if (pb != null && pb.IsCard)
@@ -326,7 +414,7 @@ namespace Vid2Sim
             }
             zone.name = $"SnapZone:{p.id}";
             zone.transform.SetParent(_bench, false);
-            zone.transform.localPosition = part.transform.localPosition + new Vector3(0f, 0f, -0.14f);
+            zone.transform.SetPositionAndRotation(part.transform.position + pb.Outward * 0.14f, part.transform.rotation);
             var zm = NewZoneMaterial(new Color(0.2f, 0.8f, 0.4f, 0.45f));
             if (pb != null && pb.IsCard && pr != null && pr.material.mainTexture) zm.mainTexture = pr.material.mainTexture;
             zone.GetComponent<Renderer>().material = zm;

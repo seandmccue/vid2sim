@@ -120,3 +120,35 @@ namespace Vid2Sim.Generated.Shapes
     }}
 }}
 """
+
+
+def mock_host_csharp(cls: str, procedure_id: str, parts: list[dict]) -> str:
+    """A box body at real scale with one anchor per part along its right flank, the shape of what Muse Code returns
+    for a host model, so the gate and the engine's placement path are exercised. Parts whose name says they travel
+    with the operator (manual, clipboard, tool) get no anchor, like the real prompt asks."""
+    loose = ("manual", "clipboard", "tool", "checklist")
+    anchored = [p for p in parts if not any(w in p["name"].lower() for w in loose)]
+    n = max(1, len(anchored))
+    lines = []
+    for i, p in enumerate(anchored):
+        z = -0.8 + 1.6 * (i + 0.5) / n
+        lines.append(f'            ShapeKit.Anchor(root, "{p["id"]}", new Vector3(0.6f, 0.6f, {z:.2f}f), new Vector3(1f, 0f, 0f), {max(0.1, p.get("size_hint_m", 0.1)):.2f}f);')
+    anchors = "\n".join(lines)
+    return f"""using UnityEngine;
+using Vid2Sim;
+
+namespace Vid2Sim.Generated.Hosts
+{{
+    [HostShape("{procedure_id}")]
+    public class {cls} : IHostShape
+    {{
+        public void Build(GameObject root)
+        {{
+            ShapeKit.Box(root, new Vector3(0f, 0.5f, 0f), new Vector3(1.2f, 1.0f, 2.0f), ShapeKit.Yellow);
+            ShapeKit.Cylinder(root, new Vector3(-0.6f, 0.3f, -0.6f), 0.6f, 0.2f, ShapeKit.Black, new Vector3(0f, 0f, 90f));
+            ShapeKit.Cylinder(root, new Vector3(0.6f, 0.3f, 0.6f), 0.6f, 0.2f, ShapeKit.Black, new Vector3(0f, 0f, 90f));
+{anchors}
+        }}
+    }}
+}}
+"""

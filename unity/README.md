@@ -6,7 +6,9 @@ Data-driven Quest sim engine. Six scripts, no scene edits per procedure: a new p
 | Script | Does |
 | --- | --- |
 | `SpecLoader` | Loads + validates spec.json (persistentDataPath first for hot reload, then StreamingAssets) |
-| `PartFactory` | One object per part: a photo card of the real part when the pipeline made a cutout (`bundle/cutouts`, SAM mask or Muse Image shot with the background removed), else a primitive by `interaction`; scaled by `size_hint_m`, Interaction SDK attached; seated bench layout in rows of six |
+| `PartFactory` | One object per part: the Muse Code model (`[PartShape]` class in `Assets/Generated/Shapes`, plus its `"faulty"` variant hidden until a fault is injected), else a photo card of the real part (`bundle/cutouts`), else a primitive by `interaction`. With a `[HostShape]` class for the procedure (`Assets/Generated/Hosts`) the machine body is built at real scale, scaled onto the bench (`hostSize`, 0.8 m) and each part spawns at its `ShapeKit.Anchor`, facing out of the surface, sized from the anchor's real size; parts without an anchor are loose items in a row at the front. Without a host: rows of five on the bench |
+| `PartShapes` | `IPartShape` / `IHostShape`, the `ShapeKit` primitives and `Anchor` the generated code calls, `HostAnchor`, reflection lookup of generated classes, translucent clones for ghosts and snap zones |
+| `FaultInjector` / `VerdictPanel` | Inspect steps are judgments: each inspected part spawns good or faulty (never a flawless exam), the trainee calls it on the bench buttons, the HUD or keys 1 / 2; a wrong call is coached from the step's `check` / `failure` text |
 | `MotionHint` | Cyan arrow on the current step's part: up for lift, toward the trainee for pull, an arc for a turn, a line to the zone for place |
 | `StepSequencer` | Current step, expected part + action, advances on the matching `StepEvent`, raises `WrongPart`; safety skips fail the attempt |
 | `Scorer` | Order, seconds per step, wrong-part touches, safety skips; writes `results/*.json` |
@@ -15,7 +17,7 @@ Data-driven Quest sim engine. Six scripts, no scene edits per procedure: a new p
 
 `StepSequencer` raises `Stalled` once per step after `stallSeconds` (20 s) with no progress; `CoachUI` repeats the
 instruction, names the part and pulses it yellow (`PartBehaviour.Highlight`). `ActionDetector` maps the closed vocabulary to completion rules (press = poke select, pull = moved 10 cm,
-lift = raised 8 cm, place = released in the snap zone, turn_cw/ccw = ±45°, inspect = 1.5 s hover). A step with a
+lift = raised 8 cm, place = released in the snap zone, turn_cw/ccw = ±45°, inspect = the trainee's verdict matches the part's injected state). Pulls, hint arrows and demo ghosts move along `PartBehaviour.Outward`: toward the trainee on the bench, out of the surface on a host model. A step with a
 `custom_action` binds `Assets/Generated/<Verb>Action.cs` (Muse Code output, compile-gated) through `IStepAction`.
 
 ## Interaction backends
