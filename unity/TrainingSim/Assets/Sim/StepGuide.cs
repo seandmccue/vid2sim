@@ -30,13 +30,15 @@ namespace Vid2Sim
             _hint = GetComponent<MotionHint>() ?? gameObject.AddComponent<MotionHint>();
             seq.StepStarted += (s, i) =>
             {
+                // an exam gives nothing away: no how-to, no lit part, no arrow, no ghost
+                if (ExamMode.On) { ui?.SetHow(""); LightLabel(null); _hint.Hide(); StopDemo(); return; }
                 ui?.SetHow(HowTo(s, factory.Backend));
                 LightLabel(s.part_id);
                 if (factory.Spawned.TryGetValue(s.part_id, out var part)) _hint.Show(part, s); else _hint.Hide();
                 if (demoOnStepStart) Demonstrate(s);
             };
             seq.Finished += _ => { LightLabel(null); _hint.Hide(); };
-            seq.Stalled += (s, p) => Demonstrate(s);
+            seq.Stalled += (s, p) => { if (!ExamMode.On) Demonstrate(s); };
             seq.Finished += _ => StopDemo();
         }
 
@@ -105,7 +107,7 @@ namespace Vid2Sim
 
         public void Demonstrate(Step s)
         {
-            if (_factory == null || s == null || !_factory.Spawned.TryGetValue(s.part_id, out var part)) return;
+            if (ExamMode.On || _factory == null || s == null || !_factory.Spawned.TryGetValue(s.part_id, out var part)) return;
             StopDemo();
             part.Highlight(demoSeconds * demoLoops + 1f);
             _running = StartCoroutine(DemoRoutine(part, s));

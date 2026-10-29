@@ -71,14 +71,17 @@ namespace Vid2Sim
                 var r = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
                 HudPanel.Draw(r);
                 GUILayout.BeginArea(new Rect(r.x + 40, r.y + 30, r.width - 80, r.height - 60));
-                GUILayout.Label("Training sim", _big);
+                GUILayout.Label(ExamMode.On ? "Training sim: EXAM" : "Training sim", _big);
                 GUILayout.Space(10);
-                GUILayout.Label("First you'll watch the whole procedure once: each part lights up and a yellow ghost shows the motion. Then it's your turn, one step at a time, with the step and how to do it at the top of the screen.", _body);
+                if (ExamMode.On)
+                    GUILayout.Label("Exam mode: no walkthrough, no arrows, no lit parts. Some parts are faulty; find each one from the step text and make the call. Every call is final. Your score is the faults you catch; false alarms cost.", _body);
+                else
+                    GUILayout.Label("First you'll watch the whole procedure once: each part lights up and a yellow ghost shows the motion. Then it's your turn, one step at a time, with the step and how to do it at the top of the screen.", _body);
                 GUILayout.Space(12);
                 GUILayout.Label("Click a part to select it. A cyan arrow on the part shows the motion the step needs.", _body);
                 GUILayout.Label("Buttons at the bottom (or keys) move the selected part: Q / E turn, W / S lift / lower, X pull out. Or drag it; drop it on the green zone to place it.", _body);
                 GUILayout.Label("Click = press          Inspect = look it over, then 1 = Looks OK, 2 = Fault found", _body);
-                GUILayout.Label("Arrow keys orbit    Scroll zooms    H = show me again    R = restart    P = pause", _body);
+                GUILayout.Label("Arrow keys orbit    Scroll zooms    H = show me again    R = restart    T = exam mode on/off    P = pause", _body);
                 GUILayout.Space(16);
                 GUILayout.Label("Click anywhere to begin.", _big);
                 GUILayout.EndArea();
@@ -88,7 +91,7 @@ namespace Vid2Sim
             if (!showHint) return;
             var style = new GUIStyle(GUI.skin.label) { fontSize = 28, normal = { textColor = new Color(0.9f, 0.93f, 1f) } };
             HudPanel.Draw(new Rect(12, Screen.height - 52, Screen.width - 24, 40));
-            GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · 1/2 = Looks OK / Fault · H show me · R restart · Arrows orbit · Scroll zooms", style);
+            GUI.Label(new Rect(20, Screen.height - 48, Screen.width - 40, 36), (ExamMode.On ? "EXAM · " : "") + "Click a part to select it · Drag to move · Q/E turn · W/S lift/lower · X pull out · 1/2 = Looks OK / Fault · H show me · R restart · T exam · Arrows orbit · Scroll zooms", style);
             if (debugReadout)
             {
                 var cam = Camera.main;

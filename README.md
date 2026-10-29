@@ -45,7 +45,10 @@ Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in
    and hits Rebuild. The spec hot-loads into a running dev build on the headset over adb.
 6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored;
    the coach panel speaks the instruction and one coaching line, calls out a wrong part, and after 20 s without
-   progress repeats the instruction and pulses the expected part.
+   progress repeats the instruction and pulses the expected part. Inspect steps are judgments: each inspected
+   part spawns good or faulty and the trainee has to say which. **Exam mode** (`?mode=exam`, the EXAM block on
+   the bench, or T) drops the walkthrough and every hint, makes each call final, and scores the faults caught;
+   what was missed is revealed at the end with the step's failure text.
 
 ## Repo layout
 

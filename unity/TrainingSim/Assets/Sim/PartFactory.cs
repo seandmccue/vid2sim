@@ -43,6 +43,7 @@ namespace Vid2Sim
         /// <summary>World bounds of everything on the bench, for camera framing.</summary>
         public Bounds StageBounds { get; private set; }
         Transform _bench;
+        public Transform Bench => _bench;
 
         void Awake() { Backend = InteractionBackends.Create(); }
 

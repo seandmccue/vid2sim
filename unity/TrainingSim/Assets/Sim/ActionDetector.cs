@@ -21,12 +21,15 @@ namespace Vid2Sim
         public float snapRadius = 0.06f;
         public float turnDegrees = 45f;
         public float inspectSeconds = 1.5f;
+        [Tooltip("Exam mode: an inspect step completes on any verdict, right or wrong; nothing is coached")]
+        public bool verdictsFinal = false;
 
         Step _step;
         PartBehaviour _part;
         Action<StepEvent> _emit;
         Action<PartBehaviour> _wrong;
         Action<PartBehaviour, bool> _misjudged;
+        Action<PartBehaviour, bool> _verdict;     // every call, before it is judged (the scorer records it)
         PartFactory _factory;
         bool _done;
         MonoBehaviour _custom;
@@ -34,10 +37,10 @@ namespace Vid2Sim
         float _baseYaw;
 
         public void Arm(Step step, PartFactory factory, Action<StepEvent> emit, Action<PartBehaviour> wrongPart,
-                        Action<PartBehaviour, bool> misjudged = null)
+                        Action<PartBehaviour, bool> misjudged = null, Action<PartBehaviour, bool> verdict = null)
         {
             Disarm();
-            _step = step; _factory = factory; _emit = emit; _wrong = wrongPart; _misjudged = misjudged; _done = false;
+            _step = step; _factory = factory; _emit = emit; _wrong = wrongPart; _misjudged = misjudged; _verdict = verdict; _done = false;
             factory.Spawned.TryGetValue(step.part_id, out _part);
             Debug.Log($"[Detector] armed step {step.order} {step.action} on '{step.part_id}' found={_part != null} custom={step.custom_action}");
             foreach (var p in factory.Spawned.Values)
@@ -91,11 +94,14 @@ namespace Vid2Sim
             _wrong?.Invoke(p);
         }
 
-        // inspect is a judgment: the step completes on the right call, a wrong call is coached and counted
+        // inspect is a judgment: the step completes on the right call, a wrong call is coached and counted;
+        // in an exam every call closes the step and the scorer records whether it was right
         void OnVerdict(PartBehaviour p, bool saidFault)
         {
             if (!enabled || _done || _custom || _step.action != Actions.Inspect) return;
-            if (saidFault == p.Faulty) Complete();
+            bool correct = saidFault == p.Faulty;
+            if (correct || verdictsFinal) _verdict?.Invoke(p, saidFault);   // the call that closes the step
+            if (correct || verdictsFinal) Complete();
             else _misjudged?.Invoke(p, saidFault);
         }
 
