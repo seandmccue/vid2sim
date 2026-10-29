@@ -20,7 +20,7 @@ namespace Vid2Sim
         public float hotReloadPollSeconds = 2f;
         public KeyCode restartKey = KeyCode.R, pauseKey = KeyCode.P, skipKey = KeyCode.N, reloadKey = KeyCode.L, helpKey = KeyCode.H;
 
-        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech; StepGuide _guide; FaultInjector _faults;
+        SpecLoader _loader; PartFactory _factory; StepSequencer _seq; Scorer _scorer; CoachUI _ui; Speech _speech; StepGuide _guide; FaultInjector _faults; ExamMode _exam;
         System.DateTime _lastSpecMtime;
         float _bootStart;
 
@@ -31,6 +31,8 @@ namespace Vid2Sim
             _guide = GetComponent<StepGuide>() ?? gameObject.AddComponent<StepGuide>();
             _faults = GetComponent<FaultInjector>() ?? gameObject.AddComponent<FaultInjector>();
             _scorer.UseFaults(_faults);
+            _exam = GetComponent<ExamMode>() ?? gameObject.AddComponent<ExamMode>();
+            _exam.Changed += _ => { if (_seq.Spec != null && !_guide.FullDemoRunning) Restart(); };   // switching modes is a fresh attempt
             if (origin == null) origin = Camera.main ? (Camera.main.transform.parent ?? Camera.main.transform) : transform;
         }
 
@@ -65,6 +67,7 @@ namespace Vid2Sim
             _ui.SetTitle(_loader.Procedure.procedure.title);
             yield return _factory.Spawn(_loader.Procedure, _loader, origin);
             _factory.Verdicts?.Attach(_seq);
+            _exam.AttachBench(_factory, _factory.Bench);
             var rig = FindFirstObjectByType<WebCameraRig>();
             if (rig) rig.Frame(_factory.StageBounds);
             var gate = GetComponent<IStartGate>() ?? (IStartGate)FindFirstObjectByType<WebCameraRig>();
@@ -73,9 +76,10 @@ namespace Vid2Sim
             if (gate != null)
             {
                 while (!gate.Started) yield return null;              // the start screen's click
-                yield return _guide.PlayFullDemo(_loader.Procedure);  // show the whole thing once, then play
+                if (!_exam.Enabled) yield return _guide.PlayFullDemo(_loader.Procedure);  // show the whole thing once, then play
             }
             _faults.PlanFaults(_loader.Procedure, _factory);
+            _seq.exam = _scorer.exam = _exam.Enabled;
             _seq.Begin(_loader.Procedure, _factory);
             Debug.Log($"[SessionFlow] cold start to first step: {Time.realtimeSinceStartup - _bootStart:0.0}s");
         }
@@ -85,6 +89,7 @@ namespace Vid2Sim
             _seq.Stop();
             _factory.ResetPoses();
             _faults.PlanFaults(_loader.Procedure, _factory);   // a different exam every time
+            _seq.exam = _scorer.exam = _exam.Enabled;
             _scorer.Begin(_loader.Procedure);
             _seq.Begin(_loader.Procedure, _factory);
         }
@@ -136,7 +141,7 @@ namespace Vid2Sim
             if (Input.GetKeyDown(pauseKey)) TogglePause();
             if (Input.GetKeyDown(skipKey)) _seq.Skip();
             if (Input.GetKeyDown(reloadKey)) Reload();
-            if (Input.GetKeyDown(helpKey) && !_guide.FullDemoRunning) _guide.Demonstrate(_seq.Current);
+            if (Input.GetKeyDown(helpKey) && !_guide.FullDemoRunning && !_exam.Enabled) _guide.Demonstrate(_seq.Current);
 #if META_CORE_SDK && !UNITY_WEBGL
             // Quest: A = restart, B = pause, Y = skip (debug), X = recenter. Hands-only users never need these.
             if (OVRInput.GetDown(OVRInput.Button.One)) Restart();

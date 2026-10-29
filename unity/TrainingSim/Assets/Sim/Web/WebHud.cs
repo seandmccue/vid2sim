@@ -28,13 +28,15 @@ namespace Vid2Sim
             seq.StepStarted += (s, i) =>
             {
                 _index = i; _count = _spec.steps.Length;
-                _stepText = $"Step {s.order} of {_count}: {s.instruction}";
-                _how = StepGuide.HowTo(s, factory.Backend);
+                _stepText = (ExamMode.On ? "Exam, step " : "Step ") + $"{s.order} of {_count}: {s.instruction}";
+                _how = ExamMode.On ? (s.action == Actions.Inspect ? "Look it over, then make the call. Every call is final; you'll see how you did at the end." : "No hints in an exam. Find it and do it.")
+                                   : StepGuide.HowTo(s, factory.Backend);
                 if (s.safety) _how += "  (safety step: can't be skipped)";
             };
             seq.StepCompleted += (s, secs) =>
             {
                 _done.Add(s.order);
+                if (ExamMode.On) { Toast(s.action == Actions.Inspect ? "Call recorded." : $"Step {s.order} done.", new Color(0.75f, 0.8f, 0.9f), 1.5f); return; }
                 string what = s.action == Actions.Inspect
                     ? (factory.Spawned.TryGetValue(s.part_id, out var ip) && ip.Faulty ? $"Fault caught: {s.failure}" : $"Right, it's fine: {s.check}")
                     : $"Step {s.order} done in {secs:0.0}s";
@@ -43,7 +45,7 @@ namespace Vid2Sim
             seq.Misjudged += (s, p, saidFault) =>
                 Toast($"Not quite. Look for: {s.check}. " + (p.Faulty ? $"This one is faulty: {s.failure}" : "This one is fine."), new Color(1f, 0.55f, 0.4f), 6f);
             seq.WrongPart += (s, p) => Toast($"That's the {p.Part.name}. You need the {NameOf(s.part_id)}.", new Color(1f, 0.55f, 0.4f));
-            seq.Stalled += (s, p) => Toast($"Stuck? Watch the yellow ghost. {s.coach}", new Color(1f, 0.85f, 0.3f), 5f);
+            seq.Stalled += (s, p) => Toast(ExamMode.On ? $"Still on step {s.order}: {s.instruction}" : $"Stuck? Watch the yellow ghost. {s.coach}", new Color(1f, 0.85f, 0.3f), 5f);
             seq.Finished += passed => { _finished = true; _passed = passed; };
             guide.CaptionChanged += c => _caption = c;
         }
@@ -89,7 +91,7 @@ namespace Vid2Sim
             if (need == Actions.Inspect)
             {
                 // a judgment step: the two verdict buttons replace the motion buttons
-                GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), $"Look it over, then make the call: {_spec.steps[_index].check}", _body);
+                GUI.Label(new Rect(_barRect.x + 20, _barRect.y + 6, barW - 40, 26), ExamMode.On ? "Make the call. It's final." : $"Look it over, then make the call: {_spec.steps[_index].check}", _body);
                 var v = _factory.Verdicts;
                 GUI.enabled = v != null;
                 float vw = 2 * bw + gap + 60f;
@@ -132,8 +134,9 @@ namespace Vid2Sim
             else if (_finished)
             {
                 var r = _scorer != null ? _scorer.Current : null;
-                GUI.Label(new Rect(24, 36, W - 48, 48), _passed ? "Procedure complete." : "Attempt failed.", _h1);
-                GUI.Label(new Rect(24, 90, W - 48, 36), r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches" + (r.faults_total > 0 ? $", faults caught {r.faults_caught}/{r.faults_total}, {r.misjudgements} wrong calls" : "") + ". Press R for a new exam." : "Press R to try again.", _h2);
+                bool exam = r != null && r.IsExam;
+                GUI.Label(new Rect(24, 36, W - 48, 48), exam ? (_passed ? "Exam passed." : "Exam over.") : (_passed ? "Procedure complete." : "Attempt failed."), _h1);
+                GUI.Label(new Rect(24, 90, W - 48, 36), r != null ? Scorer.Summary(r) + (exam ? "  R = new exam, T = back to guided." : "  R = try again, T = exam mode.") : "Press R to try again.", _h2);
             }
             else
             {
@@ -156,6 +159,18 @@ namespace Vid2Sim
             }
 
             ActionBar(W, H);
+
+            // end of an exam: what was missed, with the spec's failure text, so the exam still teaches
+            if (_finished && _scorer != null && _scorer.Current != null && _scorer.Current.IsExam)
+            {
+                var rv = _scorer.Current.reveal;
+                float ph = 60f + Mathf.Max(1, rv.Count) * 34f, pw = Mathf.Min(900f, W - 440f);
+                var pr = new Rect(W / 2f - pw / 2f + 190f, H / 2f - ph / 2f, pw, ph);
+                HudPanel.Draw(pr);
+                GUI.Label(new Rect(pr.x + 20, pr.y + 12, pw - 40, 30), rv.Count == 0 ? "Every call was right." : "Where it went wrong:", _h2);
+                for (int i = 0; i < rv.Count; i++)
+                    GUI.Label(new Rect(pr.x + 20, pr.y + 48 + i * 34, pw - 40, 32), rv[i], _body);
+            }
 
             // toast
             if (Time.unscaledTime < _toastUntil)

@@ -280,7 +280,7 @@ def get_frame(pid: str, n: int):
 # ------------------------------------------------------------------ play in the browser
 
 @app.get("/api/procedures/{pid}/play")
-def play(pid: str, mute: bool = False):
+def play(pid: str, mute: bool = False, mode: str = "guided"):
     """Open the WebGL training sim on this procedure. Same engine as the Quest build, mouse backend;
     spec and textures are fetched from this backend, and a saved edit hot-reloads in the running page."""
     from fastapi.responses import RedirectResponse
@@ -294,6 +294,8 @@ def play(pid: str, mute: bool = False):
               "cutouts": f"/api/procedures/{pid}/files/bundle/cutouts"}
     if mute:
         params["mute"] = "1"
+    if mode == "exam":
+        params["mode"] = "exam"   # no walkthrough or hints, verdicts final, score = faults caught
     return RedirectResponse(url=f"/sim/index.html?{urlencode(params)}")
 
 

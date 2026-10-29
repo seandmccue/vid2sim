@@ -56,14 +56,16 @@ namespace Vid2Sim
             {
                 if (_step == null) { _speech?.Say(s.instruction); return; }
                 _step.text = $"{s.order}. {s.instruction}";
-                _progress.text = $"{i + 1} / {seq.Spec.steps.Length}";
-                _status.text = s.safety ? "SAFETY STEP: cannot be skipped. " + s.check : s.check;
+                _progress.text = (ExamMode.On ? "EXAM  " : "") + $"{i + 1} / {seq.Spec.steps.Length}";
+                // the check text is the answer key: shown while learning, kept back in an exam
+                string check = ExamMode.On ? (s.action == Actions.Inspect ? "Make the call. It is final." : "") : s.check;
+                _status.text = s.safety ? "SAFETY STEP: cannot be skipped. " + check : check;
                 _coach.text = "";
                 _speech?.Say(s.instruction);
             };
             seq.StepCompleted += (s, secs) =>
             {
-                if (_status) _status.text = s.action == Actions.Inspect ? $"Right call. {s.check}." : $"Done in {secs:0.0}s.";
+                if (_status) _status.text = ExamMode.On ? (s.action == Actions.Inspect ? "Call recorded." : "Done.") : (s.action == Actions.Inspect ? $"Right call. {s.check}." : $"Done in {secs:0.0}s.");
             };
             seq.Misjudged += (s, p, saidFault) =>
             {
@@ -82,6 +84,7 @@ namespace Vid2Sim
             seq.Stalled += (s, part) =>
             {
                 var name = part != null ? part.Part.name : s.part_id;
+                if (ExamMode.On) { if (_coach) _coach.text = $"Still on step {s.order}: {s.instruction}"; _speech?.Say(s.instruction); return; }
                 if (_coach) _coach.text = $"Stuck? Find the {name}. {s.coach}";
                 part?.Highlight();
                 _speech?.Say($"{s.instruction} Look for the {name}.");
@@ -94,11 +97,12 @@ namespace Vid2Sim
             seq.Finished += passed =>
             {
                 var r = scorer.Current;
-                if (_how) _how.text = "";
-                if (_step) _step.text = passed ? "Procedure complete." : "Attempt failed.";
-                if (_coach) _coach.text = r != null ? $"Score {r.score}. {r.total_seconds:0}s, {r.wrong_part_touches} wrong-part touches" + (r.faults_total > 0 ? $", faults caught {r.faults_caught}/{r.faults_total}, {r.misjudgements} wrong calls." : ".") : "";
+                bool exam = r != null && r.IsExam;
+                if (_how) _how.text = exam && r.reveal.Count > 0 ? string.Join("  ", r.reveal) : "";
+                if (_step) _step.text = exam ? (passed ? "Exam passed." : "Exam over.") : (passed ? "Procedure complete." : "Attempt failed.");
+                if (_coach) _coach.text = Scorer.Summary(r);
                 if (_status) _status.text = "Say or press Restart to try again.";
-                _speech?.Say(passed ? "Procedure complete. Well done." : "Attempt failed.");
+                _speech?.Say(exam ? "Exam over. " + Scorer.Summary(r) : (passed ? "Procedure complete. Well done." : "Attempt failed."));
             };
         }
 

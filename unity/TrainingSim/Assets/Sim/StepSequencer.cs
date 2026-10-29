@@ -26,6 +26,10 @@ namespace Vid2Sim
         public event Action<Step, PartBehaviour> Stalled;
         /// <summary>Inspect step: the trainee's Pass/Fail call was wrong (part, they said "fault"). The step stays open.</summary>
         public event Action<Step, PartBehaviour, bool> Misjudged;
+        /// <summary>Inspect step: the call that closed it (part, they said "fault"). Right in guided mode; any call in an exam.</summary>
+        public event Action<Step, PartBehaviour, bool> Verdict;
+        [Tooltip("Exam mode: verdicts are final (see ExamMode)")]
+        public bool exam = false;
         public float stallSeconds = 20f;
         bool _stallRaised;
 
@@ -84,8 +88,10 @@ namespace Vid2Sim
             _stepStart = Time.unscaledTime;
             _stallRaised = false;
             var step = Current;
+            _detector.verdictsFinal = exam;
             _detector.Arm(step, _factory, OnEvent, p => { _stepStart = Time.unscaledTime; WrongPart?.Invoke(step, p); },
-                          (p, saidFault) => { _stepStart = Time.unscaledTime; Misjudged?.Invoke(step, p, saidFault); });
+                          (p, saidFault) => { _stepStart = Time.unscaledTime; Misjudged?.Invoke(step, p, saidFault); },
+                          (p, saidFault) => Verdict?.Invoke(step, p, saidFault));
             StepStarted?.Invoke(step, Index);
         }
 

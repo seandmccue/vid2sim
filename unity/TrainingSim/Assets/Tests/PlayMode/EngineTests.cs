@@ -384,6 +384,95 @@ namespace Vid2Sim.Tests
             Assert.AreEqual(0, scorer.Current.wrong_part_touches);
         }
 
+        [UnityTest]
+        public IEnumerator Exam_mode_makes_every_call_final_and_scores_the_faults_caught()
+        {
+            PartFactory factory = null; StepSequencer seq = null; Scorer scorer = null; SpecLoader loader = null;
+            yield return Load("forklift-pre-shift-inspection", (l, f, s, sc) => { loader = l; factory = f; seq = s; scorer = sc; });
+            var faults = _root.AddComponent<FaultInjector>();
+            faults.seed = 7; faults.faultRate = 0.5f;
+            scorer.UseFaults(faults);
+            faults.PlanFaults(loader.Procedure, factory);
+            factory.Verdicts.Attach(seq);
+            var exam = _root.AddComponent<ExamMode>();
+            exam.AttachBench(factory, factory.Bench);
+            Assert.IsTrue(factory.Controls.ContainsKey("__exam"), "the EXAM switch sits on the bench");
+            int changes = 0; exam.Changed += _ => changes++;
+            factory.Controls["__exam"].NotifySelect(); factory.Controls["__exam"].NotifyUnselect();
+            Assert.IsTrue(ExamMode.On && changes == 1, "poking the block switches the mode");
+            seq.exam = scorer.exam = true;
+
+            var misjudged = new List<string>();
+            seq.Misjudged += (s, p, said) => misjudged.Add(p.Part.id);
+            // vocabulary verbs only: a generated custom action adds Meta SDK components that need the headset backend
+            foreach (var st in loader.Procedure.steps) st.custom_action = "";
+            seq.Begin(ReadSpec(seq), factory);
+            Assert.AreEqual("exam", scorer.Current.mode);
+            int total = scorer.Current.faults_total;
+            Assert.Greater(total, 0);
+
+            // walk the whole exam: wrong call on the first inspect step, right calls after; other steps skipped
+            bool wrongDone = false; string wrongPart = null; bool wrongWasFaulty = false;
+            int guard = 0;
+            while (seq.Running && guard++ < 50)
+            {
+                var s = seq.Current;
+                if (s.action == Actions.Inspect)
+                {
+                    var p = factory.Spawned[s.part_id];
+                    bool say = p.Faulty;
+                    if (!wrongDone) { say = !p.Faulty; wrongDone = true; wrongPart = p.Part.name; wrongWasFaulty = p.Faulty; }
+                    int before = seq.Index;
+                    factory.Verdicts.Give(say);
+                    yield return null;
+                    Assert.AreNotEqual(before, seq.Index, $"in an exam any call closes step {s.order}");
+                }
+                else
+                {
+                    // do the step for real (skipping a safety step would fail the attempt): press/grab complete
+                    // on select, turns and pulls through the mouse driver's buttons
+                    var p = factory.Spawned[s.part_id];
+                    var d = p.GetComponent<SimpleMouseDriver>(); d.nudgeSeconds = 0.05f;
+                    switch (s.action)
+                    {
+                        case Actions.TurnCw: d.Turn(d.turnStepDegrees); break;
+                        case Actions.TurnCcw: d.Turn(-d.turnStepDegrees); break;
+                        case Actions.Pull: d.Pull(1); break;
+                        case Actions.Lift: d.Lift(1); break;
+                        default: p.NotifySelect(); p.NotifyUnselect(); break;
+                    }
+                    yield return new WaitForSeconds(0.15f);
+                    if (seq.Current == s)
+                    {
+                        Assert.IsFalse(s.safety, $"safety step {s.order} ({s.action}) could not be completed by the test");
+                        seq.Skip();
+                    }
+                }
+            }
+            Assert.IsFalse(seq.Running, "the exam ran to the end");
+            CollectionAssert.IsEmpty(misjudged, "nothing is coached during an exam");
+            var r = scorer.Current;
+            Assert.AreEqual(0, r.misjudgements);
+            if (wrongWasFaulty) { Assert.AreEqual(1, r.faults_missed); Assert.AreEqual(total - 1, r.faults_caught); Assert.AreEqual(0, r.false_alarms); }
+            else { Assert.AreEqual(1, r.false_alarms); Assert.AreEqual(total, r.faults_caught); Assert.AreEqual(0, r.faults_missed); }
+            Assert.AreEqual(1, r.reveal.Count, "the one wrong call is revealed at the end");
+            StringAssert.Contains(wrongPart, r.reveal[0]);
+            Assert.IsFalse(r.passed, "one wrong call fails an exam");
+            Assert.AreEqual(Mathf.Clamp(Mathf.RoundToInt(100f * r.faults_caught / total - 15f * r.false_alarms - 10f * r.wrong_part_touches), 0, 100), r.score);
+            StringAssert.Contains("Faults caught", Scorer.Summary(r));
+
+            // back to guided: a wrong call is coached again and the step stays open
+            exam.Enabled = false;
+            seq.exam = scorer.exam = false;
+            faults.PlanFaults(loader.Procedure, factory);
+            seq.Begin(ReadSpec(seq), factory);
+            var first = factory.Spawned[seq.Current.part_id];
+            factory.Verdicts.Give(!first.Faulty);
+            yield return null;
+            Assert.AreEqual(1, seq.Current.order);
+            Assert.AreEqual(1, misjudged.Count);
+        }
+
         /// <summary>Stand-in for a Muse Code host model: a 2 m body with anchors on its right flank and roof.</summary>
         [HostShape("test-host-rig")]
         public class TestHost : IHostShape

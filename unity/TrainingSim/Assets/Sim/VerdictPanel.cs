@@ -24,28 +24,11 @@ namespace Vid2Sim
             go.transform.SetParent(bench, false);
             var panel = go.AddComponent<VerdictPanel>();
             panel._factory = factory;
-            panel._ok = panel.Button(factory, bench, "__verdict_ok", "LOOKS OK", OkColor, new Vector3(-reachWidth / 2f - 0.02f, 0f, -0.15f));
-            panel._fault = panel.Button(factory, bench, "__verdict_fault", "FAULT", FaultColor, new Vector3(reachWidth / 2f + 0.02f, 0f, -0.15f));
+            panel._ok = BenchControls.Button(factory, bench, "__verdict_ok", "LOOKS OK", OkColor, new Vector3(-reachWidth / 2f - 0.02f, 0f, -0.15f));
+            panel._fault = BenchControls.Button(factory, bench, "__verdict_fault", "FAULT", FaultColor, new Vector3(reachWidth / 2f + 0.02f, 0f, -0.15f));
             panel._ok.Selected += _ => panel.Give(false);
             panel._fault.Selected += _ => panel.Give(true);
             return panel;
-        }
-
-        PartBehaviour Button(PartFactory factory, Transform bench, string id, string label, Color color, Vector3 pos)
-        {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.name = $"Control:{id}";
-            go.transform.SetParent(bench, false);
-            go.transform.localScale = new Vector3(0.09f, 0.025f, 0.06f);
-            go.transform.localPosition = pos + Vector3.up * 0.0125f;
-            go.GetComponent<Renderer>().material = ShapeKit.Material(color);
-            var pb = go.AddComponent<PartBehaviour>();
-            pb.Init(new Part { id = id, name = label, prompt_phrase = label, interaction = "press", size_hint_m = 0.09f });
-            factory.Backend.Attach(pb, go, "press", false);
-            factory.Controls[id] = pb;
-            var lbl = PartLabel.Create(pb, 0.05f);
-            lbl.name = $"Label:{id}";
-            return pb;
         }
 
         /// <summary>Hook the sequencer so a verdict reaches the part the current step inspects.</summary>
@@ -65,8 +48,8 @@ namespace Vid2Sim
         {
             if (_ok == null || _fault == null) return;
             float pulse = Wanted ? 1f + 0.06f * Mathf.Sin(Time.unscaledTime * 4f) : 1f;
-            _ok.transform.localScale = new Vector3(0.09f, 0.025f, 0.06f) * pulse;
-            _fault.transform.localScale = new Vector3(0.09f, 0.025f, 0.06f) * pulse;
+            _ok.transform.localScale = BenchControls.Size * pulse;
+            _fault.transform.localScale = BenchControls.Size * pulse;
             if (Input.GetKeyDown(KeyCode.Alpha1)) Give(false);
             if (Input.GetKeyDown(KeyCode.Alpha2)) Give(true);
         }
