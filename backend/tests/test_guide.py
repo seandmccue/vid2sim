@@ -66,3 +66,26 @@ def test_guide_routes(tmp_path, monkeypatch):
     assert (tmp_path / "sessions" / f"{s['session_id']}.json").exists()
     assert c.get("/guide/sessions").json()[0]["procedure_id"] == "desk-demo"
     assert c.get("/guide/").status_code == 200 and "Apprentice" in c.get("/guide/").text
+
+
+def test_check_route_mock_advances_and_builds_messages(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from backend import app as app_mod
+    from backend.guide import CheckResult, check_response
+    step = {"order": 2, "check": "charger plug is out of the wall socket", "coach": "Pull the plug straight out.", "instruction": "Unplug it."}
+    part = {"name": "Phone charger"}
+    assert check_response(step, part, CheckResult("yes", "plug is out", 900, 0.001))["advance"] is True
+    no = check_response(step, part, CheckResult("no", "still plugged in", 900, 0.001))
+    assert no["advance"] is False and no["message"] == "Pull the plug straight out."
+    unclear = check_response(step, part, CheckResult("unclear", "", 900, 0.001))
+    assert "closer to the Phone charger" in unclear["message"]
+
+    data = tmp_path / "procedures"; d = data / "x"; d.mkdir(parents=True)
+    spec = {"schema_version": "1.0", "procedure": {"id": "x", "title": "x", "source_video": "x", "fps": 30, "width": 10, "height": 10, "duration_s": 1},
+            "parts": [{"id": "p", "name": "Part", "prompt_phrase": "part", "interaction": "press", "keyframe": 0, "box": [0, 0, 1, 1], "size_hint_m": 0.1, "confidence": 1, "source": "manual"}],
+            "steps": [{"order": 1, "part_id": "p", "action": "press", "instruction": "Do it.", "start_frame": 0, "end_frame": 1, "check": "it is done", "failure": "", "safety": False, "coach": "c"}]}
+    (d / "spec.json").write_text(json.dumps(spec))
+    monkeypatch.setattr(app_mod, "DATA", data)
+    c = TestClient(app_mod.app)
+    r = c.post("/guide/check", json={"procedure_id": "x", "step_order": 1, "image": _jpeg_data_url()})
+    assert r.status_code == 200 and r.json()["verdict"] == "yes" and r.json()["advance"] is True

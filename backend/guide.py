@@ -11,7 +11,9 @@ import io
 import time
 from dataclasses import asdict, dataclass
 
-from .pipeline.common import SAM_MODEL, Metrics, Timer, client, is_mock, iter_output_text, with_retries
+import json
+
+from .pipeline.common import SAM_MODEL, SPARK_MODEL, Metrics, Timer, client, is_mock, iter_output_text, spark_cost, with_retries
 
 PRICE_SAM_PER_IMAGE = 2.50 / 1000     # image pricing: $2.50 per 1k images
 CONFIDENCE_FLOOR = 0.5                # below this a match is "not found" (the dashboard phrase-fix is the remedy)
@@ -160,3 +162,91 @@ def save_session(sessions_dir, payload: dict) -> dict:
     payload.setdefault("saved_at", time.strftime("%Y-%m-%dT%H:%M:%S"))
     (sessions_dir / f"{sid}.json").write_text(json.dumps(payload, indent=2))
     return {"session_id": sid, "path": str(sessions_dir / f"{sid}.json")}
+
+
+# ------------------------------------------------------------------ the step check (Spark looks at the frame)
+
+CHECK_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["verdict", "note"],
+    "properties": {
+        "verdict": {"type": "string", "enum": ["yes", "no", "unclear"]},
+        "note": {"type": "string", "description": "one short sentence on what you see that decides it"},
+    },
+}
+CHECK_MAX_OUTPUT_TOKENS = 600
+
+
+@dataclass
+class CheckResult:
+    verdict: str          # yes | no | unclear
+    note: str
+    wall_ms: int
+    cost_usd: float
+    tokens_in: int = 0
+    tokens_out: int = 0
+
+
+def check(jpeg: bytes, check_text: str, part_name: str, metrics: Metrics | None = None) -> CheckResult:
+    """Muse Spark 1.3 on the current frame: is the step's `check` statement true in this photo? The check is a
+    visible binary state ("switch is in the OFF position"), so the answer is yes / no / unclear plus one sentence.
+    Low reasoning effort: this should come back in a second or two."""
+    data, w, h = _prepare(jpeg)
+    if is_mock():
+        if metrics: metrics.log("guide_check", SPARK_MODEL, 0.0, 0.0, note=f"mock: {check_text[:40]}")
+        return CheckResult("yes", "mock", 0, 0.0)
+    b64 = base64.b64encode(data).decode()
+    prompt = (f"Look at this photo of a {part_name}. Is the following statement true right now: \"{check_text}\". "
+              f"Answer yes only if the photo clearly shows it, no if the photo clearly shows it is not the case, "
+              f"and unclear if the {part_name} is not visible well enough to tell. Then one short sentence on what you see.")
+    c = client()
+
+    def once():
+        txt, st, ui, uo = "", "completed", 0, 0
+        stream = c.responses.create(
+            model=SPARK_MODEL,
+            input=[{"type": "message", "role": "user", "content": [
+                {"type": "input_text", "text": prompt},
+                {"type": "input_image", "image_url": f"data:image/jpeg;base64,{b64}"},
+            ]}],
+            text={"format": {"type": "json_schema", "name": "step_check", "schema": CHECK_SCHEMA, "strict": True}},
+            reasoning={"effort": "low"},
+            max_output_tokens=CHECK_MAX_OUTPUT_TOKENS, stream=True)
+        for kind, payload in iter_output_text(stream):
+            if kind == "delta":
+                txt += payload
+            else:
+                st = getattr(payload, "status", "completed")
+                u = getattr(payload, "usage", None)
+                if u:
+                    ui, uo = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
+        return txt, st, ui, uo
+
+    with Timer() as t:
+        txt, status, ui, uo = with_retries(once, label="Spark guide_check", tries=2, base_delay=0.5)
+    verdict, note = "unclear", ""
+    try:
+        parsed = json.loads(txt) if txt.strip() else {}
+        verdict = parsed.get("verdict", "unclear") if parsed.get("verdict") in ("yes", "no", "unclear") else "unclear"
+        note = str(parsed.get("note", ""))[:200]
+    except json.JSONDecodeError:
+        low = txt.strip().lower()
+        verdict = "yes" if low.startswith("yes") else "no" if low.startswith("no") else "unclear"
+        note = txt.strip()[:200]
+    cost = spark_cost(ui, uo)
+    if metrics:
+        metrics.log("guide_check", SPARK_MODEL, t.wall, cost, tokens_in=ui, tokens_out=uo,
+                    note=f"{check_text[:40]} -> {verdict} ({status})")
+    return CheckResult(verdict, note, int(t.wall * 1000), cost, ui, uo)
+
+
+def check_response(step: dict, part: dict, res: CheckResult) -> dict:
+    """What the page needs for each verdict: advance, coach, or ask for a closer look."""
+    out = asdict(res)
+    out.update({"step_order": step["order"], "part_name": part["name"], "check": step.get("check", "")})
+    if res.verdict == "yes":
+        out["advance"] = True; out["message"] = "Done. " + (res.note or "")
+    elif res.verdict == "no":
+        out["advance"] = False; out["message"] = step.get("coach") or f"Not yet: {step.get('check', '')}."
+    else:
+        out["advance"] = False; out["message"] = f"Can't tell. Hold the phone closer to the {part['name']} and tap Done again."
+    return out
