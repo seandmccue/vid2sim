@@ -19,6 +19,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from backend.pipeline import package as package_mod
 from backend.pipeline.common import REPO_ROOT, UNITY_STREAMING, extract_frame, faststart, probe, read_json, slugify, write_json
@@ -339,6 +340,78 @@ def build(pid: str, push: bool = True, apk: bool = False):
             log.append(f"unity build {'ok' if built else 'failed'} (see Logs/build.log)")
     return {"ok": True, "packaged": str(out), "pushed": pushed, "apk_built": built, "log": log}
 
+
+# ------------------------------------------------------------------ guide mode (phone camera on the real machine)
+
+GUIDE_DIR = REPO_ROOT / "backend" / "static" / "guide"
+SESSIONS_DIR = DATA.parent / "sessions"
+_guide_metrics: dict[str, "Metrics"] = {}
+
+
+def _metrics_for(pid: str):
+    from .pipeline.common import Metrics
+    if pid not in _guide_metrics:
+        _guide_metrics[pid] = Metrics.start(f"guide:{pid}")
+    return _guide_metrics[pid]
+
+
+@app.get("/guide/procedures")
+def guide_procedures():
+    """Landing page list: every procedure with a spec, a one-line description, a thumbnail, sample footage if any."""
+    from . import guide as g
+    out = []
+    for d in sorted(DATA.iterdir()) if DATA.exists() else []:
+        if d.is_dir() and (d / "spec.json").exists():
+            spec = read_json(d / "spec.json")
+            if spec.get("steps"):
+                out.append(g.procedure_card(d.name, spec, d))
+    # the desk demo first: it is the one a judge can try on their own desk
+    out.sort(key=lambda c: (0 if "desk" in c["id"] else 1, c["title"]))
+    return out
+
+
+class FindRequest(BaseModel):
+    procedure_id: str
+    step_order: int
+    image: str                      # JPEG data URL (or bare base64) of the current camera frame
+    session_id: str | None = None
+
+
+@app.post("/guide/find")
+def guide_find(req: FindRequest):
+    """SAM 3.1 on one camera frame with the step's prompt_phrase. Boxes come back in the frame's own pixels."""
+    from . import guide as g
+    d = _dir(req.procedure_id)
+    spec = read_json(d / "spec.json")
+    try:
+        step, part = g.step_and_part(spec, req.step_order)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    try:
+        jpeg = g.decode_image(req.image)
+    except Exception:
+        raise HTTPException(400, "image must be a JPEG data URL or base64")
+    res = g.find(jpeg, part["prompt_phrase"], _metrics_for(req.procedure_id))
+    out = res.to_dict()
+    out.update({"step_order": step["order"], "part_id": part["id"], "part_name": part["name"], "session_id": req.session_id})
+    return out
+
+
+@app.post("/guide/sessions")
+def guide_save_session(payload: dict):
+    from . import guide as g
+    return g.save_session(SESSIONS_DIR, payload)
+
+
+@app.get("/guide/sessions")
+def guide_list_sessions():
+    if not SESSIONS_DIR.exists():
+        return []
+    return [read_json(p) for p in sorted(SESSIONS_DIR.glob("*.json"))[-50:]]
+
+
+if GUIDE_DIR.exists():
+    app.mount("/guide", StaticFiles(directory=GUIDE_DIR, html=True), name="guide")
 
 # serve the WebGL sim when built (Builds/web/index.html + Build/*.js|.wasm|.data), then the dashboard
 if (WEB_BUILD / "index.html").exists():

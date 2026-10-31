@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f1115">
+<title>Apprentice</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+<main id="app" class="landing">
+  <section id="landing">
+    <header class="brand">
+      <h1>Apprentice</h1>
+      <p>Watch it once. Do it yourself.</p>
+      <p class="sub">Pick a procedure, point your phone at the real thing. Each step's part is found on your camera and boxed; tap Done when the step is finished.</p>
+    </header>
+    <ul id="procedures" class="cards"><li class="muted">Loading procedures…</li></ul>
+  </section>
+
+  <section id="guide" hidden>
+    <div id="stage">
+      <video id="cam" playsinline autoplay muted></video>
+      <canvas id="overlay"></canvas>
+      <div id="dots" class="dots"></div>
+      <div id="status" class="status"></div>
+      <button id="back" class="back" title="Back to procedures">‹</button>
+    </div>
+    <div id="card" class="card">
+      <div class="row">
+        <img id="thumb" class="thumb" alt="" hidden>
+        <div class="text">
+          <div id="stepno" class="stepno">Step 1 of 6</div>
+          <div id="instruction" class="instruction">…</div>
+          <div id="hint" class="hint"></div>
+        </div>
+      </div>
+      <div class="row buttons">
+        <button id="mic" class="mic" disabled title="Voice: coming next">🎤</button>
+        <button id="done" class="done">Done</button>
+      </div>
+    </div>
+    <div id="finish" class="finish" hidden>
+      <h2>Procedure complete</h2>
+      <p id="summary"></p>
+      <div class="row buttons">
+        <button id="again" class="done">Run it again</button>
+        <button id="home" class="ghost">Other procedures</button>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="guide.js"></script>
+</body>
+</html>

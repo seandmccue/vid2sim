@@ -1,0 +1,205 @@
+/* Apprentice guide: one page, phone browser.
+   Landing lists procedures. In a procedure: rear camera (or sample footage) full-screen, the current step's
+   part found by SAM 3.1 on a frame every ~1 s through /guide/find and boxed on an overlay canvas, a step card
+   with the instruction, the part's keyframe crop and a Done button. Boxes clear on every response so a stale
+   box never survives a moved camera. One request in flight at a time; frames are dropped while waiting. */
+(() => {
+  const $ = id => document.getElementById(id);
+  const q = new URLSearchParams(location.search);
+  const MUTE = q.get('mute') === '1';
+  const FLOOR = 0.5;
+  const state = { spec: null, pid: null, i: 0, timer: null, inFlight: false, intervalMs: 1000, lastResult: null,
+                  stepStart: 0, lastFound: 0, results: [], sessionId: null, source: 'camera', stream: null, rtt: [] };
+
+  const say = text => { if (MUTE || !('speechSynthesis' in window) || !text) return; try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch (e) {} };
+  const chime = () => { if (MUTE) return; try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = 0.08; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.12); } catch (e) {} };
+  const toast = (text, bad) => { const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = text; $('stage').appendChild(t); setTimeout(() => t.remove(), 3500); };
+
+  // ---------------- landing
+  async function landing() {
+    document.getElementById('app').className = 'landing';
+    $('guide').hidden = true;
+    const ul = $('procedures');
+    let list = [];
+    try { list = await (await fetch('/guide/procedures')).json(); } catch (e) { ul.innerHTML = '<li class="muted">Backend not reachable.</li>'; return; }
+    if (!list.length) { ul.innerHTML = '<li class="muted">No procedures yet. Run the pipeline on an expert video first.</li>'; return; }
+    ul.innerHTML = '';
+    for (const p of list) {
+      const li = document.createElement('li');
+      li.innerHTML = `${p.thumbnail ? `<img src="${p.thumbnail}" alt="">` : '<div class="ph">▣</div>'}
+        <div><h3></h3><p class="d"></p><p class="muted">${p.steps} steps · ${p.parts} parts${p.safety_steps ? ` · ${p.safety_steps} safety` : ''}</p></div>
+        <div class="actions"><button class="go">Guide me (camera)</button>${p.sample_video ? '<button class="sample">Watch on sample footage</button>' : ''}</div>`;
+      li.querySelector('h3').textContent = p.title;
+      li.querySelector('.d').textContent = p.description;
+      li.querySelector('.go').onclick = () => start(p.id, null);
+      const s = li.querySelector('.sample'); if (s) s.onclick = () => start(p.id, p.sample_video);
+      ul.appendChild(li);
+    }
+  }
+
+  // ---------------- guide
+  async function start(pid, videoUrl) {
+    state.pid = pid; state.i = 0; state.results = []; state.sessionId = null; state.rtt = [];
+    state.source = videoUrl ? 'sample' : 'camera';
+    history.replaceState(null, '', `?procedure=${encodeURIComponent(pid)}${videoUrl ? '&video=' + encodeURIComponent(videoUrl) : ''}${MUTE ? '&mute=1' : ''}`);
+    try { state.spec = await (await fetch(`/api/procedures/${encodeURIComponent(pid)}/spec`)).json(); }
+    catch (e) { toast('Could not load the procedure', true); return; }
+    document.getElementById('app').className = 'guiding';
+    $('guide').hidden = false; $('finish').hidden = true; $('card').hidden = false;
+    const ok = await openSource(videoUrl);
+    if (!ok) return;
+    showStep();
+  }
+
+  async function openSource(videoUrl) {
+    const v = $('cam');
+    stopSource();
+    if (videoUrl) {
+      v.srcObject = null; v.src = videoUrl; v.loop = true; v.muted = true;
+      try { await v.play(); } catch (e) {}
+      return true;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status(location.protocol === 'https:' ? 'This browser has no camera access.' : 'Camera needs HTTPS. Open the https link, or use sample footage.');
+      return false;
+    }
+    try {
+      state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+      v.srcObject = state.stream; await v.play();
+      return true;
+    } catch (e) {
+      status('Camera blocked: ' + (e.name || e.message) + '. Allow the camera, or use sample footage.');
+      return false;
+    }
+  }
+
+  function stopSource() {
+    const v = $('cam');
+    if (state.stream) { for (const t of state.stream.getTracks()) t.stop(); state.stream = null; }
+    v.pause(); v.removeAttribute('src'); v.srcObject = null;
+  }
+
+  function status(text, pulse) { const s = $('status'); s.textContent = text || ''; s.className = 'status' + (pulse ? ' pulse' : ''); }
+
+  function showStep() {
+    const steps = state.spec.steps, s = steps[state.i];
+    const part = state.spec.parts.find(p => p.id === s.part_id) || { name: s.part_id };
+    $('stepno').textContent = `Step ${s.order} of ${steps.length}` + (s.safety ? ' · safety step' : '');
+    $('instruction').textContent = s.instruction;
+    $('hint').textContent = s.safety ? 'Safety step: cannot be skipped.' : '';
+    $('hint').className = 'hint' + (s.safety ? ' safety' : '');
+    const th = $('thumb'); th.hidden = false;
+    th.src = `/api/procedures/${encodeURIComponent(state.pid)}/files/bundle/crops/${encodeURIComponent(part.id)}.png`;
+    th.onerror = () => { th.hidden = true; };
+    const dots = $('dots'); dots.innerHTML = steps.map((_, k) => `<i class="${k < state.i ? 'done' : k === state.i ? 'now' : ''}"></i>`).join('');
+    clearOverlay();
+    status(`Finding the ${part.name}…`, true);
+    state.stepStart = performance.now(); state.lastFound = 0; state.lastResult = null;
+    state.results.push({ step_order: s.order, part_id: s.part_id, frames: 0, hits: 0, seconds: 0, attempts: 1, done_by: null });
+    say(s.instruction);
+    loop(true);
+  }
+
+  // ---------------- frame loop
+  function loop(restart) {
+    if (restart && state.timer) { clearInterval(state.timer); state.timer = null; }
+    if (!state.timer) state.timer = setInterval(tick, state.intervalMs);
+  }
+
+  const work = document.createElement('canvas');
+  function grabFrame() {
+    const v = $('cam');
+    if (!v.videoWidth || !v.videoHeight) return null;
+    const scale = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight));
+    work.width = Math.round(v.videoWidth * scale); work.height = Math.round(v.videoHeight * scale);
+    work.getContext('2d').drawImage(v, 0, 0, work.width, work.height);
+    return work.toDataURL('image/jpeg', 0.7);
+  }
+
+  async function tick() {
+    if (state.inFlight || $('finish').hidden === false) return;
+    const s = state.spec.steps[state.i]; if (!s) return;
+    const frame = grabFrame(); if (!frame) return;
+    state.inFlight = true;
+    const t0 = performance.now();
+    try {
+      const r = await fetch('/guide/find', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ procedure_id: state.pid, step_order: s.order, image: frame, session_id: state.sessionId }) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const res = await r.json();
+      const rtt = performance.now() - t0; state.rtt.push(rtt);
+      if (state.rtt.length >= 5 && median(state.rtt.slice(-5)) < 800 && state.intervalMs !== 700) { state.intervalMs = 700; loop(true); }
+      if (res.step_order === state.spec.steps[state.i].order) render(res);
+    } catch (e) {
+      status('Connection hiccup, retrying…', true);
+    } finally { state.inFlight = false; }
+  }
+
+  const median = a => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
+
+  function clearOverlay() { const c = $('overlay'); c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio; }
+
+  function render(res) {
+    const rec = state.results[state.results.length - 1]; rec.frames++;
+    clearOverlay();                                    // never a stale box after the camera moved
+    const v = $('cam'), c = $('overlay'), ctx = c.getContext('2d');
+    const name = res.part_name;
+    const m = res.matches || [];
+    if (!m.length) {
+      const waited = (performance.now() - (state.lastFound || state.stepStart)) / 1000;
+      status(waited > 5 ? `Finding the ${name}… try moving closer or to the side.` : `Finding the ${name}…`, true);
+      return;
+    }
+    rec.hits++; state.lastFound = performance.now();
+    // object-fit: cover maps the frame onto the element: scale by the larger ratio, centre the overflow
+    const sx = c.clientWidth / res.width, sy = c.clientHeight / res.height, k = Math.max(sx, sy);
+    const ox = (c.clientWidth - res.width * k) / 2, oy = (c.clientHeight - res.height * k) / 2;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    ctx.lineWidth = 3; ctx.font = '600 15px -apple-system, Roboto, sans-serif';
+    m.forEach((b, i) => {
+      const x = ox + b.x1 * k, y = oy + b.y1 * k, w = (b.x2 - b.x1) * k, h = (b.y2 - b.y1) * k;
+      ctx.strokeStyle = '#39c6ff'; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 6;
+      ctx.strokeRect(x, y, w, h);
+      const label = m.length > 1 ? `${name} ${i + 1}` : name;
+      const tw = ctx.measureText(label).width + 12;
+      ctx.shadowBlur = 0; ctx.fillStyle = '#39c6ff'; ctx.fillRect(x, Math.max(0, y - 24), tw, 22);
+      ctx.fillStyle = '#06202b'; ctx.fillText(label, x + 6, Math.max(16, y - 8));
+    });
+    status(m.length > 1 ? `${m.length} found. Either works, or use the one you're touching.` : `${name} found (${Math.round(m[0].confidence * 100)}%)`, false);
+  }
+
+  // ---------------- advance
+  function done(by) {
+    const rec = state.results[state.results.length - 1];
+    rec.seconds = Math.round((performance.now() - state.stepStart) / 100) / 10; rec.done_by = by || 'tap';
+    chime();
+    if (state.i + 1 < state.spec.steps.length) { state.i++; showStep(); }
+    else finish();
+  }
+
+  async function finish() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    clearOverlay(); status('');
+    const total = state.results.reduce((a, r) => a + r.seconds, 0);
+    const frames = state.results.reduce((a, r) => a + r.frames, 0), hits = state.results.reduce((a, r) => a + r.hits, 0);
+    const payload = { mode: 'guide', procedure_id: state.pid, source: state.source, steps: state.results, total_seconds: Math.round(total * 10) / 10,
+                      frames_sent: frames, frames_with_match: hits, median_rtt_ms: state.rtt.length ? Math.round(median(state.rtt)) : null, user_agent: navigator.userAgent };
+    let saved = '';
+    try { const r = await (await fetch('/guide/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })).json(); saved = `Saved as session ${r.session_id}.`; } catch (e) { saved = 'Could not save the session.'; }
+    $('summary').textContent = `${state.spec.steps.length} steps in ${payload.total_seconds}s.\n` +
+      state.results.map(r => `Step ${r.step_order}: ${r.seconds}s, part seen in ${r.hits}/${r.frames} frames`).join('\n') +
+      `\n${payload.median_rtt_ms ? `Median find round-trip ${payload.median_rtt_ms} ms. ` : ''}${saved}`;
+    $('finish').hidden = false;
+    say('Procedure complete.');
+  }
+
+  $('done').onclick = () => done('tap');
+  $('again').onclick = () => { $('finish').hidden = true; state.i = 0; state.results = []; state.rtt = []; showStep(); };
+  $('home').onclick = () => { stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
+  $('back').onclick = () => { if (state.timer) { clearInterval(state.timer); state.timer = null; } stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
+  window.addEventListener('resize', () => { if (state.lastResult) render(state.lastResult); else clearOverlay(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Enter' && !$('guide').hidden && $('finish').hidden) done('key'); });
+
+  const pid = q.get('procedure');
+  if (pid) start(pid, q.get('video')); else landing();
+})();

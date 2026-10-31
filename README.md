@@ -50,6 +50,18 @@ Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in
    the bench, or T) drops the walkthrough and every hint, makes each call final, and scores the faults caught;
    what was missed is revealed at the end with the step's failure text.
 
+## Guide mode (Oct 31 pivot: the phone, not the headset)
+
+Apprentice guides the trainee on the real machine through a phone camera. Open `/guide/` on a phone (HTTPS is
+required for the camera; `cloudflared tunnel --url http://127.0.0.1:8000` gives one in seconds), pick a procedure,
+point at the thing. Every second a frame goes to `POST /guide/find`, which runs **SAM 3.1** on that one image with
+the current step's `prompt_phrase` and returns boxes in the frame's own pixels; the page draws them and clears them
+on every response so a moved camera never shows a stale box. The step card shows the instruction, the part's
+keyframe crop and a Done button; results are saved to `data/sessions/`. "Watch on sample footage" runs the same
+loop over a pre-recorded video for anyone without a camera. Day-1 numbers: 500 to 1900 ms per frame, median
+about 820 ms, $0.0025 a frame; laptop, water bottle and mouse at 0.95+ confidence on desk photos. Code:
+`backend/guide.py`, `backend/static/guide/`. Spark step checks and voice follow.
+
 ## Repo layout
 
 ```text
