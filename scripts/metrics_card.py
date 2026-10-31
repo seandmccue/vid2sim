@@ -129,9 +129,48 @@ def markdown(c: dict) -> str:
     return "\n".join(lines)
 
 
+def png(c: dict, out: Path) -> Path:
+    """The card as an image for the video's 2:30 shot."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    def font(size, bold=False):
+        for name in ("/System/Library/Fonts/SFNS.ttf", "/System/Library/Fonts/Helvetica.ttc", "/Library/Fonts/Arial.ttf"):
+            try:
+                return ImageFont.truetype(name, size)
+            except Exception:
+                continue
+        return ImageFont.load_default()
+    g, v = c["guide"], c["verify"]
+    cap = [p for p in c["capture"] if p["procedure"] != "p1"]
+    rows = [
+        ("Expert video → procedure spec", f"{min(p['minutes'] for p in cap):.0f} to {max(p['minutes'] for p in cap):.0f} min, ${min(p['cost_usd'] for p in cap):.2f} to ${max(p['cost_usd'] for p in cap):.2f} per procedure ({len(cap)} procedures)") if cap else ("Expert video → spec", "—"),
+        ("SAM 3.1 on live phone frames", f"{int((g['find_hit_rate'] or 0) * 100)}% first-phrase hits, median {g['find_median_ms']} ms, $0.0025 a frame ({g['find_calls']} frames)"),
+        ("Spark 1.3 step check from one frame", f"median {g['check_median_ms']} ms, about $0.002 ({g['check_calls']} checks)"),
+        ("Voice (Muse Voice Transcribe → Spark)", f"\"done\" in {g['hear_median_ms']} ms, a spoken answer in {g['ask_median_ms']} ms"),
+        ("Verify a trainee video", f"{v['videos_graded']} graded: {v['passed']} pass, {v['safety_fails']} fail on a skipped safety step; about ${v['cost_per_video_usd']} each"),
+        ("Total Meta API spend, whole hackathon", f"${c['total_api_spend_usd']}"),
+    ]
+    W, H = 1600, 160 + 92 * len(rows)
+    im = Image.new("RGB", (W, H), (15, 17, 21)); d = ImageDraw.Draw(im)
+    d.text((60, 44), "Apprentice, measured", font=font(52, True), fill=(242, 244, 248))
+    d.text((60, 108), "Every number from metrics/runs.csv and the saved sessions. Nothing typed by hand.", font=font(26), fill=(154, 163, 178))
+    y = 170
+    for label, value in rows:
+        d.rounded_rectangle((60, y, W - 60, y + 76), radius=14, fill=(23, 26, 33), outline=(38, 42, 51))
+        d.text((84, y + 14), label, font=font(24, True), fill=(57, 198, 255))
+        d.text((84, y + 44), value, font=font(24), fill=(242, 244, 248))
+        y += 92
+    out.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out)
+    return out
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--png", type=Path, help="also render the card as an image (e.g. docs/metrics-card.png)")
     a = ap.parse_args()
     c = card()
+    if a.png:
+        print("wrote", png(c, a.png))
     print(json.dumps(c, indent=2) if a.json else markdown(c))

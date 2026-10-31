@@ -33,6 +33,10 @@ scripts/serve.sh              # backend on :8000, Cloudflare quick tunnel, print
 Dashboard at `/`, Guide at `/guide/`, Verify at `/guide/verify.html`. `cd dashboard && npm run build` after
 editing the dashboard (the backend serves `dashboard/dist`); `scripts/metrics_card.py` prints the metrics card.
 
+| Guide: the part boxed on the camera | Done: Spark says not yet, with the expert's line | Verify: a skipped safety step fails |
+| --- | --- | --- |
+| ![](docs/screens/guide-box.jpg) | ![](docs/screens/guide-coach.jpg) | ![](docs/screens/verify-fail.jpg) |
+
 ## How it works
 
 1. **Capture.** A trainer films the procedure once, narrating. 30 s to 3 min, MP4, faststart.
@@ -220,7 +224,8 @@ The pre-pivot VR training sim (Unity engine, Muse Code part models, exam mode, Q
 - [docs/SUBMISSION.md](docs/SUBMISSION.md): the submission page text with the measured numbers
 - [docs/VIDEO.md](docs/VIDEO.md): 3-minute shot list timed against the rubric, X post
 - [docs/FILMING.md](docs/FILMING.md): how to shoot and narrate so footage is pipeline-ready
-- [docs/metrics-card.png](docs/metrics-card.png): rendered by `backend/metrics_card.py` from `metrics.json`
+- [docs/metrics-card.png](docs/metrics-card.png): rendered by `scripts/metrics_card.py --png` from `metrics/runs.csv` and the sessions
+- [docs/screens/](docs/screens/): Guide and Verify as they look today (sample footage, Oct 31)
 
 ## Development
 
