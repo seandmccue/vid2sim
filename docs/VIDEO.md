@@ -17,3 +17,5 @@ Impact in the first 15 seconds; the judges' own phones in the last 15.
 **X post:** the 2:45 shot as a 15 s clip, the QR, one line: "Watch it once. Do it yourself. Point your phone at your desk." Submit the post link for Most Viral.
 
 Captured material that already exists: the forklift Verify pass/fail reports (`/guide/verify.html?session=forklift-correct-take`, `...wrong-take`), the desk demo on sample footage, the metrics card.
+
+**Rough cut (Oct 31):** `logs/apprentice-rough-cut.mp4` (76 s) assembled from the cards, the forklift film, the Guide and Verify screens, the metrics card and the QR. Shots 0:15 (compressor capture), 0:55 (trainee at the machine), 1:35 (voice) and 1:50 (second machine) are placeholders until filmed. Rebuild with the script in the session scratchpad or by hand in any editor from `docs/screens/` and `docs/metrics-card.png`.
