@@ -13,7 +13,7 @@
 
   const say = text => { if (MUTE || !('speechSynthesis' in window) || !text) return; try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch (e) {} };
   const chime = () => { if (MUTE) return; try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = 0.08; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.12); } catch (e) {} };
-  const toast = (text, bad) => { const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = text; $('stage').appendChild(t); setTimeout(() => t.remove(), 3500); };
+  const toast = (text, bad) => { const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = text; $('stage').appendChild(t); setTimeout(() => t.remove(), bad ? 6000 : 3500); };
 
   // ---------------- landing
   async function landing() {
@@ -95,7 +95,8 @@
     clearOverlay();
     status(`Finding the ${part.name}…`, true);
     state.stepStart = performance.now(); state.lastFound = 0; state.lastResult = null;
-    state.results.push({ step_order: s.order, part_id: s.part_id, frames: 0, hits: 0, seconds: 0, attempts: 1, done_by: null });
+    state.results.push({ step_order: s.order, part_id: s.part_id, frames: 0, hits: 0, seconds: 0, attempts: 1, done_by: null, checks: [], override: false });
+    state.checking = false; $('done').disabled = false; $('done').textContent = 'Done'; hideOverride();
     say(s.instruction);
     loop(true);
   }
@@ -168,7 +169,44 @@
     status(m.length > 1 ? `${m.length} found. Either works, or use the one you're touching.` : `${name} found (${Math.round(m[0].confidence * 100)}%)`, false);
   }
 
-  // ---------------- advance
+  // ---------------- advance: Done asks Spark whether the step's check is true in the current frame
+  async function checkAndAdvance(by) {
+    if (state.checking || !$('finish').hidden) return;
+    const s = state.spec.steps[state.i], rec = state.results[state.results.length - 1];
+    const part = state.spec.parts.find(p => p.id === s.part_id) || { name: s.part_id };
+    const frame = grabFrame();
+    if (!frame) { toast('No camera frame yet', true); return; }
+    state.checking = true; $('done').disabled = true; $('done').textContent = 'Checking…';
+    status(`Checking: ${s.check || s.instruction}`, true);
+    try {
+      const r = await fetch('/guide/check', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ procedure_id: state.pid, step_order: s.order, image: frame, session_id: state.sessionId }) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const res = await r.json();
+      rec.checks.push({ verdict: res.verdict, note: res.note, wall_ms: res.wall_ms, by });
+      if (res.verdict === 'yes') { done(by); return; }
+      rec.attempts++;
+      // the verdict lives in the card's hint line until the next check, since the find loop keeps rewriting the status
+      const hint = $('hint'); hint.textContent = res.message; hint.className = 'hint ' + (res.verdict === 'no' ? 'bad' : 'warn');
+      toast(res.message, res.verdict === 'no'); say(res.message);
+      if (res.verdict === 'no') showOverride();        // once per step, logged, shown in Verify
+    } catch (e) {
+      toast('Could not check that frame. Try again.', true);
+    } finally {
+      state.checking = false; $('done').disabled = false; $('done').textContent = 'Done';
+    }
+  }
+
+  function showOverride() {
+    const rec = state.results[state.results.length - 1];
+    if (rec.override || $('override')) return;
+    const b = document.createElement('button');
+    b.id = 'override'; b.className = 'ghost small'; b.textContent = 'I did it, override';
+    b.onclick = () => { rec.override = true; rec.checks.push({ verdict: 'override', by: 'tap' }); hideOverride(); done('override'); };
+    $('card').querySelector('.row.buttons').insertBefore(b, $('done'));
+  }
+  function hideOverride() { const b = $('override'); if (b) b.remove(); }
+
   function done(by) {
     const rec = state.results[state.results.length - 1];
     rec.seconds = Math.round((performance.now() - state.stepStart) / 100) / 10; rec.done_by = by || 'tap';
@@ -182,23 +220,24 @@
     clearOverlay(); status('');
     const total = state.results.reduce((a, r) => a + r.seconds, 0);
     const frames = state.results.reduce((a, r) => a + r.frames, 0), hits = state.results.reduce((a, r) => a + r.hits, 0);
-    const payload = { mode: 'guide', procedure_id: state.pid, source: state.source, steps: state.results, total_seconds: Math.round(total * 10) / 10,
+    const overrides = state.results.filter(r => r.override).length;
+    const payload = { mode: 'guide', procedure_id: state.pid, source: state.source, steps: state.results, total_seconds: Math.round(total * 10) / 10, overrides,
                       frames_sent: frames, frames_with_match: hits, median_rtt_ms: state.rtt.length ? Math.round(median(state.rtt)) : null, user_agent: navigator.userAgent };
     let saved = '';
     try { const r = await (await fetch('/guide/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })).json(); saved = `Saved as session ${r.session_id}.`; } catch (e) { saved = 'Could not save the session.'; }
     $('summary').textContent = `${state.spec.steps.length} steps in ${payload.total_seconds}s.\n` +
-      state.results.map(r => `Step ${r.step_order}: ${r.seconds}s, part seen in ${r.hits}/${r.frames} frames`).join('\n') +
+      state.results.map(r => `Step ${r.step_order}: ${r.seconds}s, part seen in ${r.hits}/${r.frames} frames, ${r.checks.length} check${r.checks.length === 1 ? '' : 's'}${r.override ? ' (overridden)' : ''}`).join('\n') +
       `\n${payload.median_rtt_ms ? `Median find round-trip ${payload.median_rtt_ms} ms. ` : ''}${saved}`;
     $('finish').hidden = false;
     say('Procedure complete.');
   }
 
-  $('done').onclick = () => done('tap');
+  $('done').onclick = () => checkAndAdvance('tap');
   $('again').onclick = () => { $('finish').hidden = true; state.i = 0; state.results = []; state.rtt = []; showStep(); };
   $('home').onclick = () => { stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
   $('back').onclick = () => { if (state.timer) { clearInterval(state.timer); state.timer = null; } stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
   window.addEventListener('resize', () => { if (state.lastResult) render(state.lastResult); else clearOverlay(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Enter' && !$('guide').hidden && $('finish').hidden) done('key'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Enter' && !$('guide').hidden && $('finish').hidden) checkAndAdvance('key'); });
 
   const pid = q.get('procedure');
   if (pid) start(pid, q.get('video')); else landing();

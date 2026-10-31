@@ -60,7 +60,10 @@ on every response so a moved camera never shows a stale box. The step card shows
 keyframe crop and a Done button; results are saved to `data/sessions/`. "Watch on sample footage" runs the same
 loop over a pre-recorded video for anyone without a camera. Day-1 numbers: 500 to 1900 ms per frame, median
 about 820 ms, $0.0025 a frame; laptop, water bottle and mouse at 0.95+ confidence on desk photos. Code:
-`backend/guide.py`, `backend/static/guide/`. Spark step checks and voice follow.
+`backend/guide.py`, `backend/static/guide/`. Tapping Done sends the current frame to `POST /guide/check`, where
+**Muse Spark 1.3** answers whether the step's `check` statement is true in that photo (yes advances, no shows the
+step's coach line and offers a logged override, unclear asks for a closer look); 7/7 on desk photos, 1.6 to 2.4 s,
+about $0.002 a check. Voice follows.
 
 ## Repo layout
 

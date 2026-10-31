@@ -45,7 +45,8 @@ button { font:inherit; }
 .stepno { color:var(--accent); font-weight:700; font-size:13px; letter-spacing:.3px; text-transform:uppercase; }
 .instruction { font-size:19px; font-weight:600; margin-top:2px; }
 .hint { color:var(--muted); font-size:14px; margin-top:4px; min-height:1.2em; }
-.hint.safety { color:var(--warn); }
+.hint.safety, .hint.warn { color:var(--warn); }
+.hint.bad { color:var(--bad); }
 .done { flex:1; padding:16px; border:0; border-radius:14px; background:var(--accent); color:#06202b; font-size:20px; font-weight:800; }
 .done:disabled { opacity:.5; }
 .mic { width:58px; border:0; border-radius:14px; background:#262a33; color:#fff; font-size:22px; }
@@ -56,3 +57,4 @@ button { font:inherit; }
 .finish p { color:var(--muted); white-space:pre-line; }
 .toast { position:absolute; left:16px; right:16px; top:calc(44px + env(safe-area-inset-top)); background:var(--panel); border:1px solid #262a33; border-radius:14px; padding:12px 14px; font-weight:600; text-align:center; }
 .toast.bad { border-color:var(--bad); }
+.ghost.small { flex:0 0 auto; padding:10px 14px; font-size:14px; border-color:var(--bad); color:var(--bad); }

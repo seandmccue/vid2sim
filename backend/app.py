@@ -397,6 +397,34 @@ def guide_find(req: FindRequest):
     return out
 
 
+class CheckRequest(BaseModel):
+    procedure_id: str
+    step_order: int
+    image: str
+    session_id: str | None = None
+
+
+@app.post("/guide/check")
+def guide_check(req: CheckRequest):
+    """Spark 1.3 looks at the current frame and says whether the step's check statement is true: yes advances,
+    no returns the coach line, unclear asks for a closer look. The page may override once per step; that is logged there."""
+    from . import guide as g
+    d = _dir(req.procedure_id)
+    spec = read_json(d / "spec.json")
+    try:
+        step, part = g.step_and_part(spec, req.step_order)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    try:
+        jpeg = g.decode_image(req.image)
+    except Exception:
+        raise HTTPException(400, "image must be a JPEG data URL or base64")
+    res = g.check(jpeg, step.get("check") or step["instruction"], part["name"], _metrics_for(req.procedure_id))
+    out = g.check_response(step, part, res)
+    out["session_id"] = req.session_id
+    return out
+
+
 @app.post("/guide/sessions")
 def guide_save_session(payload: dict):
     from . import guide as g
