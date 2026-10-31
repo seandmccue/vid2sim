@@ -1,3 +1,5 @@
+> **Oct 31 pivot:** the Unity sim is archived under `archive/unity`; the demo is Guide (phone) and Verify. This file is the pre-pivot handoff, kept for history.
+
 # Morning handoff (written overnight Oct 26 → 27)
 
 Everything below is on `main` through PRs 1–16. CI is green. `pytest backend/tests` 11/11, Unity PlayMode 10/10.

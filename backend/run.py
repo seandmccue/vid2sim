@@ -22,7 +22,7 @@ from backend.pipeline import metrics as metrics_mod  # noqa: E402
 from backend.pipeline import package as package_mod  # noqa: E402
 from backend.pipeline import segment as segment_mod  # noqa: E402
 from backend.pipeline import transcribe as transcribe_mod  # noqa: E402
-from backend.pipeline.common import REPO_ROOT, Metrics, Timer, is_mock, probe, require_ffmpeg, upload_video, write_json  # noqa: E402
+from backend.pipeline.common import UNITY_PROJECT, REPO_ROOT, Metrics, Timer, is_mock, probe, require_ffmpeg, upload_video, write_json  # noqa: E402
 from backend.pipeline.validate import validate_spec  # noqa: E402
 
 
@@ -60,7 +60,10 @@ def run(video: Path, *, work: Path | None = None, title: str | None = None, grou
             write_json(work / "errors.json", [str(e) for e in errors])
             raise SystemExit("spec failed validation:\n  " + "\n  ".join(str(e) for e in errors))
         progress("6/6 generate + package")
-        unity = unity_project or (REPO_ROOT / "unity" / "TrainingSim")
+        unity = unity_project or UNITY_PROJECT
+        if unity_project is None and not unity.exists() and not skip_generate:   # archived project absent: nothing to generate for
+            progress("    no Unity project (archived); skipping Muse Code generation")
+            skip_generate = True
         generated = [] if skip_generate else generate_mod.generate_actions(spec, unity, metrics, gate=not skip_generate and os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
         shapes = [] if (skip_generate or not shapes_on) else generate_mod.generate_shapes(spec, unity, metrics, gate=os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1")
         host = {} if (skip_generate or not shapes_on) else generate_mod.generate_host(spec, unity, metrics, gate=os.environ.get("VID2SIM_COMPILE_GATE", "1") == "1", work=work)

@@ -18,8 +18,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = REPO_ROOT / "backend"
 SCHEMA_PATH = BACKEND_ROOT / "schema" / "procedure.schema.json"
 METRICS_CSV = REPO_ROOT / "metrics" / "runs.csv"
-UNITY_STREAMING = REPO_ROOT / "unity" / "TrainingSim" / "Assets" / "StreamingAssets" / "procedures"
-UNITY_GENERATED = REPO_ROOT / "unity" / "TrainingSim" / "Assets" / "Generated"
+# The Unity sim (archived Oct 31, 2026; see archive/README.md). The pipeline still packages for it when present.
+UNITY_PROJECT = next((p for p in (REPO_ROOT / "archive" / "unity" / "TrainingSim", REPO_ROOT / "unity" / "TrainingSim") if p.exists()),
+                     REPO_ROOT / "archive" / "unity" / "TrainingSim")
+UNITY_STREAMING = UNITY_PROJECT / "Assets" / "StreamingAssets" / "procedures"
+UNITY_GENERATED = UNITY_PROJECT / "Assets" / "Generated"
 
 load_dotenv(REPO_ROOT / ".env")
 
