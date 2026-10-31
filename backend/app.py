@@ -479,6 +479,97 @@ def guide_list_sessions():
     return [read_json(p) for p in sorted(SESSIONS_DIR.glob("*.json"))[-50:]]
 
 
+# ------------------------------------------------------------------ verify mode (grade a trainee video)
+
+VERIFY_DIR = DATA.parent / "verify"
+
+
+def _verify_status(sid: str, **fields):
+    VERIFY_DIR.mkdir(parents=True, exist_ok=True)
+    p = VERIFY_DIR / sid / "status.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    cur = read_json(p) if p.exists() else {"session_id": sid}
+    cur.update(fields)
+    write_json(p, cur)
+    return cur
+
+
+def _verify_job(sid: str, pid: str):
+    from .pipeline.verify import verify_video
+    from .pipeline.common import Metrics
+    from . import guide as g
+    work = VERIFY_DIR / sid
+    log: list[str] = []
+    t0 = time.time()
+
+    def progress(msg: str):
+        log.append(f"[{time.time() - t0:5.1f}s] {msg}")
+        _verify_status(sid, state="running", log=list(log))
+
+    try:
+        spec = read_json(DATA / pid / "spec.json")
+        report = verify_video(work / "trainee.mp4", spec, work, Metrics.start(f"verify:{pid}"), progress=progress)
+        report["session_id"] = sid
+        g.save_session(SESSIONS_DIR, dict(report, steps=report["steps"]))
+        _verify_status(sid, state="done", log=log, report=report, elapsed_s=round(time.time() - t0, 1))
+    except BaseException as e:
+        log.append(f"ERROR: {e}")
+        _verify_status(sid, state="error", log=log, error=str(e)[:500], elapsed_s=round(time.time() - t0, 1))
+
+
+@app.post("/verify/{pid}")
+async def verify_start(pid: str, video: UploadFile = File(...)):
+    """Upload a trainee's video of the procedure; the pipeline grades it against the expert spec in the background."""
+    import uuid
+    d = _dir(pid)
+    if not (d / "spec.json").exists():
+        raise HTTPException(404, "no spec for this procedure yet")
+    if not (video.filename or "").lower().endswith((".mp4", ".mov", ".m4v", ".webm")):
+        raise HTTPException(400, "upload an MP4 or MOV")
+    sid = time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:6]
+    work = VERIFY_DIR / sid
+    work.mkdir(parents=True, exist_ok=True)
+    raw = work / "raw_upload"
+    with raw.open("wb") as fh:
+        shutil.copyfileobj(video.file, fh)
+    try:
+        faststart(raw, work / "trainee.mp4")
+        info = probe(work / "trainee.mp4")
+    except Exception as e:
+        raise HTTPException(400, f"ffmpeg could not read the file: {e}")
+    raw.unlink(missing_ok=True)
+    _verify_status(sid, state="queued", procedure_id=pid, filename=video.filename, duration_s=round(info.duration_s, 1), log=["queued"])
+    threading.Thread(target=_verify_job, args=(sid, pid), daemon=True).start()
+    return {"session_id": sid, "procedure_id": pid, "state": "queued", "duration_s": round(info.duration_s, 1)}
+
+
+@app.get("/verify/{sid}")
+def verify_status(sid: str):
+    p = VERIFY_DIR / sid / "status.json"
+    if not p.exists():
+        raise HTTPException(404, "unknown verify session")
+    return read_json(p)
+
+
+@app.get("/verify/{sid}/thumbs/{name}")
+def verify_thumb(sid: str, name: str):
+    f = (VERIFY_DIR / sid / "thumbs" / name).resolve()
+    if not str(f).startswith(str((VERIFY_DIR / sid).resolve())) or not f.is_file():
+        raise HTTPException(404)
+    return FileResponse(f)
+
+
+@app.get("/verify")
+def verify_list():
+    out = []
+    if VERIFY_DIR.exists():
+        for p in sorted(VERIFY_DIR.glob("*/status.json"))[-50:]:
+            st = read_json(p)
+            out.append({k: st.get(k) for k in ("session_id", "procedure_id", "state", "filename", "duration_s", "elapsed_s")}
+                       | ({"verdict": st["report"].get("verdict"), "score": st["report"].get("score")} if st.get("report") else {}))
+    return out
+
+
 if GUIDE_DIR.exists():
     app.mount("/guide", StaticFiles(directory=GUIDE_DIR, html=True), name="guide")
 
