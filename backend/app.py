@@ -365,9 +365,8 @@ def guide_procedures():
             spec = read_json(d / "spec.json")
             if spec.get("steps"):
                 out.append(g.procedure_card(d.name, spec, d))
-    # the desk demo first: it is the one a judge can try on their own desk
-    out.sort(key=lambda c: (0 if "desk" in c["id"] else 1, c["title"]))
-    return out
+    # data/guide.json puts the featured three first (the desk demo is the one a judge can try on their own desk)
+    return g.featured(DATA, out)
 
 
 class FindRequest(BaseModel):
@@ -422,6 +421,48 @@ def guide_check(req: CheckRequest):
     res = g.check(jpeg, step.get("check") or step["instruction"], part["name"], _metrics_for(req.procedure_id))
     out = g.check_response(step, part, res)
     out["session_id"] = req.session_id
+    return out
+
+
+@app.post("/guide/hear")
+async def guide_hear(audio: UploadFile = File(...), procedure_id: str = Form(""), step_order: int = Form(0)):
+    """A few seconds of microphone audio → Muse Voice Transcribe → intent: done (advance), question (ask), none."""
+    from . import guide as g
+    data = await audio.read()
+    if not data:
+        raise HTTPException(400, "empty audio")
+    try:
+        return g.hear(data, audio.content_type or "", _metrics_for(procedure_id or "guide"))
+    except Exception as e:
+        raise HTTPException(502, f"transcription failed: {str(e)[:200]}")
+
+
+class AskRequest(BaseModel):
+    procedure_id: str
+    step_order: int
+    question: str
+    image: str | None = None
+    session_id: str | None = None
+
+
+@app.post("/guide/ask")
+def guide_ask(req: AskRequest):
+    """A spoken question → Spark with the spec and the current frame → one sentence the page speaks."""
+    from . import guide as g
+    d = _dir(req.procedure_id)
+    spec = read_json(d / "spec.json")
+    try:
+        step, part = g.step_and_part(spec, req.step_order)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+    jpeg = None
+    if req.image:
+        try:
+            jpeg = g.decode_image(req.image)
+        except Exception:
+            jpeg = None
+    out = g.ask(req.question.strip()[:400], spec, step, part, jpeg, _metrics_for(req.procedure_id))
+    out.update({"question": req.question, "step_order": step["order"], "session_id": req.session_id})
     return out
 
 

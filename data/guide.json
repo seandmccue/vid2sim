@@ -1,0 +1,8 @@
+{
+  "_": "Landing page order for /guide/. Featured procedures come first with these blurbs; ids without a spec are skipped until the pipeline makes one.",
+  "featured": [
+    { "id": "desk-demo", "blurb": "Try it on your own desk: close the laptop, unplug the charger, cap the bottle, park the mouse. Any laptop and bottle will do." },
+    { "id": "compressor-filter-swap", "blurb": "The industrial case: power off, bleed the tank, swap the intake filter on a real shop compressor." },
+    { "id": "second-machine", "blurb": "A second machine through the same pipeline, untouched, to show nothing was tuned to one object." }
+  ]
+}
