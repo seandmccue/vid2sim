@@ -17,7 +17,7 @@ export default function Sidebar({ procs, selected, onSelect, onUploaded, health 
 
   return (
     <aside>
-      <div className="brand">vid2sim <span className={`dot ${health?.ok ? 'on' : 'off'}`} title={health?.ok ? 'backend up' : 'backend down'} /></div>
+      <div className="brand">Apprentice <span className={`dot ${health?.ok ? 'on' : 'off'}`} title={health?.ok ? 'backend up' : 'backend down'} /></div>
       <div className="upload">
         <input ref={fileRef} type="file" accept="video/mp4,video/quicktime" />
         <input placeholder="Title (e.g. Replace the intake filter)" value={title} onChange={e => setTitle(e.target.value)} />

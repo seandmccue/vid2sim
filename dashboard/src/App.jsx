@@ -69,9 +69,9 @@ export default function App() {
 function Empty({ health }) {
   return (
     <div className="empty">
-      <h1>vid2sim</h1>
-      <p>Film a procedure once on a phone. Get a hands-first Quest training module back.</p>
-      <p className="chain">Spark understands · SAM segments · Muse Code builds · Muse Image paints</p>
+      <h1>Apprentice</h1>
+      <p>Watch it once. Do it yourself. One video from the person who knows how becomes a guide on the real machine, and a grader for the trainee's own video.</p>
+      <p className="chain">Spark understands · SAM finds · Spark checks · Voice Transcribe listens</p>
       <p className="muted">Upload a video on the left, then Run. {health && !health.has_key && 'No MODEL_API_KEY on the server: runs will use mock mode.'}</p>
     </div>
   )
