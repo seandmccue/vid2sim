@@ -1,77 +1,51 @@
-# vid2sim — submission write-up (draft for the Cerebral Valley form)
+# Apprentice — submission page
 
-> Fill the bracketed numbers from `data/procedures/*/metrics.json` and `metrics/runs.csv` on Nov 3. Keep every claim measured.
+> Apprentice turns one phone video from the person who knows how into a guide anyone can follow on the real machine. Point your phone at it; the AI finds each part, checks your work, and answers questions. Film yourself doing it and Apprentice grades you against the expert.
+>
+> **Try it (30 seconds):** open [link] on your phone, choose Desk demo, point at your desk. No camera? Choose "Watch on sample footage" for the forklift.
+>
+> **Built with:** Muse Spark 1.3 (procedure extraction from video, step verification from a frame, Q&A, grading a trainee video), SAM 3.1 (part detection on the expert video and live on the trainee's camera), Muse Voice Transcribe (narration, voice commands, questions). All through the Meta Model API.
+>
+> **Built during the hackathon:** everything in this repo. The team's prior work is VR training sims delivered by hand; none of that code is here.
 
-## One line
+**Spark understands, SAM finds, Spark checks, Voice Transcribe listens.**
 
-Film a procedure once on a phone; get a hands-first Meta Quest training module back in minutes, for under two dollars.
+## The problem
 
-## The number first
+Every plant has one person who knows how. When they are off shift, the procedure is a laminated sheet or a phone call. Training sims take weeks to build per procedure and cannot keep up with the equipment on the floor.
 
-A single-procedure VR training module takes Frame Sixty **[X] weeks** and **$[Y]** today: a studio scripts the steps, models the parts, hand-wires the interactions, QAs. vid2sim did it in **[9.6] minutes** for **$[1.16]** on a real clip, and **[N] minutes** for **$[M]** on a second, unrelated machine with zero code changes.
+## What Apprentice does
 
-## What it does
-
-1. **Capture.** A trainer films the procedure once, narrating. 30 s to 3 min, phone, one take.
-2. **Understand.** Muse Voice Transcribe turns the narration into a frame-stamped transcript. Muse Spark 1.3 reads the frames and the transcript together and returns the procedure as structured JSON against a frozen schema: ordered steps, the part each step touches, the action from a closed vocabulary, safety flags, checks, failure text, a coaching line, and the frame range. A second Spark pass verifies every step against the narration and flags the ones it can't support.
-3. **Segment.** SAM 3.1 finds and tracks every part across its step's frames from a text prompt. When the text prompt misses, Spark proposes a box on the keyframe and SAM re-runs from it. Every part records how it was found.
-4. **Build.** A data-driven Unity engine reads the spec: one object per part with the Meta Interaction SDK component the action needs. Muse Code writes a stylised low-poly model of each part from primitives, a faulty variant of each inspected part, and the machine they belong to at real scale with an anchor where each part lives; the engine scales the machine onto the bench and spawns the parts on it, so a forklift inspection means finding the lift chain on the mast and the drive tyre at the front. Parts Muse Code cannot model are photo cards cut out by SAM 3.1 or Muse Image. Muse Code also generates a script for verbs the engine doesn't know, and every generated file passes a headless Unity compile before it's referenced.
-5. **Review.** The trainer sees the steps and the masks in a dashboard, renames a part, reorders a step, draws a box where SAM missed, and hits Rebuild. The spec hot-loads into the running headset build.
-6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored. Skipping a safety step fails the attempt, which is what industrial clients ask for. Touch the wrong part and the
-   coach says so; stall for twenty seconds and it repeats the instruction and lights up the part it means. Inspection steps are judgments: each inspected part spawns good or faulty, with the defect written by Muse Code, and the trainee has to call it. Exam mode takes the hints away, makes every call final and scores the faults caught, so the same sim that teaches also certifies.
-
-**Spark understands, SAM segments, Muse Code builds, Muse Image paints.**
-
-## Use of Meta AI tooling
-
-| Model | Role | What we learned using it |
-| --- | --- | --- |
-| Muse Spark 1.3 | Video + transcript → structured procedure; verify pass; box proposals; writes long-tail scripts when Muse Code is absent | Reasoning shares the output budget. 6000 tokens returned nothing on a 79 s clip; 16000 with one retry is the floor. Reads burned-in captions when there is no narration. |
-| SAM 3.1 | Per-part detection, masks and tracking from a noun phrase | One concept per request; zero matches is a branch, not an error. A mask raster covers only its box bounds. Frame-accurate trims keep a procedure under a dollar. |
-| Muse Voice Transcribe | Narration → turns with timestamps | Matches a clip's own subtitle track nearly word for word. Spark 1.3's audio path is documented as degraded, so narration never goes through Spark. |
-| Muse Image | Part textures from keyframe crops | Turns a 100-pixel crop into a usable flat-lit texture; capped at 1024 px for the APK. |
-| Muse Code | Low-poly part models, faulty variants for judgment steps, the host machine with part anchors, and `IStepAction` MonoBehaviours for verbs outside the engine's vocabulary | Gated by a headless Unity compile with per-file rollback; generated files are guarded so the project compiles with or without the SDK. |
-
-Optional: the verify pass can run on Muse Spark Open via Baseten or Modal with three env vars (`VERIFY_*`), the open-weight bonus line.
-
-## The catch we'll show
-
-On the second test machine the clip had no narration, only burned-in captions. Spark extracted 15 steps from
-the captions alone. The verify pass, given the video as evidence, cited the caption behind 14 of them and flagged
-the 15th, "place the replacement card", as never shown. It was right: the clip ends before the install. A step
-the model invented from the title was caught before any trainee saw it, and the trainer deletes it in one click.
-
-## Agentic behaviour (where it's true)
-
-The pipeline extracts, verifies its own extraction against the transcript, detects low-confidence parts and retries them with a different prompt type, and gates generated code behind a compiler before trusting it. The human is in the loop at exactly one place, the review step, and that step is a feature, not an apology.
+1. **Capture.** The expert films the procedure once on a phone, narrating. One take.
+2. **Understand.** Muse Voice Transcribe stamps the narration to frames. Muse Spark 1.3 reads the video plus the transcript and returns the procedure as structured JSON against a frozen schema: ordered steps, the part each step touches, the action, a visible `check` for when it is done, failure text, safety flags, a coaching line, frame ranges. A second Spark pass flags any step the narration does not support. SAM 3.1 finds each part on the expert video from a text phrase, with a Spark box fallback.
+3. **Review.** The trainer fixes a phrase or a step in the dashboard. The frozen schema is the contract.
+4. **Guide.** The trainee points a phone at the real machine. Every second a frame goes to SAM 3.1 with the step's phrase and the real part gets a box. Done (tapped or said) sends the frame to Spark with the step's check: yes advances, no coaches with the expert's line, unclear asks for a closer look. A question into the mic is transcribed and answered by Spark in one sentence with the procedure and the frame as context.
+5. **Verify.** The trainee films themselves. The same pipeline runs with the expert's steps in the prompt; the report marks each step done, missed or out of order, with a thumbnail from the trainee's video. A skipped safety step fails the attempt. Printable, shareable.
 
 ## Measured
 
-| Procedure | Upload → playable | API cost | Steps correct vs trainer list | Parts: text / box / manual |
-| --- | --- | --- | --- | --- |
-| [procedure #1, own footage] | [ ] min | $[ ] | [ ]/[ ] | [ ] / [ ] / [ ] |
-| [procedure #2, own footage] | [ ] min | $[ ] | [ ]/[ ] | [ ] / [ ] / [ ] |
+Filled from `scripts/metrics_card.py` (every number comes from `metrics/runs.csv` and the saved sessions; nothing typed by hand):
 
-Development runs on public-domain footage (a 1960s Department of Defense engine-maintenance film) and two CC BY test clips (water filter install, PC graphics-card swap) are in the repo README with attribution; none of them is part of the demo.
-
-## Risks we designed around
-
-| Risk | Mitigation |
+| | |
 | --- | --- |
-| Spark merges or misreads steps | Fixed schema with structured output; verify pass against the transcript; dashboard review |
-| SAM's text prompt misses an industrial part | Spark box fallback with forward propagation; trainer draws a box; `source` field makes the miss rate a metric |
-| Generated code doesn't compile | Engine is data-driven; Muse Code writes only the long tail; headless compile gate |
-| Parts have no 3D geometry | Photo cards cut from the video by SAM 3.1 (or the Muse Image shot, background removed), sized from SAM's box. Photogrammetry is the roadmap |
-| Hand tracking on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
+| Expert video → spec | 3 to 24 minutes per procedure, $0.37 to $3.67 (five public-domain test films plus the desk demo); 10/12 steps right on the forklift film against a trainer's list |
+| SAM on live phone frames | median under a second per frame, $0.0025 a frame; laptop / bottle / mouse found at 0.95+ on desk photos; thin parts (chains, hoses) miss on a single frame and get a phrase fix |
+| Spark step check | 7/7 correct on desk photos (open laptop is not closed; capped bottle is capped; a frame with no laptop comes back unclear), 1.6 to 2.4 s, about $0.002 |
+| Voice | "done" recognised in 0.8 s; a question answered and spoken in about 2.3 s |
+| Verify | the full forklift inspection passes at 100; the same film with the battery check cut out fails on the skipped safety step; about 60 s and $0.08 per video |
+| Total API spend for the whole hackathon | under $15 |
 
-## What's new vs prior work
+## Known limits, and what the UI does about them
 
-Everything in the repo was written during the hackathon from an empty repo on Oct 26 (see the PR trail). `prior/` is empty.
-
-## What's next
-
-Photogrammetry for real part geometry; Muse Wonder for a trainee agent that remembers past attempts; Voice Transcribe realtime for "which one is the bypass valve?" in the headset.
+| Limit | What happens | On screen |
+| --- | --- | --- |
+| Two identical parts | SAM returns both | Both boxed: "2 found, either works". Never a guess |
+| Part not visible from this angle | Zero matches | "Finding the X…" with the expert's keyframe crop, then "try moving closer or to the side" |
+| 1 to 2 s latency | Box lags a moving phone | Boxes cleared on every response; nobody calls it AR tracking |
+| Spark check wrong from one frame | False pass or fail | Checks are visible binary states; one override per step, logged and shown in Verify |
 
 ## Links
 
-Repo: https://github.com/seandmccue/vid2sim · Demo video: [ ] · Team: Sean McCue (Frame Sixty), [Dev]
+- Repo: https://github.com/seandmccue/vid2sim (Apprentice)
+- Live demo: [link from `scripts/serve.sh`] · Verify report example: `/guide/verify.html?session=forklift-wrong-take`
+- Video: [link]

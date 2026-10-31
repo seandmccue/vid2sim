@@ -48,11 +48,6 @@ export default function SpecEditor({ id, spec: initial, review, bundle, notify, 
         <div className="spacer" />
         {review?.flagged_count > 0 && <span className="flag">⚠ {review.flagged_count} step(s) not supported by the {review.evidence_mode === "narration+video" ? "narration or video" : "narration"}</span>}
         <button onClick={save} disabled={!dirty || saving} className="primary">{saving ? 'Saving…' : dirty ? 'Save + repackage' : 'Saved'}</button>
-        <button onClick={build} disabled={dirty} title={dirty ? 'save first' : 'package StreamingAssets and hot-push to the Quest'}>Rebuild → Quest</button>
-        <button onClick={() => window.open(`/api/procedures/${id}/play`, '_blank')} disabled={dirty || !webBuild}
-          title={!webBuild ? 'build the web sim first: Vid2Sim.Editor.BuildScript.BuildWebGL' : dirty ? 'save first' : 'same engine in the browser, mouse-first; edits hot-reload'}>Play in browser</button>
-        <button onClick={() => window.open(`/api/procedures/${id}/play?mode=exam`, '_blank')} disabled={dirty || !webBuild}
-          title={!webBuild ? 'build the web sim first' : dirty ? 'save first' : 'exam: no walkthrough or hints, every call is final, score = faults caught'}>Exam in browser</button>
         <button onClick={() => window.open(`/guide/?procedure=${id}`, '_blank')} disabled={dirty} title="guide a trainee on the real machine through a phone camera">Guide (phone)</button>
         <button onClick={() => window.open(`/guide/verify.html?procedure=${id}`, '_blank')} disabled={dirty} title="grade a trainee's video against this spec">Verify a video</button>
       </div>

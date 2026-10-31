@@ -17,15 +17,15 @@ data/procedures/*/bundle/masks/
 data/procedures/*/trims/
 backend/uploads/
 # unity
-unity/TrainingSim/[Ll]ibrary/
-unity/TrainingSim/[Tt]emp/
-unity/TrainingSim/[Oo]bj/
-unity/TrainingSim/[Bb]uild/
-unity/TrainingSim/[Bb]uilds/
-unity/TrainingSim/[Ll]ogs/
-unity/TrainingSim/[Uu]ser[Ss]ettings/
-unity/TrainingSim/*.csproj
-unity/TrainingSim/*.sln
+archive/unity/TrainingSim/[Ll]ibrary/
+archive/unity/TrainingSim/[Tt]emp/
+archive/unity/TrainingSim/[Oo]bj/
+archive/unity/TrainingSim/[Bb]uild/
+archive/unity/TrainingSim/[Bb]uilds/
+archive/unity/TrainingSim/[Ll]ogs/
+archive/unity/TrainingSim/[Uu]ser[Ss]ettings/
+archive/unity/TrainingSim/*.csproj
+archive/unity/TrainingSim/*.sln
 # os
 .DS_Store
 # dashboard runtime artifacts
@@ -33,8 +33,8 @@ data/procedures/*/frames/
 data/procedures/*/history/
 data/procedures/*/status.json
 data/procedures/*/smoke_masks/
-unity/TrainingSim/.utmp/
-unity/TrainingSim/Assets/StreamingAssets/RuntimeActionBindings.json*
+archive/unity/TrainingSim/.utmp/
+archive/unity/TrainingSim/Assets/StreamingAssets/RuntimeActionBindings.json*
 data/procedures/*/download/
 
 # guide mode

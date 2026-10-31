@@ -22,14 +22,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from backend.pipeline import package as package_mod
-from backend.pipeline.common import REPO_ROOT, UNITY_STREAMING, extract_frame, faststart, probe, read_json, slugify, write_json
+from backend.pipeline.common import REPO_ROOT, UNITY_PROJECT, UNITY_STREAMING, extract_frame, faststart, probe, read_json, slugify, write_json
 from backend.pipeline.validate import validate_spec
 from backend.run import run as run_pipeline
 
 DATA = REPO_ROOT / "data" / "procedures"
 DASHBOARD_DIST = REPO_ROOT / "dashboard" / "dist"
-UNITY_PROJECT = REPO_ROOT / "unity" / "TrainingSim"
-WEB_BUILD = UNITY_PROJECT / "Builds" / "web"          # Unity WebGL output: the browser training sim
+WEB_BUILD = UNITY_PROJECT / "Builds" / "web"          # archived Unity WebGL sim; served at /sim only with VID2SIM_SERVE_SIM=1
 BUNDLE_ID = os.environ.get("UNITY_BUNDLE_ID", "com.framesixty.vid2sim")
 
 app = FastAPI(title="vid2sim", version="0.1")
@@ -574,7 +573,7 @@ if GUIDE_DIR.exists():
     app.mount("/guide", StaticFiles(directory=GUIDE_DIR, html=True), name="guide")
 
 # serve the WebGL sim when built (Builds/web/index.html + Build/*.js|.wasm|.data), then the dashboard
-if (WEB_BUILD / "index.html").exists():
+if (WEB_BUILD / "index.html").exists() and os.environ.get("VID2SIM_SERVE_SIM") == "1":
     app.mount("/sim", StaticFiles(directory=WEB_BUILD, html=True), name="sim")
 
 # serve the built dashboard when present; API routes above take precedence

@@ -1,12 +1,17 @@
-# vid2sim — Video to XR Training Sim
+# Apprentice — Watch it once. Do it yourself.
 
-Film a real procedure once on a phone. Get a playable, hands-first Quest training module back the same hour.
+Apprentice turns one phone video from the person who knows how into a guide anyone can follow on the real machine.
+Point your phone at it; the AI finds each part, checks your work, and answers questions. Film yourself doing it and
+Apprentice grades you against the expert.
 
-**Spark understands, SAM segments, Muse Code builds, Muse Image paints.**
+**Spark understands, SAM finds, Spark checks, Voice Transcribe listens.**
+
+**Try it (30 seconds):** run `scripts/serve.sh`, open the printed https link on your phone, choose *Desk demo*,
+point at your desk. No camera? Choose *Watch on sample footage* for the forklift.
 
 Meta Global AI Developer Hackathon, Oct 26 – Nov 4, 2026. Startup track, theme *Push the Frontier*.
-Everything in this repo was built during the hackathon, from an empty repo on Oct 26. `prior/` holds any
-pre-existing Frame Sixty code (currently none).
+Everything in this repo was built during the hackathon, from an empty repo on Oct 26. Frame Sixty's prior work is
+VR training sims delivered by hand; none of that code is here. (The repo is still named `vid2sim` on GitHub.)
 
 ## One-command run
 
@@ -16,12 +21,17 @@ cp .env.example .env          # paste MODEL_API_KEY from https://dev.meta.ai/pla
 .venv/bin/python backend/run.py data/procedures/p1/p1.mp4
 ```
 
-Out: `spec.json`, `transcript.json`, `review.json`, `bundle/` (crops, masks, textures, cutouts), `metrics.json`, and the
-Unity payload under `unity/TrainingSim/Assets/StreamingAssets/procedures/<id>/`. Add `--mock` to run the whole
-chain with no key and no cost (real SAM protocol text, canned model answers).
+Out: `spec.json`, `transcript.json`, `review.json`, `bundle/` (crops, masks, cutouts) and `metrics.json` next to the
+video. Add `--mock` to run the whole chain with no key and no cost (real SAM protocol text, canned model answers).
 
-Dashboard: `.venv/bin/uvicorn backend.app:app --port 8000` then `cd dashboard && npm install && npm run dev`.
-Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in the dashboard, cents each.
+Then serve it, with HTTPS for the phone:
+
+```bash
+scripts/serve.sh              # backend on :8000, Cloudflare quick tunnel, prints the https link and a QR code
+```
+
+Dashboard at `/`, Guide at `/guide/`, Verify at `/guide/verify.html`. `cd dashboard && npm run build` after
+editing the dashboard (the backend serves `dashboard/dist`); `scripts/metrics_card.py` prints the metrics card.
 
 ## How it works
 
@@ -33,22 +43,14 @@ Add `--step-cards` (or `VID2SIM_STEP_CARDS=1`) for a Muse Image card per step in
 3. **Segment.** **SAM 3.1**, one request per part on a frame-accurate trim of that part's step range. Concept
    prompt first; if it returns nothing or mean confidence < 0.5, Spark returns a box on the keyframe and SAM
    re-runs with `propagation_direction: forward`. `source` on each part records which path found it.
-4. **Build.** A data-driven Unity engine reads the spec. **Muse Code** writes a stylised low-poly model of every
-   part from primitives (`Assets/Generated/Shapes`), a faulty variant of each inspected part, and, when Spark says
-   the parts belong to one machine, the machine itself at real scale with an anchor where each part lives
-   (`Assets/Generated/Hosts`). The engine scales the machine onto the bench and spawns each part at its anchor, so
-   inspecting means finding things where they actually are; loose items (a manual, a clipboard) sit in a row in
-   front. Every generated file passes a headless Unity compile before the engine sees it. Parts without a model
-   are photo cards cut from the video; **Muse Code** also generates a `MonoBehaviour` for verbs outside the
-   engine's vocabulary, and **Muse Image** paints textures.
-5. **Review.** The trainer sees the steps and the masks in the dashboard, renames a part or reorders a step,
-   and hits Rebuild. The spec hot-loads into a running dev build on the headset over adb.
-6. **Train.** Hands-first on Quest. Step order, time per step, wrong-part touches and safety skips are scored;
-   the coach panel speaks the instruction and one coaching line, calls out a wrong part, and after 20 s without
-   progress repeats the instruction and pulses the expected part. Inspect steps are judgments: each inspected
-   part spawns good or faulty and the trainee has to say which. **Exam mode** (`?mode=exam`, the EXAM block on
-   the bench, or T) drops the walkthrough and every hint, makes each call final, and scores the faults caught;
-   what was missed is revealed at the end with the step's failure text.
+4. **Review.** The trainer sees the steps and the masks in the dashboard, renames a part, fixes a phrase SAM
+   missed on ("add a colour or shape word"), reorders a step, and saves. Guide reads the saved spec on the next load.
+5. **Guide.** The trainee opens `/guide/` on a phone and points it at the real machine. The current step's
+   `prompt_phrase` goes to **SAM 3.1** on live camera frames and the real part gets a box; tapping Done (or saying
+   "done") sends the frame to **Spark 1.3** with the step's `check` text, which advances, coaches, or asks for a
+   closer look; a question into the mic goes through **Voice Transcribe** to Spark and comes back spoken.
+6. **Verify.** The trainee films themselves doing it. The same pipeline runs on their video with the expert's steps
+   in the prompt, and the report says done / missed / out of order per step; a skipped safety step fails the attempt.
 
 ## Guide mode (Oct 31 pivot: the phone, not the headset)
 
@@ -91,15 +93,19 @@ backend/
     extract.py            Spark 1.3 -> draft spec (two passes)
     segment.py            SAM 3.1 per part, trim, box fallback, meta-sam-parser
     bundle.py             keyframes, crops, size hints, mask PNGs, spec.json
-    generate.py           Muse Code (compile-gated) + Muse Image textures
-    cutouts.py            RGBA photo cards per part: Muse shot minus background, else SAM mask on the crop
-    package.py            StreamingAssets payload
+    verify.py             Verify: Spark maps the trainee's video to the expert steps, diff, score, safety fail
+    cutouts.py            RGBA photo cards per part (SAM mask on the crop)
+    generate.py / package.py   Muse Code models and the StreamingAssets payload for the archived Unity sim
     validate.py / metrics.py / common.py
+  guide.py                Guide: SAM on one camera frame, Spark step check, voice intents, Spark Q&A
+  static/guide/           the phone page (index.html, guide.js) and the Verify report page (verify.html)
   mock/                   canned responses for VID2SIM_MOCK=1
-  tests/                  pytest, 11 tests, full mock run on a synthetic clip
-dashboard/                React + Vite
-unity/TrainingSim/        Unity 6 engine (see unity/README.md)
-data/procedures/<id>/     p.mp4 (not committed), transcript.json, spec.json, bundle/, ground_truth.json
+  tests/                  pytest, 21 tests: full mock run, guide routes, verify rules and routes
+dashboard/                React + Vite (spec review and edit, Guide / Verify buttons)
+scripts/                  serve.sh (backend + HTTPS tunnel + QR), metrics_card.py
+data/procedures/<id>/     p.mp4 (not committed), transcript.json, spec.json, bundle/, ground_truth.json, sample.mp4
+data/guide.json           landing page order and blurbs;  data/sessions/  Guide and Verify results
+archive/unity/            the pre-pivot VR sim (see archive/README.md)
 metrics/runs.csv          run_id, procedure, stage, model, wall_s, cost_usd, frames, tokens
 ```
 
@@ -118,7 +124,10 @@ validated on every write and load. Rules the engine depends on:
 
 ## Metrics
 
-Filled in from `metrics/runs.csv` and each procedure's `metrics.json` as runs happen.
+`scripts/metrics_card.py` prints the live card (capture minutes and dollars per procedure, SAM hit rate and
+round-trip on phone frames, Spark check verdicts, voice, Verify results, total spend) straight from
+`metrics/runs.csv` and `data/sessions/`. The capture table below is the pre-pivot record of the same pipeline on
+public-domain test films; "upload → playable" includes the archived sim's Muse Code generation, which Guide does not need.
 
 | Procedure | Upload → playable | API cost | Steps correct vs ground truth | Parts: text / box / manual |
 | --- | --- | --- | --- | --- |
@@ -194,53 +203,16 @@ Transcribe and Image rows are labelled estimates until Billing confirms the unit
 | --- | --- |
 | Spark merges or misreads steps | Structured output against a fixed schema; second pass verifies each step against the transcript; dashboard review catches the rest |
 | SAM's text prompt misses an industrial part | Box fallback from Spark on the keyframe, or the trainer draws one in the dashboard. Zero matches is a branch, never a crash |
-| Generated Unity code doesn't compile | Engine is data-driven; Muse Code only writes the long tail, and every script passes a headless compile before it is referenced |
-| Parts have no 3D geometry | Muse Code builds a low-poly model of each part (and of the machine they sit on, with anchors) from primitives, compile-gated; a part it cannot model is a photo card cut from the video (SAM 3.1 mask or Muse Image shot on a double-sided card). Photogrammetry is the roadmap, not the demo |
+| Two identical parts on the machine | SAM returns both; Guide draws both and says "2 found, either works". It never guesses |
+| Part not visible from the trainee's angle | Zero matches is a state, not an error: "Finding the X…" with the keyframe crop, then "try moving closer or to the side" |
+| 1 to 2 s round trip on a live frame | Boxes are cleared on every response; one request in flight; the UI never calls it AR tracking |
+| Spark judges a step wrongly from one frame | Checks are written as visible binary states; the trainee can override once per step and overrides are logged and shown in Verify |
 | Spark 1.3 audio is degraded | Narration goes through Voice Transcribe; Spark gets frames plus text |
-| Hand tracking flaky on small parts | Every collider ≥ 4 cm, generous snap zones, poke and grab only |
+| Rebuilding the machine in 3D looked like primitives | We stopped rebuilding it: Guide works on the real machine through the camera (the VR sim is archived) |
 
-## Engine tests (no headset needed)
+## Archive
 
-Seven PlayMode tests drive the engine the way the Interaction SDK does: the six-step compressor procedure runs
-to a pass with scoring, a wrong-part touch is counted, skipping a safety step fails the attempt, pause blocks
-events, both committed specs load and validate. They pass headless on Unity 6000.3.21f1 with Meta XR SDK 207.0.1.
-
-```bash
-Unity -batchmode -nographics -projectPath unity/TrainingSim -runTests -testPlatform PlayMode -testResults /tmp/playmode.xml
-```
-
-## Two outputs, one spec
-
-The same engine ships twice from the same `spec.json`:
-
-| Output | Build | Input | Launch |
-| --- | --- | --- | --- |
-| Quest, hands-first | `BuildScript.BuildAndroid` → `Builds/vid2sim.apk` | Meta Interaction SDK: poke, hand grab, rotate | sideload; dashboard **Rebuild → Quest** hot-pushes a new spec |
-| Browser, mouse-first | `BuildScript.BuildWebGL` → `Builds/web/`, served at `/sim/` | click = press or select, drag = move (snaps onto the zone); the selected part has buttons for turn / lift / pull (keys Q/E, W/S, X), a cyan arrow on the part shows the motion the step needs, hover = inspect | dashboard **Play in browser** → `/api/procedures/<id>/play`; a saved edit hot-reloads in the open page |
-
-Both outputs guide the trainee: at each step the expected part pulses and a translucent ghost of it performs the
-motion twice while the panel says how to do it with the input in use ("Click it." / "Poke it with a finger."). H (web)
-replays the demo; it also replays on a stall. The web build opens with a start screen that lists the controls.
-Sequencer, scorer, coach panel and spoken lines are identical; the web build uses the browser's own speech synthesis.
-Only the interaction backend and the camera differ, selected at compile time (`InteractionBackends.Create`).
-Verified in a browser: the six-step compressor procedure played start to finish with the mouse to
-"Procedure complete. Score 100, 0 wrong-part touches", with a wrong-part touch called out by the coach along the way.
-Append `&debug=1` to the sim URL for a hover/click readout.
-
-```bash
-Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -buildTarget WebGL -executeMethod Vid2Sim.Editor.BuildScript.BuildWebGL
-```
-
-## Quest build
-
-```bash
-Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -buildTarget Android -executeMethod Vid2Sim.Editor.BuildScript.BuildAndroid
-adb install -r unity/TrainingSim/Builds/vid2sim.apk
-```
-
-Builds headless on 6000.3.21f1 with Meta XR SDK 207.0.1 (IL2CPP, ARM64, OpenXR, hand tracking): 11 min cold,
-about 2 min warm, 65 MB. The dashboard's Rebuild → Quest hot-pushes a new spec into the installed build without
-rebuilding.
+The pre-pivot VR training sim (Unity engine, Muse Code part models, exam mode, Quest and WebGL builds) lives under `archive/unity` with its own [README](archive/README.md). It is not part of the demo.
 
 ## Docs
 
@@ -256,7 +228,6 @@ Feature branches, one PR per component, merged to `main`. CI runs the backend te
 ```bash
 .venv/bin/python -m pytest backend/tests -q
 cd dashboard && npm run build
-Unity -batchmode -nographics -quit -projectPath unity/TrainingSim -executeMethod Vid2Sim.Editor.CompileGate.Run
 ```
 
 Raw video is never committed. Footage links: _tbd_.
