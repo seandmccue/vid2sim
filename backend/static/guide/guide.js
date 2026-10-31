@@ -8,6 +8,8 @@
   const q = new URLSearchParams(location.search);
   const MUTE = q.get('mute') === '1';
   const FLOOR = 0.5;
+  const AUTO = q.get('auto') !== '0';          // hands-free: once the part is seen, Spark checks the step by itself
+  const AUTO_EVERY_MS = 4000;                   // a silent check every 4 s while the part is in view
   const voice = { on: false, rec: null, stream: null, mime: '', busy: false, speaking: false };
   const state = { spec: null, pid: null, i: 0, timer: null, inFlight: false, intervalMs: 1000, lastResult: null,
                   stepStart: 0, lastFound: 0, results: [], sessionId: null, source: 'camera', stream: null, rtt: [] };
@@ -122,6 +124,7 @@
     state.stepStart = performance.now(); state.lastFound = 0; state.lastResult = null;
     state.results.push({ step_order: s.order, part_id: s.part_id, frames: 0, hits: 0, seconds: 0, attempts: 1, done_by: null, checks: [], override: false });
     state.checking = false; $('done').disabled = false; $('done').textContent = 'Done'; hideOverride();
+    state.lastAuto = performance.now(); state.autoNo = 0;
     say(s.instruction);
     loop(true);
   }
@@ -177,6 +180,7 @@
       return;
     }
     rec.hits++; state.lastFound = performance.now();
+    if (AUTO && !state.checking && state.autoNo < 6 && performance.now() - state.lastAuto > AUTO_EVERY_MS) { state.lastAuto = performance.now(); autoCheck(); }
     // object-fit: cover maps the frame onto the element: scale by the larger ratio, centre the overflow
     const sx = c.clientWidth / res.width, sy = c.clientHeight / res.height, k = Math.max(sx, sy);
     const ox = (c.clientWidth - res.width * k) / 2, oy = (c.clientHeight - res.height * k) / 2;
@@ -201,7 +205,7 @@
     const part = state.spec.parts.find(p => p.id === s.part_id) || { name: s.part_id };
     const frame = grabFrame();
     if (!frame) { toast('No camera frame yet', true); return; }
-    state.checking = true; $('done').disabled = true; $('done').textContent = 'Checking…';
+    state.checking = true; state.lastAuto = performance.now(); $('done').disabled = true; $('done').textContent = 'Checking…';
     status(`Checking: ${s.check || s.instruction}`, true);
     try {
       const r = await fetch('/guide/check', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -222,6 +226,29 @@
     }
   }
 
+  // hands-free: Spark looks at the frame while the part is in view; yes advances by itself, anything else stays
+  // silent (the trainee still has Done for the explicit call). Capped per step so a never-true check is not an endless bill.
+  async function autoCheck() {
+    if (state.checking || !$('finish').hidden) return;
+    const s = state.spec.steps[state.i], rec = state.results[state.results.length - 1];
+    const frame = grabFrame(); if (!frame) return;
+    state.checking = true;
+    $('listen').hidden = false; $('listen').textContent = 'Checking the step…';
+    try {
+      const r = await fetch('/guide/check', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ procedure_id: state.pid, step_order: s.order, image: frame, session_id: state.sessionId }) });
+      if (!r.ok) return;
+      const res = await r.json();
+      rec.checks.push({ verdict: res.verdict, note: res.note, wall_ms: res.wall_ms, by: 'auto' });
+      if (res.verdict === 'yes') { state.checking = false; done('auto'); return; }
+      state.autoNo++;
+    } catch (e) { /* next frame */ }
+    finally {
+      state.checking = false;
+      if (!voice.on) $('listen').hidden = true; else $('listen').textContent = 'Listening… say "done" or ask a question';
+    }
+  }
+
   function showOverride() {
     const rec = state.results[state.results.length - 1];
     if (rec.override || $('override')) return;
@@ -236,6 +263,7 @@
     const rec = state.results[state.results.length - 1];
     rec.seconds = Math.round((performance.now() - state.stepStart) / 100) / 10; rec.done_by = by || 'tap';
     chime();
+    if (by === 'auto') toast('Done, nice.');
     if (state.i + 1 < state.spec.steps.length) { state.i++; showStep(); }
     else finish();
   }

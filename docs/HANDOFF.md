@@ -15,6 +15,21 @@ The quick-tunnel URL changes every time the tunnel restarts. For a judge URL tha
 Cloudflare tunnel (or any HTTPS reverse proxy) to 127.0.0.1:8000 and start the backend with
 `TUNNEL_URL=https://your.domain scripts/serve.sh`. iOS Safari needs HTTPS for the camera; everything else works on http.
 
+## Keeping it up for the week
+
+```bash
+nohup scripts/keepalive.sh > logs/keepalive.log 2>&1 &     # restarts backend/tunnel if they die, keeps the Mac awake
+cat logs/public-url.txt                                     # the current public URL
+```
+
+With a named tunnel on your domain: `TUNNEL_URL=https://apprentice.yourdomain scripts/keepalive.sh`.
+
+## Hands-free
+
+Guide now checks the step by itself: once the part is in view, Spark looks at a frame every 4 s and advances on a yes
+(capped at six silent checks per step, so a step that is never done costs about a cent). Done, Enter or saying "done"
+asks for the check right now. `?auto=0` turns it off.
+
 ## Your list (from the pivot plan)
 
 1. **Film tonight.** Desk demo expert take (60 s): close the lid, unplug the charger, cap the bottle, mouse on the

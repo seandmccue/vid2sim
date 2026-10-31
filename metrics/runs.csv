@@ -678,3 +678,34 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261031-172318-2ff95f,guide-forklift-test,guide_find,sam-3.1,0.62,0.0025,1,0,0,yellow propane fuel tank | matches=1/1 best=0.94
 20261031-172318-2ff95f,guide-forklift-test,guide_find,sam-3.1,1.42,0.0025,1,0,0,red rectangular tail light | matches=0/0 best=0.00
 20261031-172318-2ff95f,guide-forklift-test,guide_find,sam-3.1,0.74,0.0025,1,0,0,black circular steering wheel | matches=0/0 best=0.00
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.80,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.79,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,2.38,0.0025,0,1273,223,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.58,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.64,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.93,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,2.46,0.0031,0,1273,357,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.87,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.03,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,2.64,0.0029,0,1273,311,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.76,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.74,0.0025,1,0,0,laptop | matches=1/1 best=0.97
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,1.72,0.0028,0,1273,281,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.83,0.0025,1,0,0,laptop | matches=1/1 best=0.97
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.11,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,1.27,0.0025,0,1273,221,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.80,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.81,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.76,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.04,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,1.93,0.0028,0,1273,279,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.75,0.0025,1,0,0,laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.62,0.0025,1,0,0,laptop | matches=1/1 best=0.97
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.59,0.0025,1,0,0,laptop | matches=1/1 best=0.97
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.70,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,1.71,0.0025,0,1273,222,laptop lid is closed -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.80,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.78,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.99,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.71,0.0025,1,0,0,phone charger cable | matches=0/0 best=0.00
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.79,0.0025,1,0,0,phone charger cable | matches=0/0 best=0.00
