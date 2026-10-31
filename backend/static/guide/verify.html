@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apprentice · Verify</title>
+<link rel="stylesheet" href="guide.css">
+<style>
+  body { background:var(--bg); }
+  .wrap { max-width:860px; margin:0 auto; padding:28px 20px 60px; }
+  .wrap h1 { margin:0 0 4px; font-size:30px; }
+  .lead { color:var(--muted); margin:0 0 20px; }
+  form.upload { background:#171a21; border:1px solid #262a33; border-radius:16px; padding:18px; display:grid; gap:12px; }
+  form.upload select, form.upload input[type=file] { font:inherit; color:var(--text); background:#0b0d11; border:1px solid #262a33; border-radius:10px; padding:10px; }
+  form.upload button { padding:14px; border:0; border-radius:12px; background:var(--accent); color:#06202b; font-weight:800; font-size:17px; }
+  .log { font:13px/1.5 ui-monospace, Menlo, monospace; color:var(--muted); white-space:pre-wrap; background:#0b0d11; border-radius:12px; padding:12px; max-height:200px; overflow:auto; }
+  .verdict { display:flex; align-items:center; gap:16px; padding:18px; border-radius:16px; margin:18px 0; background:#171a21; border:1px solid #262a33; }
+  .verdict.pass { border-color:var(--ok); } .verdict.fail { border-color:var(--bad); }
+  .verdict .big { font-size:34px; font-weight:900; }
+  .verdict.pass .big { color:var(--ok); } .verdict.fail .big { color:var(--bad); }
+  .verdict .score { font-size:22px; font-weight:700; margin-left:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #262a33; vertical-align:top; font-size:15px; }
+  th { color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.3px; }
+  td img { width:120px; height:68px; object-fit:cover; border-radius:8px; background:#0b0d11; }
+  .st { display:inline-block; padding:3px 10px; border-radius:999px; font-weight:700; font-size:13px; }
+  .st.done { background:rgba(74,222,128,.15); color:var(--ok); }
+  .st.missed { background:rgba(248,113,113,.15); color:var(--bad); }
+  .st.out_of_order { background:rgba(251,191,36,.15); color:var(--warn); }
+  .safety { color:var(--warn); font-size:12px; font-weight:700; margin-left:6px; }
+  .note { color:var(--muted); font-size:13px; }
+  .actions { display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
+  .actions button, .actions a { padding:12px 16px; border-radius:12px; border:1px solid #3a3f4a; background:transparent; color:var(--text); font:inherit; font-weight:600; text-decoration:none; }
+  .meta { color:var(--muted); font-size:13px; }
+  @media print {
+    body { background:#fff; color:#111; } :root { --text:#111; --muted:#555; --bg:#fff; }
+    .actions, form.upload, .log, .lead { display:none !important; }
+    .verdict, table { border-color:#ccc; } th, td { border-color:#ddd; }
+    .verdict.pass .big { color:#15803d; } .verdict.fail .big { color:#b91c1c; }
+    .st.done { color:#15803d; } .st.missed { color:#b91c1c; } .st.out_of_order { color:#b45309; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Verify</h1>
+  <p class="lead">Film yourself doing the procedure. Apprentice watches the video, maps what you did to the expert's steps, and grades it: done, missed, out of order. A skipped safety step fails the attempt.</p>
+
+  <form class="upload" id="upload" hidden>
+    <label>Procedure <select id="procedure"></select></label>
+    <label>Your video (MP4 or MOV) <input type="file" id="file" accept="video/*,.mp4,.mov"></label>
+    <button type="submit">Grade this video</button>
+  </form>
+
+  <div id="progress" hidden>
+    <p id="state" class="lead"></p>
+    <div id="log" class="log"></div>
+  </div>
+
+  <div id="report" hidden>
+    <div id="verdict" class="verdict"><div><div class="big" id="vtext"></div><div id="vsub" class="meta"></div></div><div class="score" id="vscore"></div></div>
+    <p id="summary"></p>
+    <table>
+      <thead><tr><th>#</th><th>Expert step</th><th>Result</th><th>Seen</th><th>From your video</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p id="extra" class="meta"></p>
+    <div class="actions">
+      <button onclick="window.print()">Save as PDF</button>
+      <button id="copy">Copy shareable link</button>
+      <a href="verify.html">Grade another video</a>
+      <a href="./">Guide</a>
+    </div>
+    <p id="meta" class="meta"></p>
+  </div>
+</div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const q = new URLSearchParams(location.search);
+  const sid = q.get('session');
+
+  async function setupUpload() {
+    $('upload').hidden = false;
+    const sel = $('procedure');
+    const list = await (await fetch('/guide/procedures')).json();
+    for (const p of list) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.title; if (p.id === q.get('procedure')) o.selected = true; sel.appendChild(o); }
+    $('upload').onsubmit = async e => {
+      e.preventDefault();
+      const f = $('file').files[0]; if (!f) return;
+      const fd = new FormData(); fd.append('video', f, f.name);
+      $('upload').querySelector('button').disabled = true;
+      const r = await fetch(`/verify/${encodeURIComponent(sel.value)}`, { method: 'POST', body: fd });
+      if (!r.ok) { alert('Upload failed: ' + (await r.text())); $('upload').querySelector('button').disabled = false; return; }
+      const j = await r.json();
+      history.replaceState(null, '', `verify.html?session=${j.session_id}`);
+      $('upload').hidden = true;
+      poll(j.session_id);
+    };
+  }
+
+  async function poll(id) {
+    $('progress').hidden = false;
+    for (;;) {
+      let st;
+      try { st = await (await fetch(`/verify/${id}`)).json(); } catch (e) { $('state').textContent = 'Backend not reachable…'; await sleep(3000); continue; }
+      $('state').textContent = st.state === 'running' ? 'Grading… Spark is watching the video.' : st.state === 'queued' ? 'Queued…' : st.state === 'error' ? 'Failed: ' + st.error : '';
+      $('log').textContent = (st.log || []).join('\n');
+      if (st.state === 'done') { $('progress').hidden = true; render(st.report, id); return; }
+      if (st.state === 'error') return;
+      await sleep(2000);
+    }
+  }
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function render(r, id) {
+    $('report').hidden = false;
+    document.title = `Apprentice · Verify · ${r.procedure_title}`;
+    $('verdict').className = 'verdict ' + (r.passed ? 'pass' : 'fail');
+    $('vtext').textContent = r.verdict;
+    $('vsub').textContent = `${r.procedure_title} · ${r.steps_done_in_order} of ${r.steps_total} steps done in order` + (r.missed_safety.length ? ` · safety step${r.missed_safety.length > 1 ? 's' : ''} ${r.missed_safety.join(', ')} missed` : '');
+    $('vscore').textContent = `Score ${r.score}`;
+    $('summary').textContent = r.summary || '';
+    const label = { done: 'Done', missed: 'Missed', out_of_order: 'Out of order' };
+    $('rows').innerHTML = r.steps.map(s => `<tr>
+      <td>${s.order}</td>
+      <td>${esc(s.instruction)}${s.safety ? '<span class="safety">SAFETY</span>' : ''}${s.status === 'missed' && s.failure ? `<div class="note">${esc(s.failure)}</div>` : ''}</td>
+      <td><span class="st ${s.status}">${label[s.status] || s.status}</span></td>
+      <td class="note">${s.start_frame != null ? `${(s.start_frame / 30).toFixed(0)}–${(s.end_frame / 30).toFixed(0)} s` : '—'}${s.note ? `<br>${esc(s.note)}` : ''}</td>
+      <td>${s.thumbnail ? `<img src="/verify/${id}/${s.thumbnail}" alt="">` : ''}</td>
+    </tr>`).join('');
+    $('extra').textContent = r.extra_actions && r.extra_actions.length ? 'Also seen, not in the procedure: ' + r.extra_actions.join('; ') : '';
+    $('meta').textContent = `Session ${id} · video ${r.video} (${r.duration_s}s) · graded in ${r.wall_s}s for $${r.cost_usd} with Muse Spark 1.3 and Muse Voice Transcribe.`;
+    $('copy').onclick = async () => { try { await navigator.clipboard.writeText(location.href); $('copy').textContent = 'Link copied'; } catch (e) { prompt('Copy this link', location.href); } };
+  }
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  if (sid) poll(sid); else setupUpload();
+})();
+</script>
+</body>
+</html>

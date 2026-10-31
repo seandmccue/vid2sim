@@ -40,3 +40,4 @@ data/procedures/*/download/
 # guide mode
 logs/
 data/sessions/
+data/verify/

@@ -152,3 +152,18 @@ namespace Vid2Sim.Generated.Hosts
     }}
 }}
 """
+
+
+def mock_observation(spec: dict, info: VideoInfo) -> dict:
+    """Every expert step seen in order, evenly spaced over the trainee video, the shape Spark returns for Verify.
+    VID2SIM_MOCK_SKIP_STEPS="3,5" leaves those steps out so the fail path can be exercised."""
+    import os
+    skip = {int(x) for x in os.environ.get("VID2SIM_MOCK_SKIP_STEPS", "").split(",") if x.strip().isdigit()}
+    steps = [s for s in spec["steps"] if s["order"] not in skip]
+    n = max(1, len(steps)); per = max(1, info.nb_frames // n)
+    return {
+        "observed_steps": [{"step_order": s["order"], "start_frame": i * per, "end_frame": min(info.nb_frames - 1, (i + 1) * per - 1),
+                            "note": f"trainee: {s['instruction']}", "confidence": 0.9} for i, s in enumerate(steps)],
+        "extra_actions": ["wiped the housing with a rag"] if skip else [],
+        "summary": "Mock observation.",
+    }

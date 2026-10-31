@@ -70,6 +70,15 @@ current frame as context ("which one is the water bottle?" → "the blue bottle 
 about 2 s). `data/guide.json` orders the landing page: featured procedures first with a blurb, the rest under
 "More procedures"; a "Sample footage" switch in the guide runs the same loop on a pre-recorded video.
 
+## Verify mode (grade a trainee's video)
+
+The pipeline already turns a video into a step list, so `backend/pipeline/verify.py` runs it on the trainee's
+video with the expert's steps in the prompt: Spark lists every action it sees and the expert step each one
+accomplishes, `diff()` marks each expert step done / out of order / missed (longest in-order run counts as done),
+score = steps done in order / total, and a missed safety step fails the attempt whatever the score. Upload at
+`/guide/verify.html`, or `POST /verify/{procedure}` with the video; the report has a thumbnail from the trainee's
+own video per matched step, prints to PDF, and its URL is the shareable link. Under a dollar per video.
+
 ## Repo layout
 
 ```text
