@@ -89,3 +89,36 @@ def test_check_route_mock_advances_and_builds_messages(tmp_path, monkeypatch):
     c = TestClient(app_mod.app)
     r = c.post("/guide/check", json={"procedure_id": "x", "step_order": 1, "image": _jpeg_data_url()})
     assert r.status_code == 200 and r.json()["verdict"] == "yes" and r.json()["advance"] is True
+
+
+def test_voice_intents_and_routes(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from backend import app as app_mod
+    from backend.guide import classify
+    assert classify("done") == "done" and classify("Okay, next.") == "done" and classify("finished") == "done"
+    assert classify("which one is the filter?") == "question" and classify("where is the switch") == "question"
+    assert classify("uh huh") == "none" and classify("") == "none"
+
+    data = tmp_path / "procedures"; d = data / "x"; d.mkdir(parents=True)
+    spec = {"schema_version": "1.0", "procedure": {"id": "x", "title": "x", "source_video": "x", "fps": 30, "width": 10, "height": 10, "duration_s": 1},
+            "parts": [{"id": "p", "name": "Bypass valve", "prompt_phrase": "red valve", "interaction": "turn", "keyframe": 0, "box": [0, 0, 1, 1], "size_hint_m": 0.1, "confidence": 1, "source": "manual"}],
+            "steps": [{"order": 1, "part_id": "p", "action": "turn_cw", "instruction": "Close it.", "start_frame": 0, "end_frame": 1, "check": "valve is closed", "failure": "", "safety": False, "coach": "c"}]}
+    (d / "spec.json").write_text(json.dumps(spec))
+    (tmp_path / "guide.json").write_text(json.dumps({"featured": [{"id": "nope"}, {"id": "x", "blurb": "Featured blurb"}]}))
+    monkeypatch.setattr(app_mod, "DATA", data)
+    c = TestClient(app_mod.app)
+
+    cards = c.get("/guide/procedures").json()
+    assert cards[0]["id"] == "x" and cards[0]["featured"] is True and cards[0]["description"] == "Featured blurb"
+
+    # a tiny real WAV through /guide/hear (mock ASR says "done"); ffmpeg converts it on the way
+    import struct, wave
+    wav = tmp_path / "a.wav"
+    with wave.open(str(wav), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(16000); w.writeframes(struct.pack("<" + "h" * 8000, *([0] * 8000)))
+    r = c.post("/guide/hear", files={"audio": ("a.wav", wav.read_bytes(), "audio/wav")}, data={"procedure_id": "x", "step_order": "1"})
+    assert r.status_code == 200 and r.json()["intent"] == "done"
+    assert c.post("/guide/hear", files={"audio": ("a.wav", b"", "audio/wav")}).status_code == 400
+
+    r = c.post("/guide/ask", json={"procedure_id": "x", "step_order": 1, "question": "which one is the bypass valve?", "image": _jpeg_data_url()})
+    assert r.status_code == 200 and "Bypass valve" in r.json()["answer"]

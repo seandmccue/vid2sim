@@ -653,3 +653,8 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261031-171059-d7e5ff,guide:desk-demo,guide_find,sam-3.1,0.69,0.0025,1,0,0,laptop | matches=3/3 best=0.92
 20261031-171059-d7e5ff,guide:desk-demo,guide_find,sam-3.1,0.65,0.0025,1,0,0,laptop | matches=3/3 best=0.92
 20261031-171059-d7e5ff,guide:desk-demo,guide_find,sam-3.1,1.89,0.0025,1,0,0,laptop | matches=3/3 best=0.92
+20261031-171701-ea8608,guide-voice-test,guide_hear,muse-voice-transcribe-1.0,0.84,0.0001,0,0,0,done: done
+20261031-171701-ea8608,guide-voice-test,guide_hear,muse-voice-transcribe-1.0,0.78,0.0002,0,0,0,question: Which one is the water bottle?
+20261031-171701-ea8608,guide-voice-test,guide_ask,muse-spark-1.3,2.29,0.0027,0,905,377,which one is the water bottle? -> The water bottle is the blue bottle on t
+20261031-171701-ea8608,guide-voice-test,guide_ask,muse-spark-1.3,2.01,0.0024,0,905,309,where is the charger plugged in? -> It's plugged into the wall socket below 
+20261031-171701-ea8608,guide-voice-test,guide_ask,muse-spark-1.3,2.23,0.0028,0,907,400,"do I need to turn the cap hard? -> Just twist it until snug, no need to for"

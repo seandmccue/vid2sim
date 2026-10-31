@@ -63,7 +63,12 @@ about 820 ms, $0.0025 a frame; laptop, water bottle and mouse at 0.95+ confidenc
 `backend/guide.py`, `backend/static/guide/`. Tapping Done sends the current frame to `POST /guide/check`, where
 **Muse Spark 1.3** answers whether the step's `check` statement is true in that photo (yes advances, no shows the
 step's coach line and offers a logged override, unclear asks for a closer look); 7/7 on desk photos, 1.6 to 2.4 s,
-about $0.002 a check. Voice follows.
+about $0.002 a check. The mic button turns on listening: 3 s segments go to `POST /guide/hear`, **Muse Voice
+Transcribe** returns the words, and "done" / "next" / "finished" runs the step check hands-free while anything
+phrased as a question goes to `POST /guide/ask`, where Spark answers in one spoken sentence with the spec and the
+current frame as context ("which one is the water bottle?" → "the blue bottle on the right side of the desk",
+about 2 s). `data/guide.json` orders the landing page: featured procedures first with a blurb, the rest under
+"More procedures"; a "Sample footage" switch in the guide runs the same loop on a pre-recorded video.
 
 ## Repo layout
 

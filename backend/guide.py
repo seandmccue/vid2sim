@@ -250,3 +250,126 @@ def check_response(step: dict, part: dict, res: CheckResult) -> dict:
     else:
         out["advance"] = False; out["message"] = f"Can't tell. Hold the phone closer to the {part['name']} and tap Done again."
     return out
+
+
+# ------------------------------------------------------------------ voice: "done" and questions
+
+DONE_WORDS = ("done", "next", "finished", "finish", "complete", "completed", "okay next", "ok next", "got it")
+QUESTION_STARTS = ("which", "where", "what", "how", "why", "is ", "are ", "can ", "do ", "does ", "should ", "could ", "when", "who")
+PRICE_ASR_PER_MIN = 0.006
+
+
+def classify(transcript: str) -> str:
+    """done | question | none from a short utterance. Trigger words win when the utterance is short; anything
+    phrased like a question (or ending in one) goes to Spark; chatter is ignored."""
+    t = " ".join(transcript.lower().replace("?", " ? ").split())
+    if not t:
+        return "none"
+    words = [w.strip(".,!") for w in t.split() if w != "?"]
+    short = len(words) <= 4
+    if short and any(w in DONE_WORDS for w in words) or t.strip(" .!") in DONE_WORDS:
+        return "done"
+    if "?" in t or any(t.startswith(q) for q in QUESTION_STARTS) or (len(words) >= 3 and any(w in ("which", "where", "what", "how") for w in words[:3])):
+        return "question"
+    return "none"
+
+
+def _to_wav(audio: bytes, suffix: str) -> bytes:
+    """Whatever the browser recorded (webm/opus on Chrome, mp4/aac on iOS) to 16 kHz mono WAV for the ASR."""
+    import subprocess, tempfile, os
+    with tempfile.TemporaryDirectory() as td:
+        src = os.path.join(td, "in" + suffix); dst = os.path.join(td, "out.wav")
+        with open(src, "wb") as fh:
+            fh.write(audio)
+        subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", src, "-ac", "1", "-ar", "16000", "-f", "wav", dst],
+                       check=True, timeout=30)
+        with open(dst, "rb") as fh:
+            return fh.read()
+
+
+def hear(audio: bytes, mime: str, metrics: Metrics | None = None) -> dict:
+    """One short recording → transcript (Muse Voice Transcribe) → intent."""
+    suffix = ".mp4" if "mp4" in mime or "m4a" in mime or "aac" in mime else ".ogg" if "ogg" in mime else ".wav" if "wav" in mime else ".webm"
+    if is_mock():
+        text = "done"
+        if metrics: metrics.log("guide_hear", "muse-voice-transcribe-1.0", 0.0, 0.0, note="mock")
+        return {"transcript": text, "intent": classify(text), "wall_ms": 0, "cost_usd": 0.0}
+    import tempfile, os
+    from .pipeline.transcribe import _post_wav
+    wav = _to_wav(audio, suffix)
+    with Timer() as t:
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as fh:
+            fh.write(wav); path = fh.name
+        try:
+            payload = with_retries(lambda: _post_wav(__import__("pathlib").Path(path)), label="ASR guide_hear", tries=2, base_delay=0.5)
+        finally:
+            os.unlink(path)
+    text = (payload.get("transcript") or "").strip()
+    seconds = int(payload.get("audioDurationMs", 0)) / 1000 or len(wav) / 32000
+    cost = seconds / 60 * PRICE_ASR_PER_MIN
+    intent = classify(text)
+    if metrics:
+        metrics.log("guide_hear", "muse-voice-transcribe-1.0", t.wall, cost, note=f"{intent}: {text[:50]}")
+    return {"transcript": text, "intent": intent, "wall_ms": int(t.wall * 1000), "cost_usd": cost}
+
+
+def ask(question: str, spec: dict, step: dict, part: dict, jpeg: bytes | None, metrics: Metrics | None = None) -> dict:
+    """A spoken question answered in one sentence by Spark, with the procedure as context and the current frame
+    when there is one ("which one is the bypass valve?" needs the picture)."""
+    if is_mock():
+        if metrics: metrics.log("guide_ask", SPARK_MODEL, 0.0, 0.0, note="mock")
+        return {"answer": f"It's the {part['name']}: {part.get('prompt_phrase', '')}.", "wall_ms": 0, "cost_usd": 0.0}
+    steps = "\n".join(f"{s['order']}. {s['instruction']} (part: {s['part_id']}; check: {s.get('check', '')})" for s in spec["steps"])
+    parts = "\n".join(f"- {p['id']}: {p['name']}, looks like {p.get('prompt_phrase', '')}" for p in spec["parts"])
+    prompt = (f"You are guiding a trainee through \"{spec['procedure']['title']}\" on the real machine, by phone camera. "
+              f"They are on step {step['order']}: {step['instruction']} The part for this step is the {part['name']} "
+              f"({part.get('prompt_phrase', '')}). Steps:\n{steps}\nParts:\n{parts}\n\n"
+              f"The trainee asks: \"{question}\"\nAnswer in ONE short spoken sentence, plain words, no lists. If the photo "
+              f"is attached and the question is about where something is, say where it is in the photo (left, right, "
+              f"above the ...). If you can't tell, say so in one sentence.")
+    content = [{"type": "input_text", "text": prompt}]
+    if jpeg:
+        data, _, _ = _prepare(jpeg)
+        content.append({"type": "input_image", "image_url": f"data:image/jpeg;base64,{base64.b64encode(data).decode()}"})
+    c = client()
+
+    def once():
+        txt, ui, uo = "", 0, 0
+        stream = c.responses.create(model=SPARK_MODEL, input=[{"type": "message", "role": "user", "content": content}],
+                                    reasoning={"effort": "low"}, max_output_tokens=400, stream=True)
+        for kind, payload in iter_output_text(stream):
+            if kind == "delta":
+                txt += payload
+            else:
+                u = getattr(payload, "usage", None)
+                if u:
+                    ui, uo = int(getattr(u, "input_tokens", 0)), int(getattr(u, "output_tokens", 0))
+        return txt, ui, uo
+
+    with Timer() as t:
+        txt, ui, uo = with_retries(once, label="Spark guide_ask", tries=2, base_delay=0.5)
+    answer = " ".join(txt.split())[:300] or "Sorry, I didn't catch that."
+    cost = spark_cost(ui, uo)
+    if metrics:
+        metrics.log("guide_ask", SPARK_MODEL, t.wall, cost, tokens_in=ui, tokens_out=uo, note=f"{question[:40]} -> {answer[:40]}")
+    return {"answer": answer, "wall_ms": int(t.wall * 1000), "cost_usd": cost}
+
+
+def featured(data_dir, cards: list[dict]) -> list[dict]:
+    """data/guide.json orders and annotates the landing page: featured procedures first with a blurb and photo,
+    the rest under 'more'. Ids without a spec are skipped (the compressor appears when its spec lands)."""
+    import pathlib
+    cfg_path = pathlib.Path(data_dir).parent / "guide.json"
+    cfg = json.loads(cfg_path.read_text()) if cfg_path.exists() else {}
+    by_id = {c["id"]: c for c in cards}
+    out = []
+    for f in cfg.get("featured", []):
+        c = by_id.pop(f["id"], None)
+        if c is None:
+            continue
+        c = dict(c, featured=True)
+        if f.get("blurb"): c["description"] = f["blurb"]
+        if f.get("photo"): c["thumbnail"] = f["photo"]
+        out.append(c)
+    rest = sorted(by_id.values(), key=lambda c: c["title"])
+    return out + [dict(c, featured=False) for c in rest]

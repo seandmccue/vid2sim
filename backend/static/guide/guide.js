@@ -8,10 +8,11 @@
   const q = new URLSearchParams(location.search);
   const MUTE = q.get('mute') === '1';
   const FLOOR = 0.5;
+  const voice = { on: false, rec: null, stream: null, mime: '', busy: false, speaking: false };
   const state = { spec: null, pid: null, i: 0, timer: null, inFlight: false, intervalMs: 1000, lastResult: null,
                   stepStart: 0, lastFound: 0, results: [], sessionId: null, source: 'camera', stream: null, rtt: [] };
 
-  const say = text => { if (MUTE || !('speechSynthesis' in window) || !text) return; try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(text)); } catch (e) {} };
+  const say = text => { if (MUTE || !('speechSynthesis' in window) || !text) return; try { const u = new SpeechSynthesisUtterance(text); voice.speaking = true; u.onend = u.onerror = () => { voice.speaking = false; }; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { voice.speaking = false; } };
   const chime = () => { if (MUTE) return; try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = 0.08; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.12); } catch (e) {} };
   const toast = (text, bad) => { const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = text; $('stage').appendChild(t); setTimeout(() => t.remove(), bad ? 6000 : 3500); };
 
@@ -23,9 +24,12 @@
     let list = [];
     try { list = await (await fetch('/guide/procedures')).json(); } catch (e) { ul.innerHTML = '<li class="muted">Backend not reachable.</li>'; return; }
     if (!list.length) { ul.innerHTML = '<li class="muted">No procedures yet. Run the pipeline on an expert video first.</li>'; return; }
-    ul.innerHTML = '';
+    ul.innerHTML = ''; $('more-list').innerHTML = '';
+    const more = list.filter(p => p.featured === false), featured = list.filter(p => p.featured !== false);
+    $('more').hidden = !(featured.length && more.length);
     for (const p of list) {
       const li = document.createElement('li');
+      if (p.featured) li.className = 'featured';
       li.innerHTML = `${p.thumbnail ? `<img src="${p.thumbnail}" alt="">` : '<div class="ph">▣</div>'}
         <div><h3></h3><p class="d"></p><p class="muted">${p.steps} steps · ${p.parts} parts${p.safety_steps ? ` · ${p.safety_steps} safety` : ''}</p></div>
         <div class="actions"><button class="go">Guide me (camera)</button>${p.sample_video ? '<button class="sample">Watch on sample footage</button>' : ''}</div>`;
@@ -33,13 +37,17 @@
       li.querySelector('.d').textContent = p.description;
       li.querySelector('.go').onclick = () => start(p.id, null);
       const s = li.querySelector('.sample'); if (s) s.onclick = () => start(p.id, p.sample_video);
-      ul.appendChild(li);
+      (featured.length && p.featured === false ? $('more-list') : ul).appendChild(li);
     }
   }
 
   // ---------------- guide
   async function start(pid, videoUrl) {
     state.pid = pid; state.i = 0; state.results = []; state.sessionId = null; state.rtt = [];
+    stopListening();
+    try { if (!state.cards) state.cards = await (await fetch('/guide/procedures')).json(); } catch (e) { state.cards = []; }
+    state.card = (state.cards || []).find(c => c.id === pid) || {};
+    state.videoUrl = videoUrl;
     state.source = videoUrl ? 'sample' : 'camera';
     history.replaceState(null, '', `?procedure=${encodeURIComponent(pid)}${videoUrl ? '&video=' + encodeURIComponent(videoUrl) : ''}${MUTE ? '&mute=1' : ''}`);
     try { state.spec = await (await fetch(`/api/procedures/${encodeURIComponent(pid)}/spec`)).json(); }
@@ -47,8 +55,20 @@
     document.getElementById('app').className = 'guiding';
     $('guide').hidden = false; $('finish').hidden = true; $('card').hidden = false;
     const ok = await openSource(videoUrl);
+    sourceButton(ok);
     if (!ok) return;
     showStep();
+  }
+
+  // camera <-> sample footage, same loop either way; offered prominently when the camera is not available
+  function sourceButton(cameraOk) {
+    const b = $('source');
+    const hasSample = !!state.card.sample_video;
+    b.hidden = !(hasSample || state.source === 'sample');
+    b.textContent = state.source === 'sample' ? 'Use camera' : 'Sample footage';
+    b.style.background = cameraOk === false ? 'var(--accent)' : '';
+    b.style.color = cameraOk === false ? '#06202b' : '';
+    b.onclick = () => start(state.pid, state.source === 'sample' ? null : state.card.sample_video);
   }
 
   async function openSource(videoUrl) {
@@ -217,6 +237,7 @@
 
   async function finish() {
     if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    stopListening();
     clearOverlay(); status('');
     const total = state.results.reduce((a, r) => a + r.seconds, 0);
     const frames = state.results.reduce((a, r) => a + r.frames, 0), hits = state.results.reduce((a, r) => a + r.hits, 0);
@@ -232,10 +253,79 @@
     say('Procedure complete.');
   }
 
+  // ---------------- voice: a 3 s recorder restarted in a loop so every blob is a complete file; "done" advances,
+  // a question goes to Spark with the current frame and the answer is spoken. Paused while we speak.
+  async function startListening() {
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast('Voice needs a newer browser', true); return; }
+    try { voice.stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) { toast('Microphone blocked: ' + (e.name || e.message), true); return; }
+    voice.mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+    voice.on = true; $('mic').classList.add('on'); $('listen').hidden = false;
+    recordSegment();
+  }
+  function stopListening() {
+    voice.on = false; $('mic').classList.remove('on'); $('listen').hidden = true;
+    try { if (voice.rec && voice.rec.state !== 'inactive') voice.rec.stop(); } catch (e) {}
+    if (voice.stream) { for (const t of voice.stream.getTracks()) t.stop(); voice.stream = null; }
+  }
+  function recordSegment() {
+    if (!voice.on || !voice.stream) return;
+    const chunks = [];
+    const rec = new MediaRecorder(voice.stream, voice.mime ? { mimeType: voice.mime } : undefined);
+    voice.rec = rec;
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      if (voice.on) recordSegment();                                   // next segment right away
+      const blob = new Blob(chunks, { type: rec.mimeType || voice.mime || 'audio/webm' });
+      if (blob.size > 2000 && !voice.speaking) hear(blob);           // tiny blobs are silence
+    };
+    rec.start();
+    setTimeout(() => { try { if (rec.state !== 'inactive') rec.stop(); } catch (e) {} }, 3000);
+  }
+  async function hear(blob) {
+    if (voice.busy || !$('finish').hidden) return;
+    voice.busy = true;
+    try {
+      const fd = new FormData();
+      fd.append('audio', blob, 'segment.' + (blob.type.includes('mp4') ? 'mp4' : blob.type.includes('ogg') ? 'ogg' : 'webm'));
+      fd.append('procedure_id', state.pid); fd.append('step_order', String(state.spec.steps[state.i].order));
+      const r = await fetch('/guide/hear', { method: 'POST', body: fd });
+      if (!r.ok) return;
+      const res = await r.json();
+      if (!res.transcript) return;
+      $('listen').textContent = `Heard: “${res.transcript}”`;
+      setTimeout(() => { if (voice.on) $('listen').textContent = 'Listening… say "done" or ask a question'; }, 4000);
+      if (res.intent === 'done') checkAndAdvance('voice');
+      else if (res.intent === 'question') askQuestion(res.transcript);
+    } catch (e) { /* a dropped segment is fine; the next one is 3 s away */ }
+    finally { voice.busy = false; }
+  }
+  async function askQuestion(question) {
+    const s = state.spec.steps[state.i], rec = state.results[state.results.length - 1];
+    status(`Thinking about: “${question}”`, true);
+    try {
+      const r = await fetch('/guide/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ procedure_id: state.pid, step_order: s.order, question, image: grabFrame(), session_id: state.sessionId }) });
+      const res = await r.json();
+      (rec.questions = rec.questions || []).push({ question, answer: res.answer, wall_ms: res.wall_ms });
+      toast(res.answer); speak(res.answer);
+      $('hint').textContent = res.answer; $('hint').className = 'hint';
+    } catch (e) { toast('Could not answer that one.', true); }
+  }
+  function speak(text) {
+    if (MUTE || !('speechSynthesis' in window) || !text) return;
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      voice.speaking = true; u.onend = u.onerror = () => { voice.speaking = false; };
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) { voice.speaking = false; }
+  }
+  $('mic').onclick = () => voice.on ? stopListening() : startListening();
+
   $('done').onclick = () => checkAndAdvance('tap');
   $('again').onclick = () => { $('finish').hidden = true; state.i = 0; state.results = []; state.rtt = []; showStep(); };
-  $('home').onclick = () => { stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
-  $('back').onclick = () => { if (state.timer) { clearInterval(state.timer); state.timer = null; } stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
+  $('home').onclick = () => { stopListening(); stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
+  $('back').onclick = () => { if (state.timer) { clearInterval(state.timer); state.timer = null; } stopListening(); stopSource(); history.replaceState(null, '', location.pathname + (MUTE ? '?mute=1' : '')); landing(); };
   window.addEventListener('resize', () => { if (state.lastResult) render(state.lastResult); else clearOverlay(); });
   document.addEventListener('keydown', e => { if (e.key === 'Enter' && !$('guide').hidden && $('finish').hidden) checkAndAdvance('key'); });
 

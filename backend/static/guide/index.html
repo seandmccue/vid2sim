@@ -16,6 +16,8 @@
       <p class="sub">Pick a procedure, point your phone at the real thing. Each step's part is found on your camera and boxed; tap Done when the step is finished.</p>
     </header>
     <ul id="procedures" class="cards"><li class="muted">Loading procedures…</li></ul>
+    <details id="more" hidden><summary>More procedures</summary><ul id="more-list" class="cards"></ul></details>
+    <p class="sub foot">No camera on this device? Every procedure has "Watch on sample footage". Built with Muse Spark 1.3, SAM 3.1 and Muse Voice Transcribe through the Meta Model API.</p>
   </section>
 
   <section id="guide" hidden>
@@ -25,6 +27,8 @@
       <div id="dots" class="dots"></div>
       <div id="status" class="status"></div>
       <button id="back" class="back" title="Back to procedures">‹</button>
+      <button id="source" class="source" hidden>Sample footage</button>
+      <div id="listen" class="listen" hidden>Listening… say "done" or ask a question</div>
     </div>
     <div id="card" class="card">
       <div class="row">
@@ -36,7 +40,7 @@
         </div>
       </div>
       <div class="row buttons">
-        <button id="mic" class="mic" disabled title="Voice: coming next">🎤</button>
+        <button id="mic" class="mic" title="Voice: say 'done' or ask a question">🎤</button>
         <button id="done" class="done">Done</button>
       </div>
     </div>
