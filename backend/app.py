@@ -465,6 +465,22 @@ def guide_ask(req: AskRequest):
     return out
 
 
+@app.get("/guide/qr.svg")
+def guide_qr(url: str):
+    """QR code for the landing page: a judge on a laptop scans it to open the same link on a phone."""
+    from fastapi.responses import Response
+    if len(url) > 500 or not url.startswith(("http://", "https://")):
+        raise HTTPException(400, "url must be http(s)")
+    try:
+        import io
+        import qrcode, qrcode.image.svg
+        img = qrcode.make(url, image_factory=qrcode.image.svg.SvgPathImage, box_size=10, border=1)
+        buf = io.BytesIO(); img.save(buf)
+        return Response(buf.getvalue(), media_type="image/svg+xml", headers={"Cache-Control": "public, max-age=3600"})
+    except ImportError:
+        raise HTTPException(503, "pip install qrcode")
+
+
 @app.post("/guide/sessions")
 def guide_save_session(payload: dict):
     from . import guide as g

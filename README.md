@@ -216,7 +216,8 @@ The pre-pivot VR training sim (Unity engine, Muse Code part models, exam mode, Q
 
 ## Docs
 
-- [docs/SUBMISSION.md](docs/SUBMISSION.md): the write-up, numbers to fill from measured runs
+- [docs/HANDOFF.md](docs/HANDOFF.md): what is done and what is left, as of the Oct 31 pivot
+- [docs/SUBMISSION.md](docs/SUBMISSION.md): the submission page text with the measured numbers
 - [docs/VIDEO.md](docs/VIDEO.md): 3-minute shot list timed against the rubric, X post
 - [docs/FILMING.md](docs/FILMING.md): how to shoot and narrate so footage is pipeline-ready
 - [docs/metrics-card.png](docs/metrics-card.png): rendered by `backend/metrics_card.py` from `metrics.json`
