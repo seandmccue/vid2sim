@@ -67,3 +67,6 @@ button { font:inherit; }
 details#more { margin-top:18px; color:var(--muted); }
 details#more summary { cursor:pointer; padding:8px 0; font-weight:600; }
 .foot { font-size:13px; margin-top:28px; }
+.qr { display:flex; gap:16px; align-items:center; background:#171a21; border:1px solid #262a33; border-radius:16px; padding:12px 14px; margin-top:18px; }
+.qr img { width:112px; height:112px; background:#fff; border-radius:10px; padding:6px; }
+.qr .muted { font-size:12px; word-break:break-all; }

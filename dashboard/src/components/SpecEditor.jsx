@@ -4,6 +4,9 @@ import Overlay from './Overlay.jsx'
 
 const clone = (x) => JSON.parse(JSON.stringify(x))
 
+const SPATIAL = /\b(left|right|top|bottom|upper|lower|front|back|rear|first|second|third|fourth|nearest|farthest|middle|centre|center|above|below|beside|next to)\b/i
+const spatial = phrase => { const m = SPATIAL.exec(phrase || ''); return m ? m[1] : null }
+
 export default function SpecEditor({ id, spec: initial, review, bundle, notify, onSaved, webBuild }) {
   const [spec, setSpec] = useState(() => clone(initial))
   const [dirty, setDirty] = useState(false)
@@ -104,7 +107,8 @@ export default function SpecEditor({ id, spec: initial, review, bundle, notify, 
           </ul>
           {part && (
             <div className="partdetail">
-              <label>SAM prompt <input value={part.prompt_phrase} onChange={e => update(n => { n.parts.find(p => p.id === part.id).prompt_phrase = e.target.value })} /></label>
+              <label>SAM prompt <input value={part.prompt_phrase} onChange={e => update(n => { n.parts.find(p => p.id === part.id).prompt_phrase = e.target.value })} className={spatial(part.prompt_phrase) ? 'warn' : ''} /></label>
+              {spatial(part.prompt_phrase) && <div className="why">SAM ignores position words ("{spatial(part.prompt_phrase)}"). Name the object by colour, shape or material instead: "red rocker switch", "brass drain valve".</div>}
               <label>Interaction <select value={part.interaction} onChange={e => update(n => { n.parts.find(p => p.id === part.id).interaction = e.target.value })}>{INTERACTIONS.map(x => <option key={x}>{x}</option>)}</select></label>
               <label>Size (m) <input type="number" step="0.01" value={part.size_hint_m} onChange={e => update(n => { n.parts.find(p => p.id === part.id).size_hint_m = parseFloat(e.target.value) || 0.04 })} /></label>
               <Overlay id={id} spec={spec} part={part} track={bundle.find(b => b.id === part.id)} onBox={(box, frame) => update(n => { const p = n.parts.find(p => p.id === part.id); p.box = box; p.keyframe = frame; p.source = 'manual'; p.confidence = 1 })} />

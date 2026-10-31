@@ -20,6 +20,11 @@
   async function landing() {
     document.getElementById('app').className = 'landing';
     $('guide').hidden = true;
+    // a laptop viewer gets a QR to carry the link to a phone (the camera needs HTTPS, which the link already is)
+    const phone = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+    const link = location.origin + location.pathname;
+    $('qr').hidden = phone;
+    if (!phone) { $('qrimg').src = `/guide/qr.svg?url=${encodeURIComponent(link)}`; $('qrurl').textContent = link; }
     const ul = $('procedures');
     let list = [];
     try { list = await (await fetch('/guide/procedures')).json(); } catch (e) { ul.innerHTML = '<li class="muted">Backend not reachable.</li>'; return; }

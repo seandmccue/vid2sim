@@ -59,3 +59,5 @@ button.icon { padding:3px 7px; } button.link { border:none; background:none; col
 .toast { position:fixed; right:20px; bottom:20px; background:#20242e; border:1px solid var(--line); padding:10px 14px; border-radius:8px; font-size:13px; max-width:420px; }
 .toast.err { border-color:var(--err); }
 @media (max-width: 1000px) { .cols { grid-template-columns:1fr; } .metrics { grid-template-columns: repeat(2,1fr); } }
+
+.partdetail input.warn { border-color: #d97706; background: #fffbeb; }
