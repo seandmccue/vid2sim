@@ -39,8 +39,8 @@ asks for the check right now. `?auto=0` turns it off.
 2. **Run each expert video** through the dashboard (upload → run) and fix phrases: anything flagged amber in the SAM
    prompt field has a position word; name the object by colour, shape or material. Write every `check` as a visible
    binary state ("switch is in the OFF position"), because Spark judges from that text and one frame.
-3. **Replace the stand-ins.** `data/procedures/desk-demo` is built from generated stills; your desk take replaces it
-   (same id keeps the landing blurb). Add the compressor as `compressor-filter-swap` and your second machine to
+3. **Replace the stand-ins.** Done for the desk: `data/procedures/desk-demo` is now your Nov 1 laptop take (two steps,
+   SAM 0.99 on the laptop, Spark 6/6 on held-out frames). Add the compressor as `compressor-filter-swap` and your second machine to
    `data/guide.json` under `featured` (the forklift on sample footage is there now and can stay as a third).
 4. **Sample footage per procedure.** Drop a `sample.mp4` in the procedure folder (480p is plenty) and "Watch on
    sample footage" appears for it.
