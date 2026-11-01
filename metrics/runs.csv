@@ -709,3 +709,16 @@ run_id,procedure,stage,model,wall_s,cost_usd,frames,tokens_in,tokens_out,note
 20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.99,0.0025,1,0,0,laptop | matches=3/3 best=0.92
 20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.71,0.0025,1,0,0,phone charger cable | matches=0/0 best=0.00
 20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,0.79,0.0025,1,0,0,phone charger cable | matches=0/0 best=0.00
+20261101-084409-428c5c,Downloads,upload,files,35.01,0.0000,0,0,0,IMG_4637.MOV
+20261101-084409-428c5c,Downloads,transcribe,muse-voice-transcribe-1.0,4.53,0.0023,0,0,0,"0.38 min, cost is an estimate"
+20261101-084409-428c5c,Downloads,extract,muse-spark-1.3,49.35,0.0394,0,6554,7347,"completed, budget 16000"
+20261101-084409-428c5c,Downloads,verify,muse-spark-1.3,9.77,0.0107,0,557,2348,"completed, budget 16000"
+20261101-084409-428c5c,Downloads,upload,files,12.80,0.0000,0,0,0,laptop.mp4
+20261101-084409-428c5c,Downloads,segment_concept,sam-3.1,23.78,0.0810,405,0,0,silver laptop
+20261101-084409-428c5c,Downloads,total,pipeline,144.75,0.0000,0,0,0,upload to StreamingAssets
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,2.04,0.0025,1,0,0,silver laptop | matches=1/1 best=0.99
+20261031-173611-43efad,guide:desk-demo,guide_find,sam-3.1,1.78,0.0025,1,0,0,silver laptop | matches=1/1 best=0.98
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,2.11,0.0027,0,1280,260,A hand is holding the top edge of the op -> yes (completed)
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,4.35,0.0037,0,1280,497,A hand is holding the top edge of the op -> no (completed)
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,1.69,0.0029,0,1283,305,The laptop lid is closed flat against th -> yes (completed)
+20261031-173611-43efad,guide:desk-demo,guide_check,muse-spark-1.3,2.00,0.0028,0,1283,293,The laptop lid is closed flat against th -> no (completed)

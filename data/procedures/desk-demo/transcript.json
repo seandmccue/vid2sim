@@ -1,0 +1,40 @@
+{
+  "model": "muse-voice-transcribe-1.0",
+  "transcript": "This is the process on how to close a laptop. First, reach out and grab the top of the laptop then pull it towards you and start to close it. Finish by closing it fully shut. Now the laptop is shut.",
+  "audio_duration_ms": 22960,
+  "fps": 29.97002997002997,
+  "turns": [
+    {
+      "turn_id": 0,
+      "start_ms": 1740,
+      "end_ms": 4380,
+      "start_frame": 52,
+      "end_frame": 131,
+      "text": "This is the process on how to close a laptop."
+    },
+    {
+      "turn_id": 1,
+      "start_ms": 5180,
+      "end_ms": 14060,
+      "start_frame": 155,
+      "end_frame": 421,
+      "text": "First, reach out and grab the top of the laptop then pull it towards you and start to close it."
+    },
+    {
+      "turn_id": 2,
+      "start_ms": 15260,
+      "end_ms": 17660,
+      "start_frame": 457,
+      "end_frame": 529,
+      "text": "Finish by closing it fully shut."
+    },
+    {
+      "turn_id": 3,
+      "start_ms": 18780,
+      "end_ms": 20300,
+      "start_frame": 562,
+      "end_frame": 608,
+      "text": "Now the laptop is shut."
+    }
+  ]
+}

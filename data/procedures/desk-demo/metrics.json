@@ -1,0 +1,70 @@
+{
+  "run_id": "20261101-084409-428c5c",
+  "procedure": "desk-demo",
+  "upload_to_spec_s": 144.8,
+  "api_cost_usd": 0.1334,
+  "steps": 3,
+  "parts": 1,
+  "parts_found_concept": 1,
+  "parts_found_box": 0,
+  "parts_manual": 0,
+  "stages": [
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 35.01,
+      "cost_usd": 0.0,
+      "note": "IMG_4637.MOV"
+    },
+    {
+      "stage": "transcribe",
+      "model": "muse-voice-transcribe-1.0",
+      "wall_s": 4.53,
+      "cost_usd": 0.0023,
+      "note": "0.38 min, cost is an estimate"
+    },
+    {
+      "stage": "extract",
+      "model": "muse-spark-1.3",
+      "wall_s": 49.35,
+      "cost_usd": 0.0394,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "verify",
+      "model": "muse-spark-1.3",
+      "wall_s": 9.77,
+      "cost_usd": 0.0107,
+      "note": "completed, budget 16000"
+    },
+    {
+      "stage": "upload",
+      "model": "files",
+      "wall_s": 12.8,
+      "cost_usd": 0.0,
+      "note": "laptop.mp4"
+    },
+    {
+      "stage": "segment_concept",
+      "model": "sam-3.1",
+      "wall_s": 23.78,
+      "cost_usd": 0.081,
+      "note": "silver laptop"
+    },
+    {
+      "stage": "total",
+      "model": "pipeline",
+      "wall_s": 144.75,
+      "cost_usd": 0.0,
+      "note": "upload to StreamingAssets"
+    }
+  ],
+  "generated_actions": [],
+  "textures": 0,
+  "shapes": 0,
+  "host": false,
+  "host_subject": "",
+  "cutouts": 1,
+  "step_cards": 0,
+  "streaming_assets": "/Users/seandmccue/Downloads/Github2/vid2sim/archive/unity/TrainingSim/Assets/StreamingAssets/procedures/desk-demo"
+}

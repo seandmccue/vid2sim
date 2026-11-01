@@ -2,127 +2,55 @@
   "schema_version": "1.0",
   "procedure": {
     "id": "desk-demo",
-    "title": "Shut down for the night (desk demo)",
-    "source_video": "provisional-generated-stills",
-    "fps": 30,
-    "width": 720,
-    "height": 720,
-    "duration_s": 12.0
+    "title": "Close a laptop",
+    "source_video": "file-911947801884426",
+    "fps": 29.97,
+    "width": 1080,
+    "height": 1920,
+    "duration_s": 22.88
   },
   "parts": [
     {
       "id": "laptop",
       "name": "Laptop",
-      "prompt_phrase": "laptop",
-      "interaction": "press",
-      "keyframe": 0,
-      "box": [
-        189,
-        121,
-        533,
-        480
-      ],
-      "size_hint_m": 0.33,
-      "confidence": 0.977,
-      "source": "concept"
-    },
-    {
-      "id": "phone_charger",
-      "name": "Phone charger",
-      "prompt_phrase": "phone charger cable",
+      "prompt_phrase": "silver laptop",
       "interaction": "grab",
-      "keyframe": 0,
+      "keyframe": 140,
       "box": [
-        396,
-        396,
-        648,
-        684
+        0,
+        485,
+        1021,
+        1467
       ],
-      "size_hint_m": 0.15,
-      "confidence": 0.0,
-      "source": "manual"
-    },
-    {
-      "id": "water_bottle",
-      "name": "Water bottle",
-      "prompt_phrase": "water bottle",
-      "interaction": "turn",
-      "keyframe": 0,
-      "box": [
-        602,
-        133,
-        697,
-        342
-      ],
-      "size_hint_m": 0.25,
-      "confidence": 0.969,
-      "source": "concept"
-    },
-    {
-      "id": "computer_mouse",
-      "name": "Computer mouse",
-      "prompt_phrase": "computer mouse",
-      "interaction": "grab",
-      "keyframe": 0,
-      "box": [
-        565,
-        385,
-        637,
-        465
-      ],
-      "size_hint_m": 0.11,
-      "confidence": 0.973,
+      "size_hint_m": 0.4,
+      "confidence": 0.992,
       "source": "concept"
     }
   ],
   "steps": [
     {
+      "action": "grab",
+      "check": "A hand is holding the top edge of the open laptop lid.",
+      "coach": "Put your hand on the top edge of the screen.",
+      "end_frame": 260,
+      "failure": "The lid cannot be pulled down without a grip on its top edge.",
+      "instruction": "Reach out and grab the top edge of the laptop lid.",
       "order": 1,
       "part_id": "laptop",
-      "action": "press",
-      "instruction": "Close the laptop lid.",
-      "start_frame": 0,
-      "end_frame": 89,
-      "check": "laptop lid is closed",
-      "failure": "Laptop keeps running overnight and the battery drains.",
       "safety": false,
-      "coach": "Press the lid down until it clicks shut."
+      "start_frame": 155
     },
     {
+      "action": "close",
+      "check": "The laptop lid is closed flat against the base and the screen is not visible.",
+      "coach": "Keep pulling the lid down until it rests on the keyboard.",
+      "end_frame": 529,
+      "failure": "A half-closed lid leaves the screen on and the hinge under strain.",
+      "instruction": "Pull the lid toward you and close it fully shut.",
       "order": 2,
-      "part_id": "phone_charger",
-      "action": "pull",
-      "instruction": "Unplug the phone charger from the wall.",
-      "start_frame": 90,
-      "end_frame": 179,
-      "check": "charger plug is out of the wall socket",
-      "failure": "Charger stays live all night.",
-      "safety": true,
-      "coach": "Pull the plug straight out, not by the cable."
-    },
-    {
-      "order": 3,
-      "part_id": "water_bottle",
-      "action": "turn_cw",
-      "instruction": "Cap the water bottle.",
-      "start_frame": 180,
-      "end_frame": 269,
-      "check": "water bottle cap is screwed on",
-      "failure": "Spill on the desk and the laptop.",
+      "part_id": "laptop",
       "safety": false,
-      "coach": "Turn the cap clockwise until it stops."
-    },
-    {
-      "order": 4,
-      "part_id": "computer_mouse",
-      "action": "place",
-      "instruction": "Put the mouse on top of the closed laptop.",
-      "start_frame": 270,
-      "end_frame": 359,
-      "check": "mouse is sitting on the laptop lid",
-      "failure": "Mouse gets knocked off the desk.",
-      "safety": false,
-      "coach": "Set it in the middle of the lid."
+      "start_frame": 261
     }
   ]
 }
